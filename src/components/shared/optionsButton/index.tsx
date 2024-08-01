@@ -4,9 +4,10 @@ import Select from "react-select"
 import reactSelect from "react-select";
 
 interface OptionsButtonProps {
+  className?: string
 };
 
-export const OptionsButton: React.FC<OptionsButtonProps> = ({ }) => {
+export const OptionsButton: React.FC<OptionsButtonProps> = ({ className = "" }) => {
   const options = [
     { value: 'chocolateeeeeeeee', label: 'Chocolate' },
     { value: 'strawberry', label: 'Strawberry' },
@@ -19,7 +20,7 @@ export const OptionsButton: React.FC<OptionsButtonProps> = ({ }) => {
   }
 
   return (
-    <div className="relative">
+    <div className={`relative ${className}`}>
       <img src={optionsIcon} alt="options button" onClick={openMenu} />
 
       {/* {!!menuIsOpen &&

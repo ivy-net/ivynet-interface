@@ -20,6 +20,7 @@ module.exports = {
         textSecondary: "#A1A1A9",
         textGrey: "#484848",
         textWarning: "#FF453B",
+        bgButton: "#242427",
       },
       width: {
         sidebarWith: "240px"

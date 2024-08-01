@@ -10,7 +10,7 @@ interface MachineProps {
 
 export const Machine: React.FC<MachineProps> = ({ }) => {
   const fakeData = {
-    name: "Machine 1",
+    name: "Node 1",
     address: "0x235eE805F962690254e9a440E01574376136ecb1",
     connected: true,
     updated: false,
@@ -24,12 +24,12 @@ export const Machine: React.FC<MachineProps> = ({ }) => {
 
   return (
     <>
-      <Topbar goBackTo="/machines" />
+      <Topbar goBackTo="/nodes" />
       <div className="flex">
         <MachineWidget name={fakeData.name} address={fakeData.address} isConnected={fakeData.connected} />
-        <div className="flex items-center ml-auto">
-          <button>Update client</button>
-          <OptionsButton />
+        <div className="flex items-center ml-auto gap-4">
+          <button className="py-2.5 px-4 bg-accent/[0.15] rounded-lg">Update client</button>
+          <OptionsButton className="p-2.5 border border-iconBorderColor rounded-lg" />
         </div>
       </div>
       <div className="flex gap-6">
@@ -45,7 +45,7 @@ export const Machine: React.FC<MachineProps> = ({ }) => {
           </div>
         </div>
       </div>
-      <h3>Status</h3>
+      <SectionTitle title="Status"></SectionTitle>
       <div className="grid grid-cols-4 gap-4">
         <MachineStatus title="Disk Usage" connected={true}>
           <div className="flex items-end gap-1">
@@ -58,7 +58,7 @@ export const Machine: React.FC<MachineProps> = ({ }) => {
         <MachineStatus title="AVS Running" status={fakeData.avs.name} />
       </div>
 
-      <h3>Performance</h3>
+      <SectionTitle title="Performance"></SectionTitle>
       <h4>New Task Received</h4>
       <h4>Signed Task Response</h4>
 

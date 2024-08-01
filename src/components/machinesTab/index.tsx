@@ -1,3 +1,4 @@
+import { Outlet, useSearchParams } from "react-router-dom";
 import { Topbar } from "../Topbar";
 import { MachineWidget } from "../shared/machineWidget";
 import { MachinesWidget } from "../shared/machinesWidget";
@@ -6,6 +7,7 @@ import { Table } from "../shared/table";
 import { Td } from "../shared/table/Td";
 import { Th } from "../shared/table/Th";
 import { Tr } from "../shared/table/Tr";
+import { TableFilters } from "./TableFilters";
 
 interface MachinesTabProps {
 };
@@ -13,11 +15,12 @@ interface MachinesTabProps {
 export const MachinesTab: React.FC<MachinesTabProps> = ({ }) => {
   return (
     <>
-      <Topbar title="Machines Overview" />
+      <Topbar title="Nodes Overview" />
       <MachinesWidget />
+      <TableFilters />
       <Table>
         <Tr>
-          <Th content="Machines"></Th>
+          <Th content="Nodes"></Th>
           <Th content="AVS Name"></Th>
           <Th content="Connectivity"></Th>
           <Th content="Resources"></Th>
@@ -26,7 +29,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = ({ }) => {
         </Tr>
         <Tr>
           <Td>
-            <MachineWidget address="0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5" name="Machine 1" isConnected={true} />
+            <MachineWidget address="0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5" name="Node 1" isConnected={true} />
           </Td>
           <Td to="/avs" content="AVS 2"></Td>
           <Td isConnected={true}></Td>
@@ -36,7 +39,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = ({ }) => {
         </Tr>
         <Tr>
           <Td>
-            <MachineWidget address="0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5" name="Machine 2" isConnected={false} />
+            <MachineWidget address="0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5" name="Node 2" isConnected={false} />
           </Td>
           <Td content="AVS 1"></Td>
           <Td isConnected={false}></Td>
@@ -48,7 +51,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = ({ }) => {
         </Tr>
         <Tr>
           <Td>
-            <MachineWidget address="0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5" name="Machine 3" isConnected={true} />
+            <MachineWidget address="0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5" name="Node 3" isConnected={true} />
           </Td>
           <Td to="/avs" content="AVS 2"></Td>
           <Td isConnected={true}></Td>
@@ -59,7 +62,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = ({ }) => {
         </Tr>
         <Tr>
           <Td>
-            <MachineWidget address="0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5" name="Machine 4" isConnected={false} />
+            <MachineWidget address="0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5" name="Node 4" isConnected={false} />
           </Td>
           <Td content="-"></Td>
           <Td isConnected={false}></Td>
@@ -68,8 +71,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = ({ }) => {
           <Td><OptionsButton /></Td>
         </Tr>
       </Table>
-
-
+      <Outlet />
     </>
   );
 }

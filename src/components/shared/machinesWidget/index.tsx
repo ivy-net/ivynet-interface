@@ -13,7 +13,7 @@ export const MachinesWidget: React.FC<MachinesWidgetProps> = ({ }) => {
 
   return (
     <div className="grid grid-cols-4 gap-4">
-      <WidgetItem title="Total Machines" amount={fakeData.totalMachines} to="/machines" />
+      <WidgetItem title="Total Nodes" amount={fakeData.totalMachines} to="/nodes" />
       <WidgetItem title="Need Ivy Client Upgrade" amount={fakeData.needUpgrade} />
       <WidgetItem title="Need AVS Update" amount={fakeData.needUpdate} />
       <WidgetItem title="New Potential AVS" amount={fakeData.newAvs} to="/avs" />

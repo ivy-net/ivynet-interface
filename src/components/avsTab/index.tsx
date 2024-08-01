@@ -16,7 +16,7 @@ export const AvsTab: React.FC<AvsTabProps> = ({ }) => {
       <Table>
         <Tr>
           <Th content="AVS"></Th>
-          <Th content="Machine"></Th>
+          <Th content="Node"></Th>
           <Th content="Stake Minimum"></Th>
           <Th content="Allowlist"></Th>
           <Th content="Operators"></Th>
@@ -27,7 +27,7 @@ export const AvsTab: React.FC<AvsTabProps> = ({ }) => {
           <Td>
             <AvsWidget name="AVS 1" description="AVS 1 Description" />
           </Td>
-          <Td content="Machine 1" to="/machines/0x235eE805F962690254e9a440E01574376136ecb1" />
+          <Td content="Node 1" to="/nodes/0x235eE805F962690254e9a440E01574376136ecb1" />
           <Td content="1 ETH"></Td>
           <Td content="No"></Td>
           <Td content="23"></Td>
@@ -38,7 +38,7 @@ export const AvsTab: React.FC<AvsTabProps> = ({ }) => {
           <Td>
             <AvsWidget name="AVS 1" description="AVS 1 Description" />
           </Td>
-          <Td content="-" to="/machines/" />
+          <Td content="-" to="/nodes/" />
           <Td content="0.1 ETH"></Td>
           <Td content="No"></Td>
           <Td content="23"></Td>
@@ -49,7 +49,7 @@ export const AvsTab: React.FC<AvsTabProps> = ({ }) => {
           <Td>
             <AvsWidget name="AVS 1" description="AVS 1 Description" />
           </Td>
-          <Td content="Machine 3" to="/machines/0x235eE805F962690254e9a440E01574376136ecb1" />
+          <Td content="Node 3" to="/nodes/0x235eE805F962690254e9a440E01574376136ecb1" />
           <Td content="1 ETH"></Td>
           <Td content="Yes"></Td>
           <Td content="23"></Td>
@@ -60,7 +60,7 @@ export const AvsTab: React.FC<AvsTabProps> = ({ }) => {
           <Td>
             <AvsWidget name="AVS 1" description="AVS 1 Description" />
           </Td>
-          <Td content="Machine 4" to="/machines/0x235eE805F962690254e9a440E01574376136ecb1" />
+          <Td content="Node 4" to="/nodes/0x235eE805F962690254e9a440E01574376136ecb1" />
           <Td content="1 ETH"></Td>
           <Td content="No"></Td>
           <Td content="23"></Td>

@@ -13,10 +13,10 @@ export const MachineWidget: React.FC<MachineWidgetProps> = ({ name, address, isC
 
   return (
     <div className="flex gap-1 items-center">
-      <div className="p-2.5 h-[50px] w-[50px] flex justify-center items-center bg-sidebarIconHighlightColor/[0.15] rounded-full relative">
+      <div className="p-2.5 h-[60px] w-[60px] flex justify-center items-center bg-sidebarIconHighlightColor/[0.15] rounded-full relative">
         <img src={machineIcon} alt="machine icon" />
       </div>
-      <div className="flex flex-col py-1.5 px-3">
+      <div className="flex flex-col py-1.5 px-3 gap-1">
         <div className="flex gap-2">
           <h2>{name}</h2>
           <ConnectedIcon isConnected={isConnected} />

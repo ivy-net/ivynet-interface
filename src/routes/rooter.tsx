@@ -10,6 +10,7 @@ import {
   redirect,
 } from "react-router-dom";
 import { Machine } from '../components/machinesTab/machine';
+import { InstallClientModal } from '../components/machinesTab/InstallClientModal';
 
 export const router = createBrowserRouter([
   {
@@ -28,11 +29,20 @@ export const router = createBrowserRouter([
         element: <OverviewTab />
       },
       {
-        path: "machines",
+        path: "nodes",
         element: <MachinesTab />,
+        children: [
+          {
+            path: "",
+          },
+          {
+            path: "install/client",
+            element: <InstallClientModal />,
+          }
+        ]
       },
       {
-        path: "machines/:address",
+        path: "nodes/:address",
         element: <Machine />
       },
       {

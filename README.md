@@ -1,6 +1,6 @@
-# Getting Started with Create React App
+# Ivynet Interface
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Currently, only dummy data is used. 
 
 ## Available Scripts
 

@@ -29,7 +29,7 @@ export const Machine: React.FC<MachineProps> = ({ }) => {
         <MachineWidget name={fakeData.name} address={fakeData.address} isConnected={fakeData.connected} />
         <div className="flex items-center ml-auto gap-4">
           <button className="py-2.5 px-4 bg-accent/[0.15] rounded-lg">Update client</button>
-          <OptionsButton className="p-2.5 border border-iconBorderColor rounded-lg" />
+          {/* <OptionsButton className="p-2.5 border border-iconBorderColor rounded-lg" /> */}
         </div>
       </div>
       <div className="flex gap-6">

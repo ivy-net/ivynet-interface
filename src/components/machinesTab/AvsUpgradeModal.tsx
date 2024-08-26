@@ -2,11 +2,11 @@ import React from "react";
 import { CodeModal } from "../shared/CodeModal";
 
 
-interface InstallClientModalProps {
+interface AvsUpgradeModalProps {
 };
 
-export const InstallClientModal: React.FC<InstallClientModalProps> = ({ }) => {
-  const title = "Install Ivy Client on a New Machine";
+export const AvsUpgradeModal: React.FC<AvsUpgradeModalProps> = ({ }) => {
+  const title = "AVS Upgrade";
   const code =
     `lorem
 Generates a random sentence.

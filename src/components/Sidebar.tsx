@@ -17,10 +17,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ }) => {
         <div className="text-xl leading-6 font-semibold">Ivynet</div>
       </div>
       <div className="flex flex-col h-full">
-        <SidebarItem title="Overview" Logo={Overview} />
+        {/* <SidebarItem title="Overview" Logo={Overview} /> */}
         <SidebarItem title="Nodes" Logo={Machines} />
         <SidebarItem title="AVS" Logo={AVS} />
-        <SidebarItem title="Rewards" Logo={Rewards} />
+        {/* <SidebarItem title="Rewards" Logo={Rewards} /> */}
         <div className="mt-auto">
           <SidebarItem title="Settings" Logo={Settings} />
           <SidebarItem title="Help" Logo={Help} />

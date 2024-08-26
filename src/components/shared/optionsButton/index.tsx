@@ -1,41 +1,30 @@
 import React, { useState } from "react";
 import optionsIcon from "../../../images/dots-vertical.svg"
 import Select from "react-select"
-import reactSelect from "react-select";
+import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu';
+import { Link } from "react-router-dom";
+
+interface Option {
+  label: string;
+  link: string;
+}
 
 interface OptionsButtonProps {
   className?: string
+  options: Option[]
 };
 
-export const OptionsButton: React.FC<OptionsButtonProps> = ({ className = "" }) => {
-  const options = [
-    { value: 'chocolateeeeeeeee', label: 'Chocolate' },
-    { value: 'strawberry', label: 'Strawberry' },
-    { value: 'vanilla', label: 'Vanilla' }
-  ]
-  const [menuIsOpen, setMenuIsOpen] = useState(false);
-
-  const openMenu = () => {
-    setMenuIsOpen(true);
-  }
+export const OptionsButton: React.FC<OptionsButtonProps> = ({ className = "", options }) => {
 
   return (
-    <div className={`relative ${className}`}>
-      <img src={optionsIcon} alt="options button" onClick={openMenu} />
-
-      {/* {!!menuIsOpen &&
-        // <Select
-        //   menuIsOpen={true}
-        //   options={options} />
-
-        // <div className="absolute bg-gray-400 p-2">
-        //   {options.map((option) => {
-        //     return <div key={option.label}>{option.value}</div>
-        //   })}
-        // </div>
-      } */}
-
-      {/*  */}
-    </div>
+    <Menu menuButton={<MenuButton><img src={optionsIcon} alt="options button" /></MenuButton>}>
+      <div className="p-2 bg-sidebarHoverBg rounded-lg flex flex-col w-max">
+        {options.map((option, index) => (
+          <Link to={option.link} key={index} className="cursor-pointer">
+            <MenuItem className="text-sm font-normal text-textSecondary hover:text-textPrimary hover:bg-textGrey px-3 py-2 rounded-[4px]">{option.label}</MenuItem>
+          </Link>
+        ))}
+      </div>
+    </Menu>
   );
 }

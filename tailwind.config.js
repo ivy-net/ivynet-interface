@@ -21,6 +21,12 @@ module.exports = {
         textGrey: "#484848",
         textWarning: "#FF453B",
         bgButton: "#242427",
+        ivywhite: "#FAFAFA",
+        ivygrey: "#344054",
+        ivygrey2: "#667085",
+        ivygrey3: "#475467",
+        ivypurple: "#6941C6",
+        positive: "#65C97A",
       },
       width: {
         sidebarWith: "240px"

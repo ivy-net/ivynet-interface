@@ -10,7 +10,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ }) => {
     <>
       <Topbar title="Overview" />
       <SectionTitle title="Node Status" className="text-textPrimary" />
-      <MachinesWidget />
+      {/* <MachinesWidget /> */}
       <SectionTitle title="Rewards" className="text-textPrimary" />
     </>
   );

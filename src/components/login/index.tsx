@@ -1,5 +1,6 @@
 import React from "react";
 import ivySmall from "../../images/ivy-small.svg"
+import { Link } from "react-router-dom";
 
 interface LoginProps {
 };
@@ -25,6 +26,12 @@ export const Login: React.FC<LoginProps> = ({ }) => {
             </div>
           </div>
           <button className="py-2.5 px-4 bg-accent/[0.10] border border-accent text-accent rounded-lg">Login</button>
+        </div>
+        <div className="flex text-ivygrey gap-1 justify-center">
+          <div>Forgot password?</div>
+          <Link to="">
+            <div className="text-accent">Reset here</div>
+          </Link>
         </div>
       </div>
 

@@ -32,10 +32,8 @@ export const MachinesTab: React.FC<MachinesTabProps> = ({ }) => {
   ]
   const filters = [
     { label: "All Nodes", query: "all" },
-    { label: "Needs Upgrade", query: "upgrade" },
-    { label: "AVS Activation", query: "activation" },
-    { label: "Idle Nodes", query: "idle" }];
-
+    { label: "High Priority", query: "upgrade" },
+    { label: "Medium Priority", query: "activation" }];
 
   return (
     <>
@@ -53,7 +51,9 @@ export const MachinesTab: React.FC<MachinesTabProps> = ({ }) => {
           <Table>
             <Tr>
               <Th content="Nodes"></Th>
+              <Th content="Ivy Version"></Th>
               <Th content="AVS Name"></Th>
+              <Th content="AVS Version"></Th>
               <Th content="Connectivity"></Th>
               <Th content="Resources"></Th>
               <Th content="Active Set"></Th>

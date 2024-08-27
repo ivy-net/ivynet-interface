@@ -12,11 +12,12 @@ interface TdProps {
   isChecked?: boolean
   diskStatus?: "fair" | "critical" | "good"
   content?: string
-  to?: string;
+  to?: string
+  active?: boolean;
   children?: React.ReactNode
 };
 
-export const Td: React.FC<TdProps> = ({ content, children, to, isConnected, isChecked, diskStatus }) => {
+export const Td: React.FC<TdProps> = ({ content, children, to, isConnected, isChecked, diskStatus, active }) => {
   const hoverClasses = to ? "hover:bg-widgetHoverBg" : "";
   const hasConnectedIcon = isConnected !== undefined;
   const hasCheckedIcon = isChecked !== undefined;

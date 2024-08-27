@@ -18,6 +18,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ }) => {
       </div>
       <div className="flex flex-col h-full">
         {/* <SidebarItem title="Overview" Logo={Overview} /> */}
+        <SidebarItem title="Organization" Logo={Machines} />
         <SidebarItem title="Nodes" Logo={Machines} />
         <SidebarItem title="AVS" Logo={AVS} />
         {/* <SidebarItem title="Rewards" Logo={Rewards} /> */}

@@ -19,6 +19,10 @@ export const EmptyMachines: React.FC<EmptyMachinesProps> = ({ onClick }) => {
       <Link to="" onClick={onClick}>
         <button className="py-2.5 px-4 bg-accent/[0.10] border border-accent text-accent rounded-lg text-base font-semibold">+ Install IvyNet Client</button>
       </Link>
+      <div className="w-[552px]">
+        <span className="justify-center text-sidebarColor">Just deployed IvyNet? It can take a few minutes to display.</span>
+      </div>
+
       <div>
         <span className="text-ivygrey3">Need help reach out on </span>
         <Link to="">

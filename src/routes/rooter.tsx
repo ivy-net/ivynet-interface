@@ -18,6 +18,7 @@ import { AvsModal } from '../components/avsTab/avs';
 import { Login } from '../components/login';
 import { Signup } from '../components/signup';
 import { Welcome } from '../components/welcome';
+import { OrgTab } from '../components/orgTab';
 
 export const router = createBrowserRouter([
   {
@@ -76,6 +77,10 @@ export const router = createBrowserRouter([
             element: <AvsModal />
           }
         ]
+      },
+      {
+        path: "organization",
+        element: <OrgTab />
       },
       // {
       //   path: "rewards",

@@ -3,12 +3,13 @@ import React from "react";
 interface ThProps {
   children?: React.ReactNode
   content?: string
+  className?: string;
 };
 
-export const Th: React.FC<ThProps> = ({ content = undefined, children = undefined }) => {
+export const Th: React.FC<ThProps> = ({ content = undefined, children = undefined, className = "" }) => {
 
   return (
-    <th className="text-left align-middle h-11">
+    <th className={`${className} text-left align-middle h-11`}>
       {content && <div className="text-sm text-textGrey">{content}</div>}
       {children}
     </th>

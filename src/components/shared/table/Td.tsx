@@ -12,19 +12,19 @@ interface TdProps {
   isChecked?: boolean
   diskStatus?: "fair" | "critical" | "good"
   content?: string
-  to?: string
-  active?: boolean;
-  children?: React.ReactNode
+  to?: string;
+  children?: React.ReactNode;
+  className?: string;
 };
 
-export const Td: React.FC<TdProps> = ({ content, children, to, isConnected, isChecked, diskStatus, active }) => {
+export const Td: React.FC<TdProps> = ({ content, children, to, isConnected, isChecked, diskStatus, className = "" }) => {
   const hoverClasses = to ? "hover:bg-widgetHoverBg" : "";
   const hasConnectedIcon = isConnected !== undefined;
   const hasCheckedIcon = isChecked !== undefined;
   const hasDiskStatus = diskStatus !== undefined;
 
   return (
-    <td className="h-[72px]">
+    <td className={`${className} h-[72px]`}>
 
       {content &&
         <ConditionalLink to={to}>

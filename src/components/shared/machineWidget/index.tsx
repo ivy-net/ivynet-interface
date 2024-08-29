@@ -7,9 +7,10 @@ interface MachineWidgetProps {
   name: string;
   address: string;
   isConnected: boolean;
+  to: string;
 };
 
-export const MachineWidget: React.FC<MachineWidgetProps> = ({ name, address, isConnected }) => {
+export const MachineWidget: React.FC<MachineWidgetProps> = ({ name, address, isConnected, to, }) => {
 
   return (
     <div className="flex gap-1 items-center">

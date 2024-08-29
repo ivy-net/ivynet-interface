@@ -10,7 +10,7 @@ export const OrgTab: React.FC<OrgTabProps> = ({ }) => {
 
   return (
     <>
-      <Topbar title="Organization" />
+      <Topbar title="Overview" />
       <SectionTitle title="Stats" className="text-textPrimary" />
       <OrgTable />
     </>

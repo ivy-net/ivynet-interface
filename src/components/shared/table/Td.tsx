@@ -8,11 +8,12 @@ import { DiskSpaceStatus } from "../diskSpaceStatus";
 
 
 interface TdProps {
-  isConnected?: boolean
+  isConnected?: boolean | null
+  avs_version?: boolean | null
   isChecked?: boolean
   diskStatus?: "fair" | "critical" | "good"
   content?: string
-  to?: string;
+  to?: string
   children?: React.ReactNode;
   className?: string;
 };

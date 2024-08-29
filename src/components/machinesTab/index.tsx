@@ -51,7 +51,6 @@ export const MachinesTab: React.FC<MachinesTabProps> = ({ }) => {
           <Table>
             <Tr>
               <Th content="Nodes"></Th>
-              <Th content="Ivy Version"></Th>
               <Th content="AVS Name"></Th>
               <Th content="AVS Version"></Th>
               <Th content="Connectivity"></Th>
@@ -61,20 +60,22 @@ export const MachinesTab: React.FC<MachinesTabProps> = ({ }) => {
             </Tr>
             <Tr>
               <Td>
-                <MachineWidget address="0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5" name="Node 1" isConnected={true} />
+                <MachineWidget address="0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5" name="Node 1" isConnected={true} to="/nodes/0x235eE805F962690254e9a440E01574376136ecb1"/>
               </Td>
               <Td to="/avs/1234" content="AVS 2"></Td>
               <Td isConnected={true}></Td>
+              <Td avs_version={true}></Td>
               <Td diskStatus="critical"></Td>
               <Td isChecked={true}></Td>
               <Td><OptionsButton options={options} /></Td>
             </Tr>
             <Tr>
               <Td>
-                <MachineWidget address="0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5" name="Node 2" isConnected={false} />
+                <MachineWidget address="0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5" name="Node 2" isConnected={false} to="" />
               </Td>
-              <Td content="AVS 1"></Td>
+              <Td to="/avs/2345" content="AVS 1"></Td>
               <Td isConnected={false}></Td>
+              <Td isConnected={true}></Td>
               <Td diskStatus="fair"></Td>
               <Td isChecked={false}></Td>
               <Td><OptionsButton options={options} /></Td>
@@ -83,9 +84,10 @@ export const MachinesTab: React.FC<MachinesTabProps> = ({ }) => {
             </Tr>
             <Tr>
               <Td>
-                <MachineWidget address="0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5" name="Node 3" isConnected={true} />
+                <MachineWidget address="0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5" name="Node 3" isConnected={true} to="" />
               </Td>
               <Td to="/avs/2345" content="AVS 2"></Td>
+              <Td isConnected={true}></Td>
               <Td isConnected={true}></Td>
               <Td diskStatus="good"></Td>
               <Td isChecked={true}></Td>
@@ -93,10 +95,11 @@ export const MachinesTab: React.FC<MachinesTabProps> = ({ }) => {
             </Tr>
             <Tr>
               <Td>
-                <MachineWidget address="0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5" name="Node 4" isConnected={false} />
+                <MachineWidget address="0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5" name="Node 4" isConnected={false} to=""/>
               </Td>
-              <Td content="-"></Td>
+              <Td to="/avs" content="-"></Td>
               <Td isConnected={false}></Td>
+              <Td isConnected={true}></Td>
               <Td diskStatus="good"></Td>
               <Td isChecked={false}></Td>
               <Td><OptionsButton options={options} /></Td>

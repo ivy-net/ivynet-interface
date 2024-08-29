@@ -30,7 +30,7 @@ export const Login: React.FC<LoginProps> = ({ }) => {
         <div className="flex text-ivygrey gap-1 justify-center">
           <div>Forgot password?</div>
           <Link to="">
-            <div className="text-accent">Reset here</div>
+            <div className="text-accent">Reset</div>
           </Link>
         </div>
       </div>

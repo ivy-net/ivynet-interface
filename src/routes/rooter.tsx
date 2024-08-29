@@ -79,7 +79,7 @@ export const router = createBrowserRouter([
         ]
       },
       {
-        path: "organization",
+        path: "overview",
         element: <OrgTab />
       },
       // {
@@ -87,7 +87,7 @@ export const router = createBrowserRouter([
       //   element: <RewardsTab />
       // },
       {
-        path: "settings",
+        path: "organization",
         element: <SettingsTab />
       },
       {

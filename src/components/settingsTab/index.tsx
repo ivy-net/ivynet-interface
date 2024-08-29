@@ -24,7 +24,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ }) => {
   return (
     <>
       <div className="flex flex-col gap-10">
-        <Topbar title="Settings" />
+        <Topbar title="Organization" />
         <div className="flex flex-col gap-6">
           <User name="Diogo Ribeiro" desc="Cool Company Name" role="Owner" size="md" />
           <div className="flex items-center justify-between">

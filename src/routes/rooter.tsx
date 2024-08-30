@@ -19,6 +19,7 @@ import { Login } from '../components/login';
 import { Signup } from '../components/signup';
 import { Welcome } from '../components/welcome';
 import { OrgTab } from '../components/orgTab';
+import { AddUserModal } from '../components/settingsTab/AddUserModal';
 
 export const router = createBrowserRouter([
   {
@@ -88,7 +89,13 @@ export const router = createBrowserRouter([
       // },
       {
         path: "organization",
-        element: <SettingsTab />
+        element: <SettingsTab />,
+        children: [
+          {
+            path: "adduser",
+            element: <AddUserModal />
+          }
+        ]
       },
       {
         path: "help",

@@ -1,3 +1,4 @@
+import { Link, Outlet } from "react-router-dom";
 import { OptionsButton } from "../shared/optionsButton";
 import { Table } from "../shared/table";
 import { Td } from "../shared/table/Td";
@@ -24,12 +25,14 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ }) => {
   return (
     <>
       <div className="flex flex-col gap-10">
-        <Topbar title="Organization" />
+        <Topbar title="Settings" />
         <div className="flex flex-col gap-6">
           <User name="Diogo Ribeiro" desc="Cool Company Name" role="Owner" size="md" />
           <div className="flex items-center justify-between">
             <div className="text-textPrimary text-base leading-5 font-medium">All members</div>
-            <button className="py-2.5 px-4 bg-accent/[0.10] border border-accent text-accent rounded-lg">+ Add Member</button>
+            <Link to="adduser">
+              <button className="py-2.5 px-4 bg-accent/[0.10] border border-accent text-accent rounded-lg">+ Add Member</button>
+            </Link>
           </div>
           <Table>
             <Tr>
@@ -53,6 +56,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({ }) => {
           </Table>
         </div>
       </div>
+      <Outlet />
     </>
   );
 }

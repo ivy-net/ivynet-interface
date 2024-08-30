@@ -4,6 +4,8 @@ import { Th } from "../shared/table/Th";
 import { Tr } from "../shared/table/Tr";
 import { shortenAddress } from "../../utils";
 import { Td } from "../shared/table/Td";
+import { Tag } from "../shared/Tag";
+import { Tooltip } from 'react-tooltip';
 
 interface OrgTableProps {
 };
@@ -39,38 +41,50 @@ export const OrgTable: React.FC<OrgTableProps> = ({ }) => {
         ))}
       </Tr>
       <Tr>
-        <Th content="Nodes" className="pt-6" />
+        <Th content="Nodes" className="pt-1" />
         {stats.map(stat => (
-          <Td content={stat.nodes.toString()} className="pt-6" />
+          <Td content={stat.nodes.toString()} className="pt-1" />
         ))}
       </Tr>
       <Tr>
-        <Th content="Total Stake" className="pt-6" />
+        <Th content="Total Stake" className="pt-1" />
         {stats.map(stat => (
-          <Td className="pt-6">
-            {stat.totalStake.map(stake => (
-              <div>{stake}</div>
-            ))}
+          <Td className="pt-1">
+            <div className="flex flex-col gap-1">
+              {stat.totalStake.map(stake => (
+                <Tag label={stake} />
+              ))}
+            </div>
           </Td>
         ))}
       </Tr>
       <Tr>
-        <Th content="AVS Running" className="pt-6" />
-        {stats.map(stat => (
-          <Td className="pt-6">
-            {stat.avsRunning.map(avs => (
-              <div>{avs}</div>
-            ))}
+        <Th content="AVS Running" className="pt-1" />
+        {stats.map((stat, idx) => (
+          <Td className="pt-1">
+            <div data-tooltip-id={`avs-running-${idx}`} className="w-fit">{stat.avsRunning[0]}</div>
+            {stat.avsRunning.length > 1 && <Tooltip id={`avs-running-${idx}`} place="bottom" >
+              <div className="flex flex-col gap-1">
+                {stat.avsRunning.slice(1).map(avs => (
+                  <Tag label={avs} />
+                ))}
+              </div>
+            </Tooltip>}
           </Td>
         ))}
       </Tr>
       <Tr>
-        <Th content="AVS Active Sets" className="pt-6" />
-        {stats.map(stat => (
-          <Td className="pt-6">
-            {stat.avsActiveSets.map(avs => (
-              <div>{avs}</div>
-            ))}
+        <Th content="AVS Active Sets" className="pt-1" />
+        {stats.map((stat, idx) => (
+          <Td className="pt-1">
+            <div data-tooltip-id={`avs-active-sets-${idx}`} className="w-fit">{stat.avsRunning[0]}</div>
+            {stat.avsActiveSets.length > 1 && <Tooltip id={`avs-active-sets-${idx}`} place="bottom" >
+              <div className="flex flex-col gap-1">
+                {stat.avsActiveSets.slice(1).map(avs => (
+                  <Tag label={avs} />
+                ))}
+              </div>
+            </Tooltip>}
           </Td>
         ))}
       </Tr>

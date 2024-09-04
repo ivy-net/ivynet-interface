@@ -26,7 +26,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({ }) => {
         </div> */}
         <div className="flex items-center">
           <h2>Add Member</h2>
-          <Link to="/settings" relative="path" className="ml-auto">
+          <Link to="/organization" relative="path" className="ml-auto">
             <img src={closeIcon} alt="close icon" />
           </Link>
         </div>
@@ -83,7 +83,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({ }) => {
         {/* <div className="border-t-[1px] border-white/10"></div> */}
         {/* <MachineRequirements /> */}
         <div className="flex gap-4 ml-auto">
-          <Link to="/settings" relative="path">
+          <Link to="/organization" relative="path">
             <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textPrimary">Add Member</div>
           </Link>
         </div>

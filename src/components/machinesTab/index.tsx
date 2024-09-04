@@ -12,6 +12,7 @@ import { Filters } from "../shared/filters";
 import { SectionTitle } from "../shared/sectionTitle";
 import { EmptyMachines } from "./EmptyMachines";
 import { useState } from "react";
+import { ConnectedIcon } from "../shared/connectedIcon";
 
 interface MachinesTabProps {
 };
@@ -32,8 +33,95 @@ export const MachinesTab: React.FC<MachinesTabProps> = ({ }) => {
   ]
   const filters = [
     { label: "All Nodes", query: "all" },
-    { label: "High Priority", query: "upgrade" },
-    { label: "Medium Priority", query: "activation" }];
+    { label: "High Priority", query: "high" },
+    { label: "Medium Priority", query: "medium" }];
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const filter = searchParams.get("filter");
+
+  const nodes = [
+    {
+      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
+      name: "Node 1",
+      ivy: null,
+      to: "/nodes/0x235eE805F962690254e9a440E01574376136ecb1",
+      connectivity: true,
+      avs: "AVS 1",
+      avsTo: "/avs/1234",
+      avsVersion: true,
+      diskStatus: "critical",
+      activeSet: true,
+    },
+    {
+      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
+      name: "Node 2",
+      ivy: true,
+      avs: "AVS 2",
+      avsTo: "/avs/1234",
+      to: "/nodes/0x235eE805F962690254e9a440E01574376136ecb1",
+      avsVersion: false,
+      connectivity: true,
+      diskStatus: "fair",
+      activeSet: false,
+    },
+    {
+      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
+      name: "Node 3",
+      ivy: false,
+      avs: "AVS 3",
+      avsTo: "/avs/1234",
+      to: "/nodes/0x235eE805F962690254e9a440E01574376136ecb1",
+      avsVersion: true,
+      connectivity: false,
+      diskStatus: "good",
+      activeSet: false,
+    },
+    {
+      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
+      name: "Node 4",
+      ivy: false,
+      avs: "-",
+      avsTo: "",
+      to: "/nodes/0x235eE805F962690254e9a440E01574376136ecb1",
+      avsVersion: true,
+      connectivity: false,
+      diskStatus: "critical",
+      activeSet: true,
+    },
+    {
+      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
+      name: "Node 5",
+      ivy: true,
+      avs: "AVS 3",
+      avsTo: "/avs/1234",
+      to: "/nodes/0x235eE805F962690254e9a440E01574376136ecb1",
+      avsVersion: true,
+      connectivity: true,
+      diskStatus: "fair",
+      activeSet: false,
+    },
+    {
+      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
+      name: "Node 6",
+      ivy: null,
+      to: "/nodes/0x235eE805F962690254e9a440E01574376136ecb1",
+      connectivity: true,
+      avs: "AVS 4",
+      avsTo: "/avs/1234",
+      avsVersion: true,
+      diskStatus: "critical",
+      activeSet: true,
+    },
+  ]
+
+  let filteredNodes = nodes;
+
+  if (filter === "high") {
+    filteredNodes = filteredNodes.filter((node) => node.ivy === false);
+  }
+  else if (filter === "medium") {
+    filteredNodes = filteredNodes.filter((node) => node.ivy !== true);
+  }
 
   return (
     <>
@@ -51,59 +139,31 @@ export const MachinesTab: React.FC<MachinesTabProps> = ({ }) => {
           <Table>
             <Tr>
               <Th content="Nodes"></Th>
-              <Th content="AVS Name"></Th>
+              <Th content="Ivy"></Th>
+              <Th content="AVS"></Th>
               <Th content="AVS Version"></Th>
               <Th content="Connectivity"></Th>
               <Th content="Resources"></Th>
               <Th content="Active Set"></Th>
               <Th content=""></Th>
             </Tr>
-            <Tr>
-              <Td>
-                <MachineWidget address="0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5" name="Node 1" isConnected={true} to="/nodes/0x235eE805F962690254e9a440E01574376136ecb1"/>
-              </Td>
-              <Td to="/avs/1234" content="AVS 2"></Td>
-              <Td isConnected={true}></Td>
-              <Td avs_version={true}></Td>
-              <Td diskStatus="critical"></Td>
-              <Td isChecked={true}></Td>
-              <Td><OptionsButton options={options} /></Td>
-            </Tr>
-            <Tr>
-              <Td>
-                <MachineWidget address="0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5" name="Node 2" isConnected={false} to="" />
-              </Td>
-              <Td to="/avs/2345" content="AVS 1"></Td>
-              <Td isConnected={false}></Td>
-              <Td isConnected={true}></Td>
-              <Td diskStatus="fair"></Td>
-              <Td isChecked={false}></Td>
-              <Td><OptionsButton options={options} /></Td>
-              <Td>
-              </Td>
-            </Tr>
-            <Tr>
-              <Td>
-                <MachineWidget address="0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5" name="Node 3" isConnected={true} to="" />
-              </Td>
-              <Td to="/avs/2345" content="AVS 2"></Td>
-              <Td isConnected={true}></Td>
-              <Td isConnected={true}></Td>
-              <Td diskStatus="good"></Td>
-              <Td isChecked={true}></Td>
-              <Td><OptionsButton options={options} /></Td>
-            </Tr>
-            <Tr>
-              <Td>
-                <MachineWidget address="0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5" name="Node 4" isConnected={false} to=""/>
-              </Td>
-              <Td to="/avs" content="-"></Td>
-              <Td isConnected={false}></Td>
-              <Td isConnected={true}></Td>
-              <Td diskStatus="good"></Td>
-              <Td isChecked={false}></Td>
-              <Td><OptionsButton options={options} /></Td>
-            </Tr>
+            {filteredNodes.map((node, index) =>
+            (
+              <Tr key={index}>
+                <Td>
+                  <MachineWidget address={node.address} name={node.name} to={node.to} />
+                </Td>
+                <Td>
+                  <ConnectedIcon isConnected={node.ivy} />
+                </Td>
+                <Td to={node.avsTo} content={node.avs}></Td>
+                <Td isConnected={node.avsVersion}></Td>
+                <Td isConnected={node.connectivity}></Td>
+                <Td diskStatus={node.diskStatus as any}></Td>
+                <Td isChecked={node.activeSet}></Td>
+                <Td><OptionsButton options={options} /></Td>
+              </Tr>
+            ))}
           </Table>
         </>
       }

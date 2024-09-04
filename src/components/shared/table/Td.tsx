@@ -9,7 +9,6 @@ import { DiskSpaceStatus } from "../diskSpaceStatus";
 
 interface TdProps {
   isConnected?: boolean | null
-  avs_version?: boolean | null
   isChecked?: boolean
   diskStatus?: "fair" | "critical" | "good"
   content?: string

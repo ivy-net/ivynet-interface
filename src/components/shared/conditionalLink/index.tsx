@@ -7,7 +7,7 @@ export type ConditionalLinkProps = {
 }
 
 export const ConditionalLink: FC<ConditionalLinkProps> = ({ children, to }) => {
-  if (!to) {
+  if (to === undefined) {
     return <>{children}</>
   }
 

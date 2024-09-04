@@ -27,6 +27,8 @@ module.exports = {
         ivygrey3: "#475467",
         ivypurple: "#6941C6",
         positive: "#65C97A",
+        tagBg: "#262626",
+        tagColor: "#CECEDA",
       },
       width: {
         sidebarWith: "240px"

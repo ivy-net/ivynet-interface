@@ -10,10 +10,10 @@ export const DiskSpaceStatus: React.FC<DiskSpaceStatusProps> = ({ status }) => {
 
   switch (status) {
     case "good":
-      statusStyling = "text-[#7E7BF5] bg-[#7E7BF5]/[0.10]";
+      statusStyling = "text-green-700 bg-widgetHoverBg";
       break;
     case "fair":
-      statusStyling = "bg-widgetHoverBg text-textSecondary";
+      statusStyling = "bg-widgetHoverBg text-yellow-500";
       break;
     case "critical":
       statusStyling = "bg-widgetHoverBg text-textWarning bg-textWarning/[0.10]";

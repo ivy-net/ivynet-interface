@@ -11,7 +11,7 @@ export const Login: React.FC<LoginProps> = ({ }) => {
 
   const login = async () => {
     try {
-      const response = await window.fetch("/authorize", {
+      const response = await window.fetch("authorize", {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',

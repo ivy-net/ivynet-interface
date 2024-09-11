@@ -13,6 +13,8 @@ import { SectionTitle } from "../shared/sectionTitle";
 import { EmptyMachines } from "./EmptyMachines";
 import { useState } from "react";
 import { ConnectedIcon } from "../shared/connectedIcon";
+import useSWR from 'swr';
+import { ClientStatusRes } from "../../interfaces/responses";
 
 interface MachinesTabProps {
 };
@@ -113,8 +115,23 @@ export const MachinesTab: React.FC<MachinesTabProps> = ({ }) => {
       activeSet: true,
     },
   ]
+  const response = useSWR<any>('/client/status', window.fetch)
+  let json: ClientStatusRes = response.data?.json()
+  json = {
+    "error": [],
+    "result": {
+      "total_machines": 0,
+      "healthy_machines": 0,
+      "unhealthy_machines": [],
+      "idle_machines": [],
+      "updateable_machines": [],
+      "erroring_machines": []
+    }
+  }
 
-  let filteredNodes = nodes;
+  const machineStatus = json.result
+
+  let filteredNodes = nodes
 
   if (filter === "high") {
     filteredNodes = filteredNodes.filter((node) => node.ivy === false);
@@ -128,8 +145,8 @@ export const MachinesTab: React.FC<MachinesTabProps> = ({ }) => {
       <Topbar title="Nodes Overview" />
       <SectionTitle title="Node Status" className="text-textPrimary" />
       <MachinesWidget data={fakeData} />
-      {!fakeData.totalMachines && <div className="mt-24"><EmptyMachines onClick={() => setFakeData({ ...fakeData, totalMachines: 6 })} /></div>}
-      {fakeData.totalMachines > 0 &&
+      {!machineStatus.total_machines && <div className="mt-24"><EmptyMachines onClick={() => setFakeData({ ...fakeData, totalMachines: machineStatus.total_machines })} /></div>}
+      {machineStatus.total_machines > 0 &&
         <>
           <Filters filters={filters}>
             <Link to="code/installclient" relative="path">

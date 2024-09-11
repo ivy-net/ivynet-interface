@@ -25,6 +25,13 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    shouldRevalidate: () => true,
+    loader: () => {
+      if (!localStorage.getItem("session_id")) {
+        return redirect("/login")
+      }
+      return null;
+    },
     children: [
       {
         path: "",

@@ -106,7 +106,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
       activeSet: true,
     },
   ]
-  const response = useSWR<any>('/client/status', window.fetch)
+  const response = useSWR<any>('client/status', window.fetch)
   let json: Response<MachinesStatus> = response.data?.json()
   json = {
     error: [],

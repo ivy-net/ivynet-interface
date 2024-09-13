@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import chevronRight from "./../../../images/chevron-right.svg"
 import { ConditionalLink } from "../conditionalLink";
 import { ConnectedIcon } from "../connectedIcon";

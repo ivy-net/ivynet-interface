@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import closeIcon from "./../../images/x-close.svg"
-import Select, { OptionsOrGroups } from 'react-select';
+import Select from 'react-select';
 
 
 interface AddUserModalProps {
 };
 
-export const AddUserModal: React.FC<AddUserModalProps> = ({ }) => {
+export const AddUserModal: React.FC<AddUserModalProps> = () => {
   const roles = [
     { value: 'admin', label: 'Admin' },
     { value: 'owner', label: 'Owner' },

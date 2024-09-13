@@ -4,10 +4,9 @@ import { Link } from "react-router-dom";
 
 
 interface EmptyMachinesProps {
-  onClick: any;
 };
 
-export const EmptyMachines: React.FC<EmptyMachinesProps> = ({ onClick }) => {
+export const EmptyMachines: React.FC<EmptyMachinesProps> = () => {
 
   return (
     <div className="flex flex-col w-full justify-center items-center gap-5">
@@ -16,7 +15,7 @@ export const EmptyMachines: React.FC<EmptyMachinesProps> = ({ onClick }) => {
         <span className="justify-center text-base font-medium text-ivywhite">Install IvyNet Client on your operator node </span>
         <span className="justify-center text-sidebarColor">in order to optimize your restaking experience, starting with the EigenLayer ecosystem</span>
       </div>
-      <Link to="" onClick={onClick}>
+      <Link to="">
         <button className="py-2.5 px-4 bg-accent/[0.10] border border-accent text-accent rounded-lg text-base font-semibold">+ Install IvyNet Client</button>
       </Link>
       <div className="w-[552px]">

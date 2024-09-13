@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import optionsIcon from "../../../images/dots-vertical.svg"
-import Select from "react-select"
 import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu';
 import { Link } from "react-router-dom";
 

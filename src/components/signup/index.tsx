@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 interface SignupProps {
 };
 
-export const Signup: React.FC<SignupProps> = ({ }) => {
+export const Signup: React.FC<SignupProps> = () => {
   const email = "someemail@gmail.com"
   const company = "Company"
 

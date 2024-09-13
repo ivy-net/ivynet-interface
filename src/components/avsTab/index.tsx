@@ -11,7 +11,7 @@ import { Tr } from "../shared/table/Tr";
 interface AvsTabProps {
 };
 
-export const AvsTab: React.FC<AvsTabProps> = ({ }) => {
+export const AvsTab: React.FC<AvsTabProps> = () => {
   const filters = [
     { label: "All AVSs", query: "all" },
     { label: "AVS needs upgrades", query: "upgrades" },

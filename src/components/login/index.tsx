@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import ivySmall from "../../images/ivy-small.svg"
 import { Link, redirect } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface LoginProps {
 };
 
-export const Login: React.FC<LoginProps> = ({ }) => {
+export const Login: React.FC<LoginProps> = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -15,7 +17,7 @@ export const Login: React.FC<LoginProps> = ({ }) => {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-        },
+        } as any,
         method: "POST",
         body: JSON.stringify({ email, password })
       })
@@ -23,6 +25,7 @@ export const Login: React.FC<LoginProps> = ({ }) => {
       localStorage.setItem("session_id", data.uuid);
       redirect("/")
     } catch (err) {
+      toast.error("Login failed", { theme: "dark" });
       console.log(err)
     }
   }
@@ -55,7 +58,7 @@ export const Login: React.FC<LoginProps> = ({ }) => {
           </Link>
         </div>
       </div>
-
+      <ToastContainer />
     </div>
   );
 }

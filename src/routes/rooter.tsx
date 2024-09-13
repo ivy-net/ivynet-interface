@@ -1,7 +1,5 @@
 import { App } from '../App';
 import { AvsTab } from '../components/avsTab';
-import { OverviewTab } from '../components/overviewTab';
-import { RewardsTab } from '../components/rewardsTab';
 import { SettingsTab } from '../components/settingsTab';
 import { HelpTab } from '../components/helpTab';
 import {

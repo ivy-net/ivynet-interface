@@ -5,7 +5,7 @@ import { SectionTitle } from "../shared/sectionTitle";
 interface OverviewTabProps {
 };
 
-export const OverviewTab: React.FC<OverviewTabProps> = ({ }) => {
+export const OverviewTab: React.FC<OverviewTabProps> = () => {
   return (
     <>
       <Topbar title="Overview" />

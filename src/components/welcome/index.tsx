@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 interface WelcomeProps {
 };
 
-export const Welcome: React.FC<WelcomeProps> = ({ }) => {
+export const Welcome: React.FC<WelcomeProps> = () => {
 
   return (
     <div className="flex items-center justify-center h-screen w-screen bg-contentBg">
@@ -23,9 +23,9 @@ export const Welcome: React.FC<WelcomeProps> = ({ }) => {
             <div className="text-positive text-base leading-5 font-medium">Account successfully created.</div>
           </div>
           <div>
-          <Link to="../machinesTab/EmptyMachines" relative="path">
-            <button className="py-2.5 px-4 bg-accent/[0.10] border border-accent text-accent rounded-lg text-base font-semibold">Enter IvyNet</button>
-          </Link>
+            <Link to="../machinesTab/EmptyMachines" relative="path">
+              <button className="py-2.5 px-4 bg-accent/[0.10] border border-accent text-accent rounded-lg text-base font-semibold">Enter IvyNet</button>
+            </Link>
           </div>
         </div>
       </div>

@@ -5,7 +5,7 @@ import { CodeModal } from "../shared/CodeModal";
 interface AvsUpgradeModalProps {
 };
 
-export const AvsUpgradeModal: React.FC<AvsUpgradeModalProps> = ({ }) => {
+export const AvsUpgradeModal: React.FC<AvsUpgradeModalProps> = () => {
   const title = "AVS Upgrade";
   const code =
     `lorem

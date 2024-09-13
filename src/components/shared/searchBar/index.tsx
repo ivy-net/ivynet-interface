@@ -5,7 +5,7 @@ import searchIcon from "./../../../images/search-icon.svg"
 interface SearchBarProps {
 };
 
-export const SearchBar: React.FC<SearchBarProps> = ({ }) => {
+export const SearchBar: React.FC<SearchBarProps> = () => {
   const [term, setTerm] = useState("");
   const [expanded, setExpanded] = useState(false);
   const conditionalHover = expanded ? "" : "hover:bg-textGrey";

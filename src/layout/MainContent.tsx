@@ -1,5 +1,3 @@
-import { Topbar } from "../components/Topbar"
-
 interface MainContentProps {
   children: React.ReactNode
 };

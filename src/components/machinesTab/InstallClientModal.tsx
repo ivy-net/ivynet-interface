@@ -5,7 +5,7 @@ import { CodeModal } from "../shared/CodeModal";
 interface InstallClientModalProps {
 };
 
-export const InstallClientModal: React.FC<InstallClientModalProps> = ({ }) => {
+export const InstallClientModal: React.FC<InstallClientModalProps> = () => {
   const title = "Install Ivy Client on a New Machine";
   const code =
     `lorem

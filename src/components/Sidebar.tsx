@@ -1,8 +1,6 @@
 import { SidebarItem } from "./SidebarItem";
-import { ReactComponent as Overview } from "../images/overview.svg"
 import { ReactComponent as Machines } from "../images/machines.svg"
 import { ReactComponent as AVS } from "../images/avs-tab.svg"
-import { ReactComponent as Rewards } from "../images/rewards.svg"
 import { ReactComponent as Settings } from "../images/settings.svg"
 import { ReactComponent as Help } from "../images/help.svg"
 import { ReactComponent as Org } from "../images/org.svg"
@@ -10,7 +8,7 @@ import { ReactComponent as Org } from "../images/org.svg"
 interface SidebarProps {
 };
 
-export const Sidebar: React.FC<SidebarProps> = ({ }) => {
+export const Sidebar: React.FC<SidebarProps> = () => {
   return (
     <div className="flex flex-col w-sidebarWith p-5 gap-2">
       <div className="flex justify-left items-center gap-3 py-5">

@@ -7,26 +7,17 @@ import { Table } from "../shared/table";
 import { Td } from "../shared/table/Td";
 import { Th } from "../shared/table/Th";
 import { Tr } from "../shared/table/Tr";
-import { SearchBar } from "../shared/searchBar";
 import { Filters } from "../shared/filters";
 import { SectionTitle } from "../shared/sectionTitle";
 import { EmptyMachines } from "./EmptyMachines";
-import { useState } from "react";
 import { ConnectedIcon } from "../shared/connectedIcon";
 import useSWR from 'swr';
-import { ClientStatusRes } from "../../interfaces/responses";
+import { MachinesStatus, Response } from "../../interfaces/responses";
 
 interface MachinesTabProps {
 };
 
-export const MachinesTab: React.FC<MachinesTabProps> = ({ }) => {
-  const [fakeData, setFakeData] = useState({
-    totalMachines: 0,
-    needUpgrade: 0,
-    needUpdate: 3,
-    newAvs: 3
-  });
-
+export const MachinesTab: React.FC<MachinesTabProps> = () => {
   const options = [
     { label: "IvyClient Update", link: "code/updateclient" },
     { label: "AVS Upgrade", link: "code/avsupgrade" },
@@ -38,7 +29,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = ({ }) => {
     { label: "High Priority", query: "high" },
     { label: "Medium Priority", query: "medium" }];
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const filter = searchParams.get("filter");
 
   const nodes = [
@@ -116,20 +107,20 @@ export const MachinesTab: React.FC<MachinesTabProps> = ({ }) => {
     },
   ]
   const response = useSWR<any>('/client/status', window.fetch)
-  let json: ClientStatusRes = response.data?.json()
+  let json: Response<MachinesStatus> = response.data?.json()
   json = {
-    "error": [],
-    "result": {
-      "total_machines": 0,
-      "healthy_machines": 0,
-      "unhealthy_machines": [],
-      "idle_machines": [],
-      "updateable_machines": [],
-      "erroring_machines": []
+    error: [],
+    result: {
+      total_machines: 0,
+      healthy_machines: 0,
+      unhealthy_machines: [],
+      idle_machines: [],
+      updateable_machines: [],
+      erroring_machines: []
     }
   }
 
-  const machineStatus = json.result
+  const machinesStatus = json.result
 
   let filteredNodes = nodes
 
@@ -144,9 +135,9 @@ export const MachinesTab: React.FC<MachinesTabProps> = ({ }) => {
     <>
       <Topbar title="Nodes Overview" />
       <SectionTitle title="Node Status" className="text-textPrimary" />
-      <MachinesWidget data={fakeData} />
-      {!machineStatus.total_machines && <div className="mt-24"><EmptyMachines onClick={() => setFakeData({ ...fakeData, totalMachines: machineStatus.total_machines })} /></div>}
-      {machineStatus.total_machines > 0 &&
+      <MachinesWidget data={machinesStatus} />
+      {!machinesStatus.total_machines && <div className="mt-24"><EmptyMachines /></div>}
+      {machinesStatus.total_machines > 0 &&
         <>
           <Filters filters={filters}>
             <Link to="code/installclient" relative="path">

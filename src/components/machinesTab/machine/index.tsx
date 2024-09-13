@@ -1,16 +1,14 @@
 import React from "react";
 import { Topbar } from "../../Topbar";
-import { OptionsButton } from "../../shared/optionsButton";
 import { SectionTitle } from "../../shared/sectionTitle";
 import { MachineStatus } from "./MachineStatus";
 import { MachineWidget } from "./MachineWidget";
 import { PerformanceWidget } from "./PerformanceHistory";
-import { Link } from "react-router-dom";
 
 interface MachineProps {
 };
 
-export const Machine: React.FC<MachineProps> = ({ }) => {
+export const Machine: React.FC<MachineProps> = () => {
   const fakeData = {
     name: "Node 1",
     address: "0x235eE805F962690254e9a440E01574376136ecb1",
@@ -24,8 +22,8 @@ export const Machine: React.FC<MachineProps> = ({ }) => {
       activeSet: "Yes"
     },
     issues: {
-      date: { date_1: "Aug 28 24 14:25 UTC", date_2: "Aug 29 24 06:44 UTC"},
-      issue: { issue_1: "Error 240: low memory capacity", issue_2: "Error 102: upgrade avs version"}
+      date: { date_1: "Aug 28 24 14:25 UTC", date_2: "Aug 29 24 06:44 UTC" },
+      issue: { issue_1: "Error 240: low memory capacity", issue_2: "Error 102: upgrade avs version" }
     }
   }
 
@@ -42,16 +40,16 @@ export const Machine: React.FC<MachineProps> = ({ }) => {
       </div>
       <div className="flex gap-6">
         <div className="flex flex-col">
-        <div className="text-sidebarColor text-base font-medium">Connectivity</div>
+          <div className="text-sidebarColor text-base font-medium">Connectivity</div>
           <div className="text-sidebarColor text-base font-medium">Client</div>
           <div className="text-sidebarColor text-base font-medium">AVS</div>
         </div>
         <div className="flex flex-col">
-        <div className="text-textPrimary text-base font-light">{fakeData.connected}</div>
-        <div className="text-textPrimary text-base font-light">{fakeData.avs.client}</div>
-                  <div className="flex items-center text-[#FFD60A] border border-[#FFD60A] text-xs px-2 leading-4 rounded-lg ml-4">Needs Upgrade</div>
+          <div className="text-textPrimary text-base font-light">{fakeData.connected}</div>
+          <div className="text-textPrimary text-base font-light">{fakeData.avs.client}</div>
+          <div className="flex items-center text-[#FFD60A] border border-[#FFD60A] text-xs px-2 leading-4 rounded-lg ml-4">Needs Upgrade</div>
           <div className="flex">
-          <div className="text-textPrimary text-base font-light"> {fakeData.avs.name} </div>
+            <div className="text-textPrimary text-base font-light"> {fakeData.avs.name} </div>
             <div className="flex items-center text-[#FFD60A] border border-[#FFD60A] text-xs px-2 leading-4 rounded-lg ml-4">Needs Upgrade</div>
           </div>
         </div>
@@ -72,8 +70,8 @@ export const Machine: React.FC<MachineProps> = ({ }) => {
       <SectionTitle title="Performance History"></SectionTitle>
       <h4>Previous Errors</h4>
       <div>
-      <PerformanceWidget date={fakeData.issues.date.date_1} address={fakeData.address} issue={fakeData.issues.issue.issue_1}/>
-      <PerformanceWidget date={fakeData.issues.date.date_2} address={fakeData.address} issue={fakeData.issues.issue.issue_2}/>
+        <PerformanceWidget date={fakeData.issues.date.date_1} address={fakeData.address} issue={fakeData.issues.issue.issue_1} />
+        <PerformanceWidget date={fakeData.issues.date.date_2} address={fakeData.address} issue={fakeData.issues.issue.issue_2} />
       </div>
     </>
   );

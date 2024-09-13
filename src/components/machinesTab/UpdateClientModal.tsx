@@ -5,7 +5,7 @@ import { CodeModal } from "../shared/CodeModal";
 interface UpdateClientModalProps {
 };
 
-export const UpdateClientModal: React.FC<UpdateClientModalProps> = ({ }) => {
+export const UpdateClientModal: React.FC<UpdateClientModalProps> = () => {
   const title = "Ivy Client Update";
   const code =
     `lorem

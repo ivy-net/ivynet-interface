@@ -3,13 +3,7 @@ import { WidgetItem } from "../../shared/machinesWidget/widgetItem";
 interface AvsInfoProps {
 };
 
-export const AvsInfo: React.FC<AvsInfoProps> = ({ }) => {
-  const fakeData = {
-    totalMachines: 6,
-    needUpgrade: 0,
-    needUpdate: 3,
-    newAvs: 3
-  }
+export const AvsInfo: React.FC<AvsInfoProps> = () => {
 
   return (
     <div className="grid grid-cols-4 gap-4">

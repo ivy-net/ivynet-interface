@@ -10,7 +10,7 @@ import { User } from "./User";
 interface SettingsTabProps {
 };
 
-export const SettingsTab: React.FC<SettingsTabProps> = ({ }) => {
+export const SettingsTab: React.FC<SettingsTabProps> = () => {
   const options = [
     { label: "Resend Email", link: "" },
     { label: "Change Role", link: "" },

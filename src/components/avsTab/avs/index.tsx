@@ -9,7 +9,7 @@ import { MachineRequirements } from "./MachineRequirements";
 interface AvsModalProps {
 };
 
-export const AvsModal: React.FC<AvsModalProps> = ({ }) => {
+export const AvsModal: React.FC<AvsModalProps> = () => {
 
   return (
     <div className="fixed left-0 top-0 w-screen h-screen flex justify-center items-center bg-black/[0.8]">

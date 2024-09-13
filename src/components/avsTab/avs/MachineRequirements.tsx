@@ -4,7 +4,7 @@ import { MachineRequirement } from "./MachineRequirement";
 interface MachineRequirementsProps {
 };
 
-export const MachineRequirements: React.FC<MachineRequirementsProps> = ({ }) => {
+export const MachineRequirements: React.FC<MachineRequirementsProps> = () => {
 
   return (
     <div className="flex flex-col gap-4">

@@ -1,5 +1,4 @@
 import React from "react";
-import { capitalize } from "../../../utils";
 import { ConditionalLink } from "../conditionalLink";
 import arrowUpRight from "./../../../images/tag-arrow-up-right.svg"
 

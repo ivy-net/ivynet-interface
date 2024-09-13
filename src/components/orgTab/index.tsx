@@ -8,7 +8,7 @@ import { OrgWidget } from "./OrgWidget";
 interface OrgTabProps {
 };
 
-export const OrgTab: React.FC<OrgTabProps> = ({ }) => {
+export const OrgTab: React.FC<OrgTabProps> = () => {
   const stats = [
     {
       address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5", nodes: 3,

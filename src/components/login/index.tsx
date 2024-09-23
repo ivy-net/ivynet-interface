@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import ivySmall from "../../images/ivy-small.svg"
-import { Link, redirect } from "react-router-dom";
-import { ToastContainer, toast } from 'react-toastify';
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { apiFetch } from "../../utils";
+import { getMessage } from "../../utils/UiMessages";
 
 interface LoginProps {
 };
@@ -11,21 +13,16 @@ export const Login: React.FC<LoginProps> = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const navigate = useNavigate();
+
+
   const login = async () => {
     try {
-      const response = await window.fetch("authorize", {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        } as any,
-        method: "POST",
-        body: JSON.stringify({ email, password })
-      })
-      const data = await response.json()
-      localStorage.setItem("session_id", data.uuid);
-      redirect("/")
-    } catch (err) {
-      toast.error("Login failed", { theme: "dark" });
+      const response = await apiFetch("authorize", "POST", JSON.stringify({ email, password }))
+      console.log(response)
+      navigate("/")
+    } catch (err: any) {
+      toast.error(getMessage(err), { theme: "dark" });
       console.log(err)
     }
   }
@@ -58,7 +55,6 @@ export const Login: React.FC<LoginProps> = () => {
           </Link>
         </div>
       </div>
-      <ToastContainer />
     </div>
   );
 }

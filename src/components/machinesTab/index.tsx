@@ -13,6 +13,9 @@ import { EmptyMachines } from "./EmptyMachines";
 import { ConnectedIcon } from "../shared/connectedIcon";
 import useSWR from 'swr';
 import { MachinesStatus, Response } from "../../interfaces/responses";
+import { apiFetch } from "../../utils";
+import { useEffect } from "react";
+import { AxiosResponse } from "axios";
 
 interface MachinesTabProps {
 };
@@ -28,6 +31,15 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     { label: "All Nodes", query: "all" },
     { label: "High Priority", query: "high" },
     { label: "Medium Priority", query: "medium" }];
+
+  const emptyMachineStatus = {
+    total_machines: 0,
+    healthy_machines: 0,
+    unhealthy_machines: [],
+    idle_machines: [],
+    updateable_machines: [],
+    erroring_machines: []
+  }
 
   const [searchParams] = useSearchParams();
   const filter = searchParams.get("filter");
@@ -106,21 +118,11 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
       activeSet: true,
     },
   ]
-  const response = useSWR<any>('client/status', window.fetch)
-  let json: Response<MachinesStatus> = response.data?.json()
-  json = {
-    error: [],
-    result: {
-      total_machines: 0,
-      healthy_machines: 0,
-      unhealthy_machines: [],
-      idle_machines: [],
-      updateable_machines: [],
-      erroring_machines: []
-    }
-  }
 
-  const machinesStatus = json.result
+  const apiFetcher = (url: string) => apiFetch(url, "GET");
+
+  const response = useSWR<AxiosResponse<Response<MachinesStatus>>, any>('client/status', apiFetcher)
+  const machinesStatus = response.data?.data.result || emptyMachineStatus
 
   let filteredNodes = nodes
 

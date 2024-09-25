@@ -18,6 +18,7 @@ import { Signup } from '../components/signup';
 import { Welcome } from '../components/welcome';
 import { OrgTab } from '../components/orgTab';
 import { AddUserModal } from '../components/settingsTab/AddUserModal';
+import { ForgotPassword } from '../components/forgotPassword';
 
 export const router = createBrowserRouter([
   {
@@ -115,6 +116,10 @@ export const router = createBrowserRouter([
   {
     path: "signup",
     element: <Signup />
+  },
+  {
+    path: "reset",
+    element: <ForgotPassword />
   },
   {
     path: "welcome",

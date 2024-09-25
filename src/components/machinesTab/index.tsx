@@ -14,7 +14,6 @@ import { ConnectedIcon } from "../shared/connectedIcon";
 import useSWR from 'swr';
 import { MachinesStatus, Response } from "../../interfaces/responses";
 import { apiFetch } from "../../utils";
-import { useEffect } from "react";
 import { AxiosResponse } from "axios";
 
 interface MachinesTabProps {

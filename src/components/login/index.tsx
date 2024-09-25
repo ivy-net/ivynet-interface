@@ -18,8 +18,7 @@ export const Login: React.FC<LoginProps> = () => {
 
   const login = async () => {
     try {
-      const response = await apiFetch("authorize", "POST", JSON.stringify({ email, password }))
-      console.log(response)
+      await apiFetch("authorize", "POST", JSON.stringify({ email, password }))
       navigate("/")
     } catch (err: any) {
       toast.error(getMessage(err), { theme: "dark" });
@@ -38,7 +37,7 @@ export const Login: React.FC<LoginProps> = () => {
           <div className="flex flex-col gap-5">
             <div className="flex flex-col gap-1.5">
               <div className="text-sm leading-5 font-medium text-ivygrey">E-Mail</div>
-              <input className="bg-transparent border border-textGrey py-2.5 px-3 rounded-lg outline-none focus:border-white text-ivygrey2 text-base font-normal" value={email} onChange={(e) => setEmail(e.target.value)} />
+              <input type="email" className="bg-transparent border border-textGrey py-2.5 px-3 rounded-lg outline-none focus:border-white text-ivygrey2 text-base font-normal" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <div className="flex flex-col gap-1.5">
               <div className="text-sm leading-5 font-medium text-ivygrey">Password*</div>
@@ -50,7 +49,7 @@ export const Login: React.FC<LoginProps> = () => {
         </div>
         <div className="flex text-ivygrey gap-1 justify-center">
           <div>Forgot password?</div>
-          <Link to="">
+          <Link to="/reset">
             <div className="text-accent">Reset</div>
           </Link>
         </div>

@@ -1,7 +1,9 @@
 const messages = {
-  BadCredentials: "Invalid Email/Password"
+  BadCredentials: "Invalid Email/Password",
+  ConfirmPasswordMismatch: "Confirmation password doesn't match.",
+  ResetCheckEmail: "Check your email for next steps"
 }
 
 export const getMessage = (text: string) => {
-  return messages[text as keyof typeof messages] || ""
+  return messages[text as keyof typeof messages] || text
 }

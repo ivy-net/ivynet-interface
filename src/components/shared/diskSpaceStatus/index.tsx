@@ -1,21 +1,22 @@
 import React from "react";
 import { capitalize } from "../../../utils";
+import { DiskStatus } from "../../../interfaces/data";
 
 interface DiskSpaceStatusProps {
-  status: "fair" | "critical" | "good"
+  status: DiskStatus
 };
 
 export const DiskSpaceStatus: React.FC<DiskSpaceStatusProps> = ({ status }) => {
   let statusStyling = ""
 
   switch (status) {
-    case "good":
+    case "Healthy":
       statusStyling = "text-green-700 bg-widgetHoverBg";
       break;
-    case "fair":
+    case "Warning":
       statusStyling = "bg-widgetHoverBg text-yellow-500";
       break;
-    case "critical":
+    case "Critical":
       statusStyling = "bg-widgetHoverBg text-textWarning bg-textWarning/[0.10]";
       break;
   }

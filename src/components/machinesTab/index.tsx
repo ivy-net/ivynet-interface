@@ -12,9 +12,10 @@ import { SectionTitle } from "../shared/sectionTitle";
 import { EmptyMachines } from "./EmptyMachines";
 import { ConnectedIcon } from "../shared/connectedIcon";
 import useSWR from 'swr';
-import { MachinesStatus, Response } from "../../interfaces/responses";
+import { MachinesStatus, NodeDetail, NodeInfo, Response } from "../../interfaces/responses";
 import { apiFetch } from "../../utils";
 import { AxiosResponse } from "axios";
+import { nodeDataFromJSON } from "../../interfaces/data";
 
 interface MachinesTabProps {
 };
@@ -43,94 +44,41 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
   const [searchParams] = useSearchParams();
   const filter = searchParams.get("filter");
 
-  const nodes = [
-    {
-      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
-      name: "Node 1",
-      ivy: null,
-      to: "/nodes/0x235eE805F962690254e9a440E01574376136ecb1",
-      connectivity: true,
-      avs: "AVS 1",
-      avsTo: "/avs/1234",
-      avsVersion: true,
-      diskStatus: "critical",
-      activeSet: true,
-    },
-    {
-      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
-      name: "Node 2",
-      ivy: true,
-      avs: "AVS 2",
-      avsTo: "/avs/1234",
-      to: "/nodes/0x235eE805F962690254e9a440E01574376136ecb1",
-      avsVersion: false,
-      connectivity: true,
-      diskStatus: "fair",
-      activeSet: false,
-    },
-    {
-      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
-      name: "Node 3",
-      ivy: false,
-      avs: "AVS 3",
-      avsTo: "/avs/1234",
-      to: "/nodes/0x235eE805F962690254e9a440E01574376136ecb1",
-      avsVersion: true,
-      connectivity: false,
-      diskStatus: "good",
-      activeSet: false,
-    },
-    {
-      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
-      name: "Node 4",
-      ivy: false,
-      avs: "-",
-      avsTo: "",
-      to: "/nodes/0x235eE805F962690254e9a440E01574376136ecb1",
-      avsVersion: true,
-      connectivity: false,
-      diskStatus: "critical",
-      activeSet: true,
-    },
-    {
-      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
-      name: "Node 5",
-      ivy: true,
-      avs: "AVS 3",
-      avsTo: "/avs/1234",
-      to: "/nodes/0x235eE805F962690254e9a440E01574376136ecb1",
-      avsVersion: true,
-      connectivity: true,
-      diskStatus: "fair",
-      activeSet: false,
-    },
-    {
-      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5",
-      name: "Node 6",
-      ivy: null,
-      to: "/nodes/0x235eE805F962690254e9a440E01574376136ecb1",
-      connectivity: true,
-      avs: "AVS 4",
-      avsTo: "/avs/1234",
-      avsVersion: true,
-      diskStatus: "critical",
-      activeSet: true,
-    },
-  ]
-
   const apiFetcher = (url: string) => apiFetch(url, "GET");
+  const multiFetcher = (urls: string[]): any => Promise.all(urls.map(url => apiFetcher(url)));
 
-  const response = useSWR<AxiosResponse<Response<MachinesStatus>>, any>('client/status', apiFetcher)
+  const response = useSWR<AxiosResponse<Response<MachinesStatus>>, any>('client/status', apiFetcher, {
+    revalidateOnFocus: false,
+    revalidateOnMount: true,
+    revalidateOnReconnect: false,
+    refreshWhenOffline: false,
+    refreshWhenHidden: false,
+    refreshInterval: 0,
+  })
   const machinesStatus = response.data?.data.result || emptyMachineStatus
 
-  let filteredNodes = nodes
+  const machines = Array.from(new Set(machinesStatus.unhealthy_machines.concat(machinesStatus.erroring_machines).concat(machinesStatus.updateable_machines).concat(machinesStatus.idle_machines)))
+  const nodesResponse = useSWR<AxiosResponse<Response<NodeDetail>>[], any>(machines.map(machine => `client/${machine}`), multiFetcher as any, {
+    revalidateOnFocus: false,
+    revalidateOnMount: true,
+    revalidateOnReconnect: false,
+    refreshWhenOffline: false,
+    refreshWhenHidden: false,
+    refreshInterval: 0,
+
+  })
+  const nodesInfo = nodesResponse.data?.map((ar, idx) => ar.data.result).sort((b, a) => b.machine_id.localeCompare(a.machine_id))
+
+  let filteredNodes = nodesInfo || []
 
   if (filter === "high") {
-    filteredNodes = filteredNodes.filter((node) => node.ivy === false);
+    filteredNodes = filteredNodes.filter((node) => node.metrics.disk_info.status === "Warning" || node.metrics.disk_info.status === "Critical");
   }
   else if (filter === "medium") {
-    filteredNodes = filteredNodes.filter((node) => node.ivy !== true);
+    filteredNodes = filteredNodes.filter((node) => node.metrics.disk_info.status === "Warning");
   }
+
+  console.log("filteredNodes", filteredNodes)
 
   return (
     <>
@@ -156,23 +104,26 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
               <Th content="Active Set"></Th>
               <Th content=""></Th>
             </Tr>
-            {filteredNodes.map((node, index) =>
+
+            {filteredNodes?.map((node, index) =>
             (
-              <Tr key={index}>
+              <Tr key={node.machine_id}>
                 <Td>
-                  <MachineWidget address={node.address} name={node.name} to={node.to} />
+                  <MachineWidget address={node.machine_id} name={node.name} to={`/nodes/${node.machine_id}`} />
                 </Td>
                 <Td>
-                  <ConnectedIcon isConnected={node.ivy} />
+                  <ConnectedIcon isConnected={node.status === "Healthy"} />
                 </Td>
-                <Td to={node.avsTo} content={node.avs}></Td>
-                <Td isConnected={node.avsVersion}></Td>
-                <Td isConnected={node.connectivity}></Td>
-                <Td diskStatus={node.diskStatus as any}></Td>
-                <Td isChecked={node.activeSet}></Td>
+                <Td to={`/avs/${node.metrics.deployed_avs.operator_id || ""}`} content={node.metrics.deployed_avs.name || ""}></Td>
+                <Td isConnected={true}></Td>
+                <Td isConnected={node.status === "Healthy"}></Td>
+                <Td diskStatus={node.metrics.disk_info.status}></Td>
+                <Td isChecked={node.metrics.deployed_avs.active_set === "true"}></Td>
                 <Td><OptionsButton options={options} /></Td>
               </Tr>
-            ))}
+            )
+            )}
+
           </Table>
         </>
       }

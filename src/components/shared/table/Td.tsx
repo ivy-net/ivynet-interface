@@ -5,12 +5,13 @@ import arrowUpRight from "./../../../images/arrow-up-right.svg"
 import { ConnectedIcon } from "../connectedIcon";
 import { CheckedIcon } from "../checkedIcon";
 import { DiskSpaceStatus } from "../diskSpaceStatus";
+import { DiskStatus } from "../../../interfaces/data";
 
 
 interface TdProps {
   isConnected?: boolean | null
   isChecked?: boolean
-  diskStatus?: "fair" | "critical" | "good"
+  diskStatus?: DiskStatus
   content?: string
   to?: string
   children?: React.ReactNode;

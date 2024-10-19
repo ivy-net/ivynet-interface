@@ -96,7 +96,6 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
           <Table>
             <Tr>
               <Th content="Nodes"></Th>
-              <Th content="Ivy"></Th>
               <Th content="AVS"></Th>
               <Th content="AVS Version"></Th>
               <Th content="Connectivity"></Th>
@@ -110,9 +109,6 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
               <Tr key={node.machine_id}>
                 <Td>
                   <MachineWidget address={node.machine_id} name={node.name} to={`/nodes/${node.machine_id}`} />
-                </Td>
-                <Td>
-                  <ConnectedIcon isConnected={node.status === "Healthy"} />
                 </Td>
                 <Td to={`/avs/${node.metrics.deployed_avs.operator_id || ""}`} content={node.metrics.deployed_avs.name || ""}></Td>
                 <Td isConnected={true}></Td>

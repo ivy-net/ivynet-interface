@@ -30,7 +30,7 @@ export const Machine: React.FC<MachineProps> = () => {
   const machine = response.data?.data.result
 
   const cpuUsage = (machine?.metrics.cpu_usage || 0).toString() + "%"
-  const memoryUsageValue = machine?.metrics.memory_info ? ((machine?.metrics.memory_info.usage - machine?.metrics.memory_info.free) / machine?.metrics.memory_info.usage) : 0
+  const memoryUsageValue = machine?.metrics.memory_info ? (machine?.metrics.memory_info.usage / (machine?.metrics.memory_info.free + machine?.metrics.memory_info.usage)) : 0
   const memoryUsage = (memoryUsageValue * 100).toFixed(0) + "%"
   const diskUsed = machine && byteSize(machine.metrics.disk_info.usage).toString()
   const diskTotal = machine && byteSize(machine.metrics.disk_info.usage + machine.metrics.disk_info.free).toString()

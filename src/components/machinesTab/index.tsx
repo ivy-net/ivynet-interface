@@ -72,7 +72,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
   let filteredNodes = nodesInfo || []
 
   if (filter === "high") {
-    filteredNodes = filteredNodes.filter((node) => node.metrics.disk_info.status === "Warning" || node.metrics.disk_info.status === "Critical");
+    filteredNodes = filteredNodes.filter((node) => node.metrics.disk_info.status === "Critical");
   }
   else if (filter === "medium") {
     filteredNodes = filteredNodes.filter((node) => node.metrics.disk_info.status === "Warning");
@@ -84,7 +84,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     <>
       <Topbar title="Nodes Overview" />
       <SectionTitle title="Node Status" className="text-textPrimary" />
-      <MachinesWidget data={machinesStatus} />
+      <MachinesWidget data={machinesStatus} details={nodesInfo} />
       {!machinesStatus.total_machines && <div className="mt-24"><EmptyMachines /></div>}
       {machinesStatus.total_machines > 0 &&
         <>

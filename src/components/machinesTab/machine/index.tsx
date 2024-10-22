@@ -54,14 +54,14 @@ export const Machine: React.FC<MachineProps> = () => {
       </div>
       <SectionTitle title="Node Status"></SectionTitle>
       <div className="grid grid-cols-4 gap-4">
-        <MachineStatus title="Disk Usage" connected={true}>
+        <MachineStatus title="Disk Usage" connected={machine?.metrics.disk_info.status === "Healthy"}>
           <div className="flex items-end gap-1">
             <h2>{diskUsed}</h2>
             {diskTotal && <h4>/{diskTotal}</h4>}
           </div>
         </MachineStatus>
         <MachineStatus title="CPU Usage" status={cpuUsage} connected={true} />
-        <MachineStatus title="Memory Usage" status={memoryUsage} connected={true} />
+        <MachineStatus title="Memory Usage" status={memoryUsage} connected={machine?.metrics.memory_info.status === "Healthy"} />
         <MachineStatus title="Active Set" status={machine?.metrics.deployed_avs.active_set === "true" ? "Yes" : "No"} connected={machine?.metrics.deployed_avs.active_set === "true"} />
       </div>
 

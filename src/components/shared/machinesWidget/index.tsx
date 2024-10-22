@@ -11,8 +11,8 @@ export const MachinesWidget: React.FC<MachinesWidgetProps> = ({ data, details })
   let mediumPriorityMachines = 0;
 
   if (details?.length) {
-    highPriorityMachines = details.filter(node => node.metrics.disk_info.status === "Critical").length
-    mediumPriorityMachines = details.filter(node => node.metrics.disk_info.status === "Warning").length
+    highPriorityMachines = details.filter(node => node.status === "Unhealthy" || node.status === "Error" || node.metrics.disk_info.status === "Critical").length
+    mediumPriorityMachines = details.filter(node => node.status === "Idle" || node.metrics.deployed_avs.active_set === "false" || node.metrics.disk_info.status === "Warning").length
   }
   // else {
   //   highPriorityMachines = data.erroring_machines.length + data.unhealthy_machines.length

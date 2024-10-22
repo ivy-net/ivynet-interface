@@ -67,14 +67,16 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
 
   })
   const nodesInfo = nodesResponse.data?.map((ar, idx) => ar.data.result).sort((b, a) => b.machine_id.localeCompare(a.machine_id))
-  console.log("nodesInfo", nodesInfo)
 
   let filteredNodes = nodesInfo || []
+
+  console.log("filteredNodes", filteredNodes)
 
   if (filter === "high") {
     filteredNodes = filteredNodes.filter((node) => node.status === "Unhealthy" || node.status === "Error");
   }
   else if (filter === "medium") {
+    console.log(filteredNodes[0].metrics.deployed_avs.active_set)
     filteredNodes = filteredNodes.filter((node) => node.status === "Idle" || node.metrics.deployed_avs.active_set === "false");
   }
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 import { Topbar } from "../../Topbar";
 import { SectionTitle } from "../../shared/sectionTitle";

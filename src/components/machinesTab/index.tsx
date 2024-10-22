@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Link, Outlet, useSearchParams } from "react-router-dom";
 import { Topbar } from "../Topbar";
 import { MachineWidget } from "../shared/machineWidget";

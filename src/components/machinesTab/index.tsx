@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Link, Outlet, useSearchParams } from "react-router-dom";
 import { Topbar } from "../Topbar";
 import { MachineWidget } from "../shared/machineWidget";
@@ -11,12 +10,10 @@ import { Tr } from "../shared/table/Tr";
 import { Filters } from "../shared/filters";
 import { SectionTitle } from "../shared/sectionTitle";
 import { EmptyMachines } from "./EmptyMachines";
-import { ConnectedIcon } from "../shared/connectedIcon";
 import useSWR from 'swr';
-import { MachinesStatus, NodeDetail, NodeInfo, Response } from "../../interfaces/responses";
+import { MachinesStatus, NodeDetail, Response } from "../../interfaces/responses";
 import { apiFetch } from "../../utils";
 import { AxiosResponse } from "axios";
-import { nodeDataFromJSON } from "../../interfaces/data";
 
 interface MachinesTabProps {
 };

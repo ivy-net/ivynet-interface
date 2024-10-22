@@ -1,15 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 import { Topbar } from "../../Topbar";
 import { SectionTitle } from "../../shared/sectionTitle";
 import { MachineStatus } from "./MachineStatus";
 import { MachineWidget } from "./MachineWidget";
-import { PerformanceWidget } from "./PerformanceHistory";
 import useSWR from "swr";
 import { AxiosResponse } from "axios";
 import { NodeDetail, Response } from "../../../interfaces/responses";
 import { apiFetch } from "../../../utils";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import byteSize from 'byte-size'
 
 
@@ -17,13 +15,6 @@ interface MachineProps {
 };
 
 export const Machine: React.FC<MachineProps> = () => {
-  const fakeData = {
-    issues: {
-      date: { date_1: "Aug 28 24 14:25 UTC", date_2: "Aug 29 24 06:44 UTC" },
-      issue: { issue_1: "Error 240: low memory capacity", issue_2: "Error 102: upgrade avs version" }
-    }
-  }
-
   const { address } = useParams();
   const apiFetcher = (url: string) => apiFetch(url, "GET");
 

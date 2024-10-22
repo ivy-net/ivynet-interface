@@ -75,7 +75,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     filteredNodes = filteredNodes.filter((node) => node.status === "Unhealthy" || node.status === "Error");
   }
   else if (filter === "medium") {
-    filteredNodes = filteredNodes.filter((node) => node.status === "Idle");
+    filteredNodes = filteredNodes.filter((node) => node.status === "Idle" || node.metrics.deployed_avs.active_set === "false");
   }
 
   console.log("filteredNodes", filteredNodes)

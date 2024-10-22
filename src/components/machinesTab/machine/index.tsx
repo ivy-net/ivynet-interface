@@ -45,10 +45,10 @@ export const Machine: React.FC<MachineProps> = () => {
         </div>
         <div className="flex flex-col">
           <div className="flex">
-            <div className="text-textPrimary text-base font-light">{machine?.metrics.deployed_avs.name}</div>
+            <div className="text-textPrimary text-base font-light">{machine?.metrics.deployed_avs.name} {machine?.metrics.deployed_avs.version}</div>
             {/* <div className="flex items-center text-[#FFD60A] border border-[#FFD60A] text-xs px-2 leading-4 rounded-lg ml-4">Needs Upgrade</div> */}
           </div>
-          <div className="text-textPrimary text-base font-light">{`IvyNet Client ${machine?.metrics.deployed_avs.version}`}</div>
+          <div className="text-textPrimary text-base font-light">{`IvyNet Client`} 0.2.1</div>
           {/* <div className="flex items-center text-[#FFD60A] border border-[#FFD60A] text-xs px-2 leading-4 rounded-lg ml-4">Needs Upgrade</div> */}
         </div>
       </div>

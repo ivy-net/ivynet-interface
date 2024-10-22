@@ -32,7 +32,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
 
   const emptyMachineStatus = {
     total_machines: 0,
-    healthy_machines: 0,
+    healthy_machines: [],
     unhealthy_machines: [],
     idle_machines: [],
     updateable_machines: [],
@@ -55,7 +55,8 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
   })
   const machinesStatus = response.data?.data.result || emptyMachineStatus
 
-  const machines = Array.from(new Set(machinesStatus.unhealthy_machines.concat(machinesStatus.erroring_machines).concat(machinesStatus.updateable_machines).concat(machinesStatus.idle_machines)))
+  const machines = Array.from(new Set(machinesStatus.unhealthy_machines.concat(machinesStatus.erroring_machines).concat(machinesStatus.updateable_machines).concat(machinesStatus.idle_machines).concat(machinesStatus.healthy_machines)))
+  console.log("machines", machines)
   const nodesResponse = useSWR<AxiosResponse<Response<NodeDetail>>[], any>(machines.map(machine => `client/${machine}`), multiFetcher as any, {
     revalidateOnFocus: false,
     revalidateOnMount: true,
@@ -66,14 +67,15 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
 
   })
   const nodesInfo = nodesResponse.data?.map((ar, idx) => ar.data.result).sort((b, a) => b.machine_id.localeCompare(a.machine_id))
+  console.log("nodesInfo", nodesInfo)
 
   let filteredNodes = nodesInfo || []
 
   if (filter === "high") {
-    filteredNodes = filteredNodes.filter((node) => node.metrics.disk_info.status === "Critical");
+    filteredNodes = filteredNodes.filter((node) => node.status === "Unhealthy" || node.status === "Error");
   }
   else if (filter === "medium") {
-    filteredNodes = filteredNodes.filter((node) => node.metrics.disk_info.status === "Warning");
+    filteredNodes = filteredNodes.filter((node) => node.status === "Idle");
   }
 
   console.log("filteredNodes", filteredNodes)

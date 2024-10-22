@@ -2,7 +2,7 @@ import { DiskStatus } from "./data"
 
 export interface MachinesStatus {
   total_machines: number,
-  healthy_machines: number,
+  healthy_machines: string[],
   unhealthy_machines: string[],
   idle_machines: string[],
   updateable_machines: string[],
@@ -25,7 +25,7 @@ export interface NodeInfo {
 export interface NodeDetail {
   "machine_id": string,
   "name": string,
-  "status": "Idle" | "Healthy",
+  "status": "Idle" | "Healthy"| "Error"| "Unhealthy",
   "metrics": {
     "cpu_usage": number,
     "memory_info": {

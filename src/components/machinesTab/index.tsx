@@ -21,9 +21,8 @@ interface MachinesTabProps {
 export const MachinesTab: React.FC<MachinesTabProps> = () => {
   const options = [
     { label: "IvyClient Update", link: "code/updateclient" },
-    { label: "AVS Upgrade", link: "code/avsupgrade" },
-    { label: "AVS Deregister", link: "code/avsderegister" },
     { label: "View Details", link: "" },
+    { label: "Delete Node", link: "" },
   ]
   const filters = [
     { label: "All Nodes", query: "all" },
@@ -112,8 +111,8 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
                 <Td>
                   <MachineWidget address={node.machine_id} name={node.name} to={`/nodes/${node.machine_id}`} />
                 </Td>
-                <Td to={`/avs/${node.metrics.deployed_avs.operator_id || ""}`} content={node.metrics.deployed_avs.name || ""}></Td>
-                <Td isConnected={true}></Td>
+                <Td content={node.metrics.deployed_avs.name || ""}></Td>  {/* to={`/avs/${node.metrics.deployed_avs.operator_id || ""}`} */}
+                <Td isConnected={node.metrics.deployed_avs.version !== null}></Td>
                 <Td isConnected={node.status === "Healthy"}></Td>
                 <Td diskStatus={node.metrics.disk_info.status}></Td>
                 <Td isChecked={node.metrics.deployed_avs.active_set === "true"}></Td>

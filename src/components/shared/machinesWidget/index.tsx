@@ -24,7 +24,7 @@ export const MachinesWidget: React.FC<MachinesWidgetProps> = ({ data, details })
       <WidgetItem title="Total Nodes" description={data.total_machines} to="/nodes" />
       <WidgetItem title="High Priority Issues" description={highPriorityMachines} connected={false} />
       <WidgetItem title="Medium Priority Issues" description={mediumPriorityMachines} connected={null} />
-      <WidgetItem title="New Potential AVS" description={0} to="/avs" connected={true} />
+      <WidgetItem title="New Potential AVS" description={0} connected={true} />
     </div>
   );
 }

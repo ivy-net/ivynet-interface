@@ -9,6 +9,7 @@ import { NodeDetail, Response } from "../../../interfaces/responses";
 import { apiFetch } from "../../../utils";
 import { useParams } from "react-router-dom";
 import byteSize from 'byte-size'
+import { ConditionalLink } from "../../shared/conditionalLink";
 
 
 interface MachineProps {
@@ -33,7 +34,9 @@ export const Machine: React.FC<MachineProps> = () => {
       <div className="flex">
         <MachineWidget name={machine?.name || ""} address={machine?.machine_id || ""} isConnected={machine?.status === "Healthy"} />
         <div className="flex items-center ml-auto gap-4">
-          <button className="py-2.5 px-4 bg-accent/[0.15] rounded-lg">Update client</button>
+          <ConditionalLink to="https://docs.ivynet.dev/" openInNewTab>
+            <button className="py-2.5 px-4 bg-accent/[0.15] rounded-lg">Update client</button>
+          </ConditionalLink>
           {/* <OptionsButton className="p-2.5 border border-iconBorderColor rounded-lg" /> */}
         </div>
       </div>
@@ -41,14 +44,14 @@ export const Machine: React.FC<MachineProps> = () => {
         <div className="flex flex-col">
           {/* <div className="text-sidebarColor text-base font-medium">Connectivity</div> */}
           <div className="text-sidebarColor text-base font-medium">AVS</div>
-          <div className="text-sidebarColor text-base font-medium">Client</div>
+          <div className="text-sidebarColor text-base font-medium">Version</div>
         </div>
         <div className="flex flex-col">
           <div className="flex">
             <div className="text-textPrimary text-base font-light">{machine?.metrics.deployed_avs.name} {machine?.metrics.deployed_avs.version}</div>
             {/* <div className="flex items-center text-[#FFD60A] border border-[#FFD60A] text-xs px-2 leading-4 rounded-lg ml-4">Needs Upgrade</div> */}
           </div>
-          <div className="text-textPrimary text-base font-light">{`IvyNet Client`} 0.2.1</div>
+          {machine?.metrics.deployed_avs.version && <div className="text-textPrimary text-base font-light">{`IvyNet Client ${machine?.metrics.deployed_avs.version}`}</div>}
           {/* <div className="flex items-center text-[#FFD60A] border border-[#FFD60A] text-xs px-2 leading-4 rounded-lg ml-4">Needs Upgrade</div> */}
         </div>
       </div>

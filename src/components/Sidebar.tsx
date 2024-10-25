@@ -19,8 +19,8 @@ export const Sidebar: React.FC<SidebarProps> = () => {
         {/* <SidebarItem title="Overview" Logo={Overview} /> */}
         {/* <SidebarItem title="Overview" Logo={Machines} /> */}
         <SidebarItem title="Nodes" Logo={Machines} />
-        <SidebarItem title="AVS" Logo={AVS} />
-        <SidebarItem title="Overview" Logo={Org} />
+        <SidebarItem title="AVS" Logo={AVS} to="" />
+        <SidebarItem title="Overview" Logo={Org} to="" />
         {/* <SidebarItem title="Rewards" Logo={Rewards} /> */}
         <div className="mt-auto">
           <SidebarItem title="Organization" Logo={Settings} />

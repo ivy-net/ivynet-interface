@@ -1,7 +1,8 @@
 const messages = {
   BadCredentials: "Invalid Email/Password",
   ConfirmPasswordMismatch: "Confirmation password doesn't match.",
-  ResetCheckEmail: "Check your email for next steps"
+  ResetCheckEmail: "Check your email for next steps",
+  HelpMessage: "Custom Help message"
 }
 
 export const getMessage = (text: string) => {

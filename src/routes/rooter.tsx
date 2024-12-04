@@ -19,6 +19,7 @@ import { Welcome } from '../components/welcome';
 import { OrgTab } from '../components/orgTab';
 import { AddUserModal } from '../components/settingsTab/AddUserModal';
 import { ForgotPassword } from '../components/forgotPassword';
+import { HelpModal } from '../components/HelpModal';
 
 export const router = createBrowserRouter([
   {
@@ -49,6 +50,10 @@ export const router = createBrowserRouter([
           {
             path: "",
             element: <></>
+          },
+          {
+            path: "help",
+            element: <HelpModal />
           },
           {
             path: "code/installclient",
@@ -82,12 +87,22 @@ export const router = createBrowserRouter([
           {
             path: ":id",
             element: <AvsModal />
-          }
+          },
+          {
+            path: "help",
+            element: <HelpModal />
+          },
         ]
       },
       {
         path: "overview",
-        element: <OrgTab />
+        element: <OrgTab />,
+        children: [
+          {
+            path: "help",
+            element: <HelpTab />
+          },
+        ]
       },
       // {
       //   path: "rewards",
@@ -100,12 +115,12 @@ export const router = createBrowserRouter([
           {
             path: "adduser",
             element: <AddUserModal />
-          }
+          },
+          {
+            path: "help",
+            element: <HelpModal />
+          },
         ]
-      },
-      {
-        path: "help",
-        element: <HelpTab />
       },
     ]
   },

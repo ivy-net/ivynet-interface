@@ -99,7 +99,8 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
               <Th content="Nodes"></Th>
               <Th content="AVS"></Th>
               <Th content="AVS Version"></Th>
-              <Th content="Status"></Th>
+              <Th content="Connectivity"></Th>
+              <Th content="Resources"></Th>
               <Th content="Active Set"></Th>
               <Th content=""></Th>
             </Tr>
@@ -113,6 +114,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
                 <Td content={node.metrics.deployed_avs.name || ""}></Td>  {/* to={`/avs/${node.metrics.deployed_avs.operator_id || ""}`} */}
                 <Td isConnected={node.metrics.deployed_avs.version !== null}></Td>
                 <Td isConnected={node.status === "Healthy"}></Td>
+                <Td diskStatus={node.metrics.disk_info.status}></Td>
                 <Td isChecked={node.metrics.deployed_avs.active_set === "true"}></Td>
                 <Td><OptionsButton options={options} /></Td>
               </Tr>

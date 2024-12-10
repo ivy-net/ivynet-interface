@@ -30,7 +30,7 @@ export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
           </Link>
         </div> */}
         <div className="flex items-center">
-          <h2>Edit Keys</h2>
+          <h2>Edit Addresses</h2>
           <Link to="/machines" relative="path" className="ml-auto">
             <img src={closeIcon} alt="close icon" />
           </Link>

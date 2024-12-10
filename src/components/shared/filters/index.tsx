@@ -42,7 +42,7 @@ export const Filters: React.FC<FiltersProps> = ({ filters, children }) => {
       <div className="ml-auto">
       </div>
       <div className="flex gap-4">
-        <SearchBar />
+        {/* <SearchBar /> */}
         {children}
       </div>
     </div>

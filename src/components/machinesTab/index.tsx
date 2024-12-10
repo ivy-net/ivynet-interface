@@ -141,7 +141,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
 
   return (
     <>
-      <Topbar title="Machine Overview" />
+      <Topbar title="Nodes Overview" />
       <SectionTitle title="AVS Deployments" className="text-textPrimary" />
       <MachinesWidget data={machinesStatus} details={nodesInfo} avs={avsResponse.data?.data} />
       {avs_data && avs_data.length === 0 && <div className="mt-24"><EmptyMachines /></div>}
@@ -162,8 +162,8 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
             <Tr>
               <Th content="AVS"></Th>
               <Th content="Chain"></Th>
-              <Th content="Version"></Th>
-              <Th content="Latest"></Th>
+              <Th content="Version" tooltip="Can show blank if AVS doesn't ship with docker container."></Th>
+              <Th content="Latest" tooltip="Can show blank if AVS doesn't ship with docker container."></Th>
               <Th content="Health"></Th>
               <Th content="Score" tooltip="Can show 0 if AVS doesn't have performance score metric."></Th>
               <Th content="Address"></Th>

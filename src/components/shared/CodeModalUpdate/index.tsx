@@ -3,12 +3,12 @@ import { Link } from "react-router-dom";
 import closeIcon from "./../../../images/x-close.svg"
 import copyIcon from "./../../../images/copy.svg"
 
-interface CodeModalProps {
+interface CodeModalUpdateProps {
   code: string;
   title: string;
 };
 
-export const CodeModal: React.FC<CodeModalProps> = ({ title, code }) => {
+export const CodeModalUpdate: React.FC<CodeModalUpdateProps> = ({ title, code }) => {
   const copyCode = () => {
     navigator.clipboard.writeText(code);
   }
@@ -25,7 +25,7 @@ export const CodeModal: React.FC<CodeModalProps> = ({ title, code }) => {
         <div className="flex flex-col gap-4">
           <div className="flex gap-2 text-sidebarColor items-center">
             <div className="border rounded-full text-[10px] font-bold border-sidebarColor w-[20px] h-[20px] flex justify-center items-center">1</div>
-            <div className="font-medium">See IvyNet Quickstart Guide</div>
+            <div className="font-medium">Scan your machine for new nodes - See IvyNet QuickStart Guide</div>
           </div>
           <div className="flex p-7 border border-bgButton text-textPrimary">
             <div className="w-3/4 font-light whitespace-pre-wrap">
@@ -40,7 +40,7 @@ export const CodeModal: React.FC<CodeModalProps> = ({ title, code }) => {
           </div>
           <div className="flex gap-2 text-sidebarColor items-center">
             <div className="border rounded-full text-[10px] font-bold border-sidebarColor w-[20px] h-[20px] flex justify-center items-center">2</div>
-            <div className="font-medium">Wait for nodes to be detected</div>
+            <div className="font-medium">Wait for new nodes to be detected</div>
           </div>
         </div>
       </div>

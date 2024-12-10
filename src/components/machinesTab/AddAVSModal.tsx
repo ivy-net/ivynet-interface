@@ -1,30 +1,15 @@
 import React from "react";
-import { CodeModal } from "../shared/CodeModal";
+import { CodeModalUpdate } from "../shared/CodeModalUpdate";
 
 
 interface AddAVSModalProps {
 };
 
 export const AddAVSModal: React.FC<AddAVSModalProps> = () => {
-  const title = "Add AVS on a New Machine";
+  const title = "Add AVS on Machine";
   const code =
-    `lorem
-Generates a random sentence.
-
-lorem -s, --sentence
-Generates a random sentence.
-
-lorem -s -c, --sentence --count
-Generates a number of random sentences.
-
-lorem -p, --paragraph
-Generates a paragraph.
-
-lorem -p -c, --paragraph --count
-Generates a number of paragraphs.  lorem -h, --help
-Displays this help message.
-`
+  `https://docs.ivynet.dev/docs/client/QuickstartGuide`
   return (
-    <CodeModal title={title} code={code} />
+    <CodeModalUpdate title={title} code={code} />
   );
 }

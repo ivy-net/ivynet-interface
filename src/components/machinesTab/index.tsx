@@ -16,6 +16,7 @@ import { apiFetch } from "../../utils";
 import { AxiosResponse } from "axios";
 import { useEffect } from "react";
 import { AvsWidget } from "../shared/avsWidget";
+import { getChainLabel } from "../../utils/UiMessages";
 
 interface MachinesTabProps {
 };
@@ -184,7 +185,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
                       to={`/machines/avs/${avs.avs_name}`} />
                   </Td>
 
-                  <Td content={avs.chain || ""}></Td>
+                  <Td content={getChainLabel(avs.chain)}></Td>
                   <Td content={avs.avs_version}>{/*version_running*/}</Td>
                   <Td content="">{/*TBU*/}</Td>
                   <Td isConnected={avs.errors.length === 0}> {/*healthy*/}</Td>

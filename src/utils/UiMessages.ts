@@ -7,7 +7,10 @@ const messages = {
   MachineEditedMessage: "Machine successfully edited",
 }
 
-export const chains = [{ label: "ethereum", value: "ethereum" }, { label: "holesky", value: "holesky" }]
+export const chains = [{ label: "ethereum", value: "mainnet" }, { label: "holesky", value: "holesky" }]
+export const getChainLabel = (value: string | null) => {
+  return chains.find(chain => chain.value === value)?.label || ""
+}
 
 export const getMessage = (text: string) => {
   return messages[text as keyof typeof messages] || text

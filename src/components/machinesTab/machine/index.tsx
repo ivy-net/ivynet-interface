@@ -15,6 +15,7 @@ import { Th } from "../../shared/table/Th";
 import { Td } from "../../shared/table/Td";
 import { AvsWidget } from "../../shared/avsWidget";
 import { MachineWidget } from "../../shared/machineWidget";
+import { getChainLabel } from "../../../utils/UiMessages";
 
 
 interface MachineProps {
@@ -131,7 +132,7 @@ export const Machine: React.FC<MachineProps> = () => {
                   to={`/machines/avs/${avs.avs_name}`} />
               </Td>
 
-              <Td content={avs.chain || ""}></Td>
+              <Td content={getChainLabel(avs.chain)}></Td>
               <Td content={avs.avs_version}>{/*version_running*/}</Td>
               <Td content="">{/*TBU*/}</Td>
               <Td isConnected={avs.errors.length === 0}> {/*healthy*/}</Td>

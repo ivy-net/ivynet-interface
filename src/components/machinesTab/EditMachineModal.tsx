@@ -8,6 +8,7 @@ import { apiFetch } from "../../utils";
 import { AxiosResponse } from "axios";
 import useSWR from "swr";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 
 interface EditMachineModalProps {
@@ -15,6 +16,7 @@ interface EditMachineModalProps {
 
 export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
   const [selectedOption, setSelectedOption] = useState<{ value: string; label: string; } | null>(null);
+  const navigate = useNavigate()
   const [address, setAddress] = useState("");
 
   const { avsName, machineId } = useParams();
@@ -42,6 +44,7 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
       console.log(fetchUrl)
       await apiFetch(fetchUrl, "PUT")
       toast.success(getMessage("MachineEditedMessage"), { theme: "dark" })
+      navigate("/machines", { state: { refetch: true } })
     }
     catch (err) {
       // empty
@@ -112,7 +115,7 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
           <Link to="/machines" relative="path">
             <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textPrimary">Cancel</div>
           </Link>
-          <Link to="/machines" state={{ refetch: true }} relative="path" onClick={() => machine && editMachine(machine.machine_id, avs?.avs_name || "", selectedOption?.value || "", address)}>
+          <Link to="" relative="path" onClick={() => machine && editMachine(machine.machine_id, avs?.avs_name || "", selectedOption?.value || "", address)}>
             <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textPrimary">Save Changes</div>
           </Link>
         </div>

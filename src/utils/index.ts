@@ -29,15 +29,16 @@ export const apiFetch = async<T>(resource: string, method: Method, data?: T, con
     return response
   }
   catch (err: any) {
-    if (err.status === 500) {
-      toast.error(getMessage(err.response.data), { theme: "dark" });
-    }
+    const errorMsg = !err.status ? getMessage(err.message) : getMessage(err.response.data) || getMessage(err.message)
     if (err.status === 401) {
-      toast.error(getMessage(err.response.data), { theme: "dark" });
+      toast.error(errorMsg, { theme: "dark", toastId: errorMsg });
       router.navigate("/login")
     }
-    if (!err.status) {
-      toast.error(getMessage(err.message), { theme: "dark" });
+    else if (err.status) {
+      toast.error(errorMsg, { theme: "dark", toastId: errorMsg });
+    }
+    else {
+      toast.error(errorMsg, { theme: "dark", toastId: errorMsg });
     }
     return Promise.reject(err);
   }
@@ -48,3 +49,7 @@ export const validateEmail = (email: string) => {
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   )
 };
+
+export const getRandomClass = () => {
+  return Math.random().toString(36).slice(2, 11)
+}

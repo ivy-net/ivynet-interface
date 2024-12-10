@@ -20,6 +20,11 @@ import { OrgTab } from '../components/orgTab';
 import { AddUserModal } from '../components/settingsTab/AddUserModal';
 import { ForgotPassword } from '../components/forgotPassword';
 import { HelpModal } from '../components/HelpModal';
+import { AddAVSModal } from '../components/machinesTab/AddAVSModal';
+import { EditKeysModal } from '../components/machinesTab/EditKeysModal';
+import { DeleteMachineModal } from '../components/machinesTab/DeleteMachineModal';
+import { EditMachineModal } from '../components/machinesTab/EditMachineModal';
+
 
 export const router = createBrowserRouter([
   {
@@ -36,7 +41,7 @@ export const router = createBrowserRouter([
       {
         path: "",
         loader: () => {
-          return redirect("/nodes");
+          return redirect("/machines");
         },
       },
       // {
@@ -44,7 +49,7 @@ export const router = createBrowserRouter([
       //   element: <OverviewTab />
       // },
       {
-        path: "nodes",
+        path: "machines",
         element: <MachinesTab />,
         children: [
           {
@@ -56,25 +61,56 @@ export const router = createBrowserRouter([
             element: <HelpModal />
           },
           {
-            path: "code/installclient",
-            element: <InstallClientModal />,
+            path: "code",
+            children: [
+              {
+                path: "installclient",
+                element: <InstallClientModal />,
+              },
+              {
+                path: "addavs",
+                element: <AddAVSModal />,
+              },
+              {
+                path: "updateclient",
+                element: <UpdateClientModal />,
+              },
+              {
+                path: "avsupgrade",
+                element: <AvsUpgradeModal />,
+              },
+              {
+                path: "avsderegister",
+                element: <AvsDeregisterModal />,
+              },
+            ]
           },
           {
-            path: "code/updateclient",
-            element: <UpdateClientModal />,
+            path: "edit",
+            children: [
+              {
+                path: "keys",
+                element: <EditKeysModal />,
+              },
+              {
+                path: ":avsName/:machineId",
+                element: <EditMachineModal />,
+              },
+            ]
           },
           {
-            path: "code/avsupgrade",
-            element: <AvsUpgradeModal />,
-          },
-          {
-            path: "code/avsderegister",
-            element: <AvsDeregisterModal />,
+            path: "delete",
+            children: [
+              {
+                path: ":avsName/:machineId",
+                element: <DeleteMachineModal />,
+              },
+            ]
           }
         ]
       },
       {
-        path: "nodes/:address",
+        path: "machines/:address",
         element: <Machine />
       },
       {

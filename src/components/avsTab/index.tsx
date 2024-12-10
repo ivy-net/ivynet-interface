@@ -19,7 +19,7 @@ export const AvsTab: React.FC<AvsTabProps> = () => {
   ];
   const options = [
     { label: "Deploy AVS", link: "" },
-    { label: "View Machine", link: "/nodes/0x235eE805F962690254e9a440E01574376136ecb1" },
+    { label: "View Machine", link: "/machines/0x235eE805F962690254e9a440E01574376136ecb1" },
     { label: "View Details", link: "" },
   ]
 
@@ -41,7 +41,7 @@ export const AvsTab: React.FC<AvsTabProps> = () => {
           <Td>
             <AvsWidget name="AVS 1" description="AVS 1 Description" />
           </Td>
-          <Td content="Node 1" to="/nodes/0x235eE805F962690254e9a440E01574376136ecb1" />
+          <Td content="Node 1" to="/machines/0x235eE805F962690254e9a440E01574376136ecb1" />
           <Td content="1 ETH"></Td>
           <Td content="No"></Td>
           <Td content="23"></Td>
@@ -54,7 +54,7 @@ export const AvsTab: React.FC<AvsTabProps> = () => {
           <Td>
             <AvsWidget name="AVS 1" description="AVS 1 Description" />
           </Td>
-          <Td content="-" to="/nodes/" />
+          <Td content="-" to="/machines/" />
           <Td content="0.1 ETH"></Td>
           <Td content="No"></Td>
           <Td content="23"></Td>
@@ -67,7 +67,7 @@ export const AvsTab: React.FC<AvsTabProps> = () => {
           <Td>
             <AvsWidget name="AVS 1" description="AVS 1 Description" />
           </Td>
-          <Td content="Node 3" to="/nodes/0x235eE805F962690254e9a440E01574376136ecb1" />
+          <Td content="Node 3" to="/machines/0x235eE805F962690254e9a440E01574376136ecb1" />
           <Td content="1 ETH"></Td>
           <Td content="Yes"></Td>
           <Td content="23"></Td>
@@ -80,7 +80,7 @@ export const AvsTab: React.FC<AvsTabProps> = () => {
           <Td>
             <AvsWidget name="AVS 1" description="AVS 1 Description" />
           </Td>
-          <Td content="Node 4" to="/nodes/0x235eE805F962690254e9a440E01574376136ecb1" />
+          <Td content="Node 4" to="/machines/0x235eE805F962690254e9a440E01574376136ecb1" />
           <Td content="1 ETH"></Td>
           <Td content="No"></Td>
           <Td content="23"></Td>

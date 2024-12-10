@@ -10,10 +10,10 @@ interface MachineWidgetProps {
   name: string;
   address: string;
   isConnected?: boolean;
-  to: string;
+  to?: string;
 };
 
-export const MachineWidget: React.FC<MachineWidgetProps> = ({ name, address, isConnected, to, }) => {
+export const MachineWidget: React.FC<MachineWidgetProps> = ({ name, address, isConnected, to = "" }) => {
   const hoverClasses = to ? "hover:bg-widgetHoverBg" : "";
 
   return (

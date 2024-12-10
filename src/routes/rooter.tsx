@@ -106,7 +106,16 @@ export const router = createBrowserRouter([
                 element: <DeleteMachineModal />,
               },
             ]
-          }
+          },
+          {
+            path: "avs",
+            children: [
+              {
+                path: ":avsName",
+                element: <AvsModal />,
+              },
+            ]
+          },
         ]
       },
       {

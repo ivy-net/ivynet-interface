@@ -15,6 +15,7 @@ import { AVS, MachineDetails, MachinesStatus, NodeDetail, Response } from "../..
 import { apiFetch } from "../../utils";
 import { AxiosResponse } from "axios";
 import { useEffect } from "react";
+import { AvsWidget } from "../shared/avsWidget";
 
 interface MachinesTabProps {
 };
@@ -177,7 +178,12 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
               // Return the JSX
               return (
                 <Tr key={`${avs.machine_id}-${avs.avs_name}`}>
-                  <Td content={avs.avs_name}>{/*name*/}</Td>
+                  <Td>
+                    <AvsWidget
+                      name={avs.avs_name}
+                      to={`/machines/avs/${avs.avs_name}`} />
+                  </Td>
+
                   <Td content={avs.chain || ""}></Td>
                   <Td content={avs.avs_version}>{/*version_running*/}</Td>
                   <Td content="">{/*TBU*/}</Td>
@@ -189,8 +195,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
                     <MachineWidget
                       address={avs.machine_id}
                       name={getMachineName(avs.machine_id)} // Dynamically fetch machine name
-                      to={`/machines/${avs.machine_id}`}
-                    />
+                      to={`/machines/${avs.machine_id}`} />
                   </Td>
                   <Td><OptionsButton options={getOptions(avs)} /></Td>
                 </Tr>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react"; // Add useState
 import { Topbar } from "../../Topbar";
 import { SectionTitle } from "../../shared/sectionTitle";
 import { MachineStatus } from "./MachineStatus";
@@ -16,12 +16,13 @@ import { Td } from "../../shared/table/Td";
 import { AvsWidget } from "../../shared/avsWidget";
 import { MachineWidget } from "../../shared/machineWidget";
 import { getChainLabel } from "../../../utils/UiMessages";
-
+import { AddAVSModal } from "../AddAVSModal"; // Add this import
 
 interface MachineProps {
-};
+}
 
 export const Machine: React.FC<MachineProps> = () => {
+  const [showAddAvsModal, setShowAddAvsModal] = useState(false); // Add this state
   const { address } = useParams();
   const apiFetcher = (url: string) => apiFetch(url, "GET");
 
@@ -62,34 +63,42 @@ export const Machine: React.FC<MachineProps> = () => {
   const diskTotal = machine && byteSize(
     machine.system_metrics.disk_info.usage + machine.system_metrics.disk_info.free).toString();
 
-  return (
-    <>
-      <Topbar goBackTo="/machines" />
-      <div className="flex">
-        <MachineWidget name={machineName} address={machine?.machine_id || ""} isConnected={machine?.status === "Healthy"} />
-        <div className="flex items-center ml-auto gap-4">
-          <ConditionalLink to="https://docs.ivynet.dev/" openInNewTab>
-            <button className="py-2.5 px-4 bg-accent/[0.15] rounded-lg">Update client</button>
-          </ConditionalLink>
-          {/* <OptionsButton className="p-2.5 border border-iconBorderColor rounded-lg" /> */}
-        </div>
-      </div>
-      <div className="flex gap-6">
-        <div className="flex flex-col">
-          {/* <div className="text-sidebarColor text-base font-medium">Connectivity</div> */}
-          <div className="text-sidebarColor text-base font-medium">AVS Running</div>
-          <div className="text-sidebarColor text-base font-medium">AVS Active Sets</div>
-        </div>
-        <div className="flex flex-col">
-          <div className="flex">
-            <div className="text-textPrimary text-base font-light">{avsCount}</div>
-            {/*<div className="text-textPrimary text-base font-light">{machine?.metrics.deployed_avs.name} {machine?.metrics.deployed_avs.version}</div>*/}
-            {/* <div className="flex items-center text-[#FFD60A] border border-[#FFD60A] text-xs px-2 leading-4 rounded-lg ml-4">Needs Upgrade</div> */}
+    const formatAddress = (address: string | null | undefined): string => {
+      if (!address) return '';
+      return `${address.slice(0, 4)}...${address.slice(-4)}`;
+    };
+
+    return (
+      <>
+        <Topbar goBackTo="/machines" />
+        <div className="flex">
+          <MachineWidget name={machineName} address={machine?.machine_id || ""} isConnected={machine?.status === "Healthy"} />
+          <div className="flex items-center ml-auto gap-4">
+            <button
+              onClick={() => setShowAddAvsModal(true)}
+              className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
+            >
+              Add AVS
+            </button>
+            {/* <OptionsButton className="p-2.5 border border-iconBorderColor rounded-lg" /> */}
           </div>
-          {/*currentMachine?.system_metrics.deployed_avs.version && <div className="text-textPrimary text-base font-light">{`${currentMachine?.system_metrics.deployed_avs.version}`}</div>}
-          {/* <div className="flex items-center text-[#FFD60A] border border-[#FFD60A] text-xs px-2 leading-4 rounded-lg ml-4">Needs Upgrade</div> */}
         </div>
-      </div>
+        {showAddAvsModal && <AddAVSModal />}
+        <div className="flex gap-6">
+          <div className="flex flex-col">
+            {/* <div className="text-sidebarColor text-base font-medium">Connectivity</div> */}
+            <div className="text-sidebarColor text-base font-medium">Machine Status</div>
+            <div className="text-sidebarColor text-base font-medium">AVS Running</div>
+          </div>
+          <div className="flex flex-col">
+              <div className="text-textPrimary text-base font-light">{machine?.status}</div>
+              <div className="text-textPrimary text-base font-light">{avsCount}</div>
+              {/*<div className="text-textPrimary text-base font-light">{machine?.metrics.deployed_avs.name} {machine?.metrics.deployed_avs.version}</div>*/}
+              {/* <div className="flex items-center text-[#FFD60A] border border-[#FFD60A] text-xs px-2 leading-4 rounded-lg ml-4">Needs Upgrade</div> */}
+            </div>
+            {/*currentMachine?.system_metrics.deployed_avs.version && <div className="text-textPrimary text-base font-light">{`${currentMachine?.system_metrics.deployed_avs.version}`}</div>}
+            {/* <div className="flex items-center text-[#FFD60A] border border-[#FFD60A] text-xs px-2 leading-4 rounded-lg ml-4">Needs Upgrade</div> */}
+        </div>
       <SectionTitle title="System Status"></SectionTitle>
       <div className="grid grid-cols-4 gap-4">
         <MachineStatus title="Cores" status={cores} />
@@ -109,7 +118,7 @@ export const Machine: React.FC<MachineProps> = () => {
         <Tr>
           <Th content="AVS"></Th>
           <Th content="Chain"></Th>
-          <Th content="Version"></Th>
+          <Th content="Version" tooltip="Can show blank if AVS doesn't ship with docker container."></Th>
           <Th content="Latest"></Th>
           <Th content="Health"></Th>
           <Th content="Score" tooltip="Can show 0 if AVS doesn't have performance score metric."></Th>
@@ -129,7 +138,8 @@ export const Machine: React.FC<MachineProps> = () => {
               <Td>
                 <AvsWidget
                   name={avs.avs_name}
-                  to={`/machines/avs/${avs.avs_name}`} />
+                  //to={`/machines/avs/${avs.avs_name}`}
+                  />
               </Td>
 
               <Td content={getChainLabel(avs.chain)}></Td>
@@ -137,7 +147,7 @@ export const Machine: React.FC<MachineProps> = () => {
               <Td content="">{/*TBU*/}</Td>
               <Td isConnected={avs.errors.length === 0}> {/*healthy*/}</Td>
               <Td score={avs.performance_score}>{/*performance score*/}</Td>
-              <Td content={avs.operator_address || ""}></Td>
+              <Td content={formatAddress(avs.operator_address) || ""}></Td>
               <Td isChecked={avs.active_set}> {/*active - set*/}</Td>
               <Td>
                 <MachineWidget

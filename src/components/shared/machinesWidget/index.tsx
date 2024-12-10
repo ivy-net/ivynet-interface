@@ -7,32 +7,43 @@ interface MachinesWidgetProps {
   avs?: AVS[];
 };
 
-
 export const MachinesWidget: React.FC<MachinesWidgetProps> = ({ data, details, avs }) => {
-  let highPriorityMachines = 0;
-  let mediumPriorityMachines = 0;
+  // Get the number of unique machines that have running AVS
+  const runningMachines = new Set(avs?.filter(a => a.avs_name).map(a => a.machine_id)).size;
 
-  if (details?.length) {
-    highPriorityMachines = details.filter(node => node.status === "Unhealthy" || node.status === "Error" || node.metrics.disk_info.status === "Critical").length
-    mediumPriorityMachines = details.filter(node => node.status === "Idle" || node.metrics.deployed_avs.active_set === "false" || node.metrics.disk_info.status === "Warning").length
-  }
-  // else {
-  //   highPriorityMachines = data.erroring_machines.length + data.unhealthy_machines.length
-  //   mediumPriorityMachines = data.idle_machines.length
-  // }
+  // Get the total number of running AVS nodes
+  const runningNodes = avs?.filter(a => a.avs_name).length ?? 0;
 
+  // Get the number of AVS in active set
+  const activeSetCount = avs?.filter(item => item.active_set === true).length ?? 0;
 
-
+  // Get the number of unhealthy AVS
+  const unhealthyCount = avs?.filter(item => item.errors && item.errors.length > 0).length ?? 0;
 
   return (
     <div className="grid grid-cols-4 gap-4">
-      <WidgetItem title="Machines" description={`${new Set(avs?.map(a => a.machine_id)).size ?? 0}`} to="/machines" />{/* need to change this to avs */}
-      <WidgetItem title="AVS Nodes" description={`${avs?.length ?? 0}`} to="/machines" />{/* need to change this to avs */}
-      <WidgetItem title="Active Set" description={`${avs?.filter(item => item.active_set === true).length ?? 0}`} to="/machines" connected={true} />
-      <WidgetItem title="Unhealthy" description={`${avs?.filter(item => item.errors.length > 0).length ?? 0}`} to="/machines" connected={false} />
-      {/*<WidgetItem title="Unhealthy" description={highPriorityMachines} connected={false} />*/}
-      {/*<WidgetItem title="Medium Priority Issues" description={mediumPriorityMachines} connected={null} />*/}
-      {/*<WidgetItem title="New Potential AVS" description={0} connected={true} />*/}
+      <WidgetItem
+        title="Machines"
+        description={`${runningMachines}`}
+        to="/machines?filter=running"
+      />
+      <WidgetItem
+        title="AVS Nodes"
+        description={`${runningNodes}`}
+        to="/machines?filter=running"
+      />
+      <WidgetItem
+        title="Active Set"
+        description={`${activeSetCount}`}
+        to="/machines?filter=active"
+        connected={true}
+      />
+      <WidgetItem
+        title="Unhealthy"
+        description={`${unhealthyCount}`}
+        to="/machines?filter=unhealthy"
+        connected={false}
+      />
     </div>
   );
 }

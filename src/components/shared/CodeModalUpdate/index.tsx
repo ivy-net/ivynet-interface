@@ -14,7 +14,7 @@ export const CodeModalUpdate: React.FC<CodeModalUpdateProps> = ({ title, code })
   }
 
   return (
-    <div className="fixed left-0 top-0 w-screen h-screen flex justify-center items-center bg-black/[0.8]">
+    <div className="fixed left-0 top-0 w-screen h-screen flex justify-center items-center bg-black/[0.8] z-[1000]">
       <div className="flex flex-col bg-widgetBg w-[730px] rounded-xl p-8 gap-8">
         <div className="flex items-center">
           <h2>{title}</h2>

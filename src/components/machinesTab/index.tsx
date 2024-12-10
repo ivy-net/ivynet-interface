@@ -18,7 +18,6 @@ import { useEffect } from "react";
 import { AvsWidget } from "../shared/avsWidget";
 import { getChainLabel } from "../../utils/UiMessages";
 
-
 interface MachinesTabProps {
 };
 
@@ -30,9 +29,11 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     { label: "Delete Machine", link: "" },
   ]
   const filters = [
-    { label: "AVS Running", query: "all" },
-    { label: "Active Set", query: "" },
-    { label: "Unhealthy", query: "medium" }];
+    { label: "AVS Running", query: "running" },
+    { label: "Ethereum AVS", query: "ethereum" },
+    { label: "Active Set", query: "active" },
+    { label: "Unhealthy", query: "unhealthy" }
+  ];
 
   const location = useLocation()
 
@@ -101,7 +102,6 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     return machine?.name?.replace(/"/g, '') || "";
   };
 
-
   const avsResponse = useSWR<AxiosResponse<AVS[]>>('avs', apiFetcher, {
     onSuccess: (data) => console.log("AVS data received:", data?.data),
     onError: (error) => {
@@ -111,24 +111,35 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
   });
 
   const avs_data = avsResponse.data?.data;
-  let filteredNodes = nodesInfo || []
+  let filteredAvs = avs_data || [];
 
-  console.log("filteredNodes", filteredNodes)
+  // Apply filters based on the query parameter
+  if (filter && avs_data) {
+    switch (filter) {
+      case "running":
+        // Show all running AVS names
+        filteredAvs = avs_data.filter(avs => avs.avs_name);
+        break;
 
-  if (filter === "high") {
-    filteredNodes = filteredNodes.filter((node) => node.status === "Unhealthy" || node.status === "Error");
+      case "ethereum":
+        // Show only AVS on mainnet chain
+        filteredAvs = avs_data.filter(avs => avs.chain === "mainnet");
+        break;
+
+      case "active":
+        // Show only AVS where active_set is true
+        filteredAvs = avs_data.filter(avs => avs.active_set === true);
+        break;
+
+      case "unhealthy":
+        // Show only AVS with unhealthy status
+        filteredAvs = avs_data.filter(avs => avs.errors && avs.errors.length > 0);
+        break;
+
+      default:
+        filteredAvs = avs_data;
+    }
   }
-  else if (filter === "medium") {
-    console.log(filteredNodes[0].metrics.deployed_avs.active_set)
-    filteredNodes = filteredNodes.filter((node) => node.status === "Idle" || node.metrics.deployed_avs.active_set === "false");
-  }
-  // console.log("filteredNodes", filteredNodes)
-  // console.log("AVS API response:", avsResponse.data?.data);
-  // console.log("AVS data for table:", avs_data);
-  // console.log("machinesStatus:", machinesStatus);
-  // console.log("avs_data before render:", avs_data);
-
-  console.log("----", avs_data)
 
   useEffect(() => {
     if (location.state?.refetch) {
@@ -143,14 +154,13 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     return `${address.slice(0, 4)}...${address.slice(-4)}`;
   };
 
-
   return (
     <>
       <Topbar title="Nodes Overview" />
       <SectionTitle title="AVS Deployments" className="text-textPrimary" />
       <MachinesWidget data={machinesStatus} details={nodesInfo} avs={avsResponse.data?.data} />
-      {avs_data && avs_data.length === 0 && <div className="mt-24"><EmptyMachines /></div>}
-      {avs_data && avs_data.length > 0 &&
+      {filteredAvs.length === 0 && <div className="mt-24"><EmptyMachines /></div>}
+      {filteredAvs.length > 0 &&
         <>
           <Filters filters={filters}>
             <Link to="edit/keys" relative="path">
@@ -177,37 +187,30 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
               <Th content=""></Th>
             </Tr>
 
-            {avs_data?.map((avs, index) => {
-              // Console log inside a block statement
-              // console.log("Looking up machine_id:", avs.machine_id, "Mapped name:", getMachineName(avs.machine_id));
-
-              // Return the JSX
-              return (
-                <Tr key={`${avs.machine_id}-${avs.avs_name}`}>
-                  <Td>
-                    <AvsWidget
-                      name={avs.avs_name}
-                      to={`/machines/avs/${avs.avs_name}`} />
-                  </Td>
-
-                  <Td content={getChainLabel(avs.chain)}></Td>
-                  <Td content={avs.avs_version}>{/*version_running*/}</Td>
-                  <Td content="">{/*TBU*/}</Td>
-                  <Td isConnected={avs.errors.length === 0}> {/*healthy*/}</Td>
-                  <Td score={avs.performance_score}>{/*performance score*/}</Td>
-                  <Td content={formatAddress(avs.operator_address) || ""}></Td>
-                  <Td isChecked={avs.active_set}> {/*active - set*/}</Td>
-                  <Td>
-                    <MachineWidget
-                      address={avs.machine_id}
-                      name={getMachineName(avs.machine_id)} // Dynamically fetch machine name
-                      to={`/machines/${avs.machine_id}`} />
-                  </Td>
-                  <Td><OptionsButton options={getOptions(avs)} /></Td>
-                </Tr>
-              )
-            })}
-
+            {filteredAvs.map((avs, index) => (
+              <Tr key={`${avs.machine_id}-${avs.avs_name}`}>
+                <Td>
+                  <AvsWidget
+                    name={avs.avs_name}
+                    //to={`/machines/avs/${avs.avs_name}`}
+                    />
+                </Td>
+                <Td content={getChainLabel(avs.chain)}></Td>
+                <Td content={avs.avs_version}></Td>
+                <Td content=""></Td>
+                <Td isConnected={avs.errors.length === 0}></Td>
+                <Td score={avs.performance_score}></Td>
+                <Td content={formatAddress(avs.operator_address) || ""}></Td>
+                <Td isChecked={avs.active_set}></Td>
+                <Td>
+                  <MachineWidget
+                    address={avs.machine_id}
+                    name={getMachineName(avs.machine_id)}
+                    to={`/machines/${avs.machine_id}`} />
+                </Td>
+                <Td><OptionsButton options={getOptions(avs)} /></Td>
+              </Tr>
+            ))}
           </Table>
         </>
       }

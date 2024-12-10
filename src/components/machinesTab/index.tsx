@@ -18,6 +18,7 @@ import { useEffect } from "react";
 import { AvsWidget } from "../shared/avsWidget";
 import { getChainLabel } from "../../utils/UiMessages";
 
+
 interface MachinesTabProps {
 };
 
@@ -25,7 +26,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
   const options = [
     { label: "IvyClient Update", link: "code/updateclient" },
     { label: "View Details", link: "" },
-    { label: "Edit Machine", link: "" },
+    { label: "Edit Address", link: "" },
     { label: "Delete Machine", link: "" },
   ]
   const filters = [
@@ -40,7 +41,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
       if (option.label === "View Details") {
         return { label: option.label, link: `/machines/${avs.machine_id || ""}` }
       }
-      if (option.label === "Edit Machine") {
+      if (option.label === "Edit Address") {
         return { label: option.label, link: `/machines/edit/${avs.avs_name}/${avs.machine_id || ""}` }
       }
       if (option.label === "Delete Machine") {
@@ -121,7 +122,6 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     console.log(filteredNodes[0].metrics.deployed_avs.active_set)
     filteredNodes = filteredNodes.filter((node) => node.status === "Idle" || node.metrics.deployed_avs.active_set === "false");
   }
-
   // console.log("filteredNodes", filteredNodes)
   // console.log("AVS API response:", avsResponse.data?.data);
   // console.log("AVS data for table:", avs_data);
@@ -138,6 +138,11 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     }
   }, [location.state, response?.mutate,]);
 
+  const formatAddress = (address: string | null | undefined): string => {
+    if (!address) return '';
+    return `${address.slice(0, 4)}...${address.slice(-4)}`;
+  };
+
 
   return (
     <>
@@ -149,7 +154,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
         <>
           <Filters filters={filters}>
             <Link to="edit/keys" relative="path">
-              <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">Edit Keys</div>
+              <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">Edit Addresses</div>
             </Link>
             <Link to="code/installclient" relative="path">
               <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">Install Client</div>
@@ -163,7 +168,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
               <Th content="AVS"></Th>
               <Th content="Chain"></Th>
               <Th content="Version" tooltip="Can show blank if AVS doesn't ship with docker container."></Th>
-              <Th content="Latest" tooltip="Can show blank if AVS doesn't ship with docker container."></Th>
+              <Th content="Latest"></Th>
               <Th content="Health"></Th>
               <Th content="Score" tooltip="Can show 0 if AVS doesn't have performance score metric."></Th>
               <Th content="Address"></Th>
@@ -190,7 +195,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
                   <Td content="">{/*TBU*/}</Td>
                   <Td isConnected={avs.errors.length === 0}> {/*healthy*/}</Td>
                   <Td score={avs.performance_score}>{/*performance score*/}</Td>
-                  <Td content={avs.operator_address || ""}></Td>
+                  <Td content={formatAddress(avs.operator_address) || ""}></Td>
                   <Td isChecked={avs.active_set}> {/*active - set*/}</Td>
                   <Td>
                     <MachineWidget

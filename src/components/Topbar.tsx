@@ -17,9 +17,9 @@ export const Topbar: React.FC<TopbarProps> = ({ title, goBackTo }) => {
       </div> */}
 
       <div className="ml-auto">
-        <ConditionalLink to="/organization">
+        <ConditionalLink to="">
           <div className="flex justify-center items-center rounded-full p-2.5 bg-[#7E7BF5]/[.15] w-10 h-10 text-accent font-medium text-base ml-auto">
-            K
+I
           </div>
         </ConditionalLink>
       </div>

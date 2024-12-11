@@ -105,7 +105,6 @@ export const OrgTab: React.FC<OrgTabProps> = () => {
         <WidgetItem
           title="Operator Addresses"
           description={`${uniqueOperators.length}`}
-          to="/machines"
           connected={true}
         />
       </div>
@@ -166,7 +165,7 @@ export const OrgTab: React.FC<OrgTabProps> = () => {
                   AVS with Errors
                 </td>
                 {uniqueOperators.map((operator) => (
-                  <td key={operator} className="px-6 py-4 text-textPrimary flex items-center">
+                  <td key={operator} className="px-6 py-4">
                     <span className={`mr-2 ${
                       getOperatorStats(operator).errorCount > 0 ? 'text-textWarning' : 'text-textPrimary'
                     }`}>

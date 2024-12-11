@@ -17,6 +17,7 @@ import { AxiosResponse } from "axios";
 import { useEffect } from "react";
 import { AvsWidget } from "../shared/avsWidget";
 import { getChainLabel } from "../../utils/UiMessages";
+import HealthStatus from './HealthStatus';
 
 interface MachinesTabProps {
 };
@@ -198,7 +199,12 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
                 <Td content={getChainLabel(avs.chain)}></Td>
                 <Td content={avs.avs_version}></Td>
                 <Td content=""></Td>
-                <Td isConnected={avs.errors.length === 0}></Td>
+                <Td>
+                <HealthStatus
+                isConnected={avs.errors.length === 0}
+                errors={avs.errors}
+                />
+                </Td>
                 <Td score={avs.performance_score}></Td>
                 <Td content={formatAddress(avs.operator_address) || ""}></Td>
                 <Td isChecked={avs.active_set}></Td>

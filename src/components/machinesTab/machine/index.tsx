@@ -17,6 +17,8 @@ import { AvsWidget } from "../../shared/avsWidget";
 import { MachineWidget } from "../../shared/machineWidget";
 import { getChainLabel } from "../../../utils/UiMessages";
 import { AddAVSModal } from "../AddAVSModal"; // Add this import
+import HealthStatus from '../HealthStatus';
+
 
 interface MachineProps {
 }
@@ -145,7 +147,12 @@ export const Machine: React.FC<MachineProps> = () => {
               <Td content={getChainLabel(avs.chain)}></Td>
               <Td content={avs.avs_version}>{/*version_running*/}</Td>
               <Td content="">{/*TBU*/}</Td>
-              <Td isConnected={avs.errors.length === 0}> {/*healthy*/}</Td>
+              <Td>
+                <HealthStatus
+                  isConnected={avs.errors.length === 0}
+                  errors={avs.errors}
+                />
+              </Td>
               <Td score={avs.performance_score}>{/*performance score*/}</Td>
               <Td content={formatAddress(avs.operator_address) || ""}></Td>
               <Td isChecked={avs.active_set}> {/*active - set*/}</Td>

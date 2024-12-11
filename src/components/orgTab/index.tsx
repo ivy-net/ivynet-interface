@@ -1,17 +1,26 @@
 import { SearchBar } from "../shared/searchBar";
 import { SectionTitle } from "../shared/sectionTitle";
 import { Topbar } from "../Topbar";
-import { OrgTable } from "./OrgTable";
-import { OrgWidget } from "./OrgWidget";
 import { MachinesStatus, NodeDetail, AVS } from "../../interfaces/responses";
 import { WidgetItem } from "../shared/machinesWidget/widgetItem";
 import useSWR from 'swr';
 import { apiFetch } from "../../utils";
 import { AxiosResponse } from "axios";
+import { ethers } from 'ethers';
+import { useEffect, useState } from 'react';
+
+// Contract constants
+const DELEGATION_MANAGER_PROXY = '0x39053D51B77DC0d36036Fc1fCc8Cb819df8Ef37A';
+const BEACON_CHAIN_STRATEGY = '0xbeac0eeeeeeeeeeeeeeeeeeeeeeeeeeeeeebeac0';
+const DELEGATION_MANAGER_ABI = [
+  "function operatorShares(address, address) external view returns (uint256)"
+];
 
 interface OrgTabProps { }
 
 export const OrgTab: React.FC<OrgTabProps> = () => {
+  const [operatorStakes, setOperatorStakes] = useState<{ [key: string]: string }>({});
+
   const { data: avsResponse } = useSWR<AxiosResponse<AVS[]>>(
     'avs',
     () => apiFetch('avs', 'GET')
@@ -19,81 +28,58 @@ export const OrgTab: React.FC<OrgTabProps> = () => {
 
   const avs = avsResponse?.data;
 
-  const stats = [
-    {
-      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe5", nodes: 3,
-      totalStake: ["125 ETH", "1,200 Eigen", "54 BTC"],
-      avsRunning: ["3", "[AVS 1]", "[AVS 2]", "[AVS 3]"],
-      avsActiveSets: ["3", "[AVS 1]", "[AVS 2]", "[AVS 3]"],
-    },
-    {
-      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe6", nodes: 3,
-      totalStake: ["225 ETH", "1,500 Eigen"],
-      avsRunning: ["3", "[AVS 1]", "[AVS 4]", "[AVS 5]"],
-      avsActiveSets: ["3", "[AVS 1]", "[AVS 4]", "[AVS 5]"],
-    },
-    {
-      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe7", nodes: 3,
-      totalStake: ["225 ETH", "1,500 Eigen"],
-      avsRunning: ["3", "[AVS 1]", "[AVS 4]", "[AVS 5]"],
-      avsActiveSets: ["3", "[AVS 1]", "[AVS 4]", "[AVS 5]"],
-    },
-    {
-      address: "0x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe8", nodes: 3,
-      totalStake: ["225 ETH", "1,500 Eigen"],
-      avsRunning: ["3", "[AVS 1]", "[AVS 4]", "[AVS 5]"],
-      avsActiveSets: ["3", "[AVS 1]", "[AVS 4]", "[AVS 5]"],
-    },
-    {
-      address: "1x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe6", nodes: 3,
-      totalStake: ["225 ETH", "1,500 Eigen"],
-      avsRunning: ["3", "[AVS 1]", "[AVS 4]", "[AVS 5]"],
-      avsActiveSets: ["3", "[AVS 1]", "[AVS 4]", "[AVS 5]"],
-    },
-    {
-      address: "1x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe7", nodes: 3,
-      totalStake: ["225 ETH", "1,500 Eigen"],
-      avsRunning: ["3", "[AVS 1]", "[AVS 4]", "[AVS 5]"],
-      avsActiveSets: ["3", "[AVS 1]", "[AVS 4]", "[AVS 5]"],
-    },
-    {
-      address: "1x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe8", nodes: 3,
-      totalStake: ["225 ETH", "1,500 Eigen"],
-      avsRunning: ["3", "[AVS 1]", "[AVS 4]", "[AVS 5]"],
-      avsActiveSets: ["3", "[AVS 1]", "[AVS 4]", "[AVS 5]"],
-    },
-    // {
-    //   address: "3x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe8", nodes: 3,
-    //   totalStake: ["225 ETH", "1,500 Eigen"],
-    //   avsRunning: ["3", "[AVS 1]", "[AVS 4]", "[AVS 5]"],
-    //   avsActiveSets: ["3", "[AVS 1]", "[AVS 4]", "[AVS 5]"],
-    // },
-    // {
-    //   address: "3x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe6", nodes: 3,
-    //   totalStake: ["225 ETH", "1,500 Eigen"],
-    //   avsRunning: ["3", "[AVS 1]", "[AVS 4]", "[AVS 5]"],
-    //   avsActiveSets: ["3", "[AVS 1]", "[AVS 4]", "[AVS 5]"],
-    // },
-    // {
-    //   address: "3x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe7", nodes: 3,
-    //   totalStake: ["225 ETH", "1,500 Eigen"],
-    //   avsRunning: ["3", "[AVS 1]", "[AVS 4]", "[AVS 5]"],
-    //   avsActiveSets: ["3", "[AVS 1]", "[AVS 4]", "[AVS 5]"],
-    // },
-    // {
-    //   address: "3x95222290DD7278Aa3Ddd389Cc1E1d165CC4BAfe8", nodes: 3,
-    //   totalStake: ["225 ETH", "1,500 Eigen"],
-    //   avsRunning: ["3", "[AVS 1]", "[AVS 4]", "[AVS 5]"],
-    //   avsActiveSets: ["3", "[AVS 1]", "[AVS 4]", "[AVS 5]"],
-    // },
-    {
-      address: "2 Total",
-      nodes: 6,
-      totalStake: ["350 ETH", "2,700 Eigen", "X Other Tokens"],
-      avsRunning: ["6"],
-      avsActiveSets: ["6"]
+  const uniqueOperators = avs
+    ? Array.from(new Set(avs.map(item => item.operator_address).filter((addr): addr is string => addr !== null)))
+    : [];
+
+  // Fetch operator stakes
+  useEffect(() => {
+    const fetchOperatorStakes = async () => {
+      try {
+        const provider = new ethers.JsonRpcProvider(`https://eth-mainnet.g.alchemy.com/v2/NTeIGRth7IO40hRthWgDID66gfOdXFQv`);
+        const delegationManager = new ethers.Contract(
+          DELEGATION_MANAGER_PROXY,
+          DELEGATION_MANAGER_ABI,
+          provider
+        );
+
+        const stakes: { [key: string]: string } = {};
+
+        // Fetch stakes for all operators in parallel
+        await Promise.all(
+          uniqueOperators.map(async (operator) => {
+            try {
+              const beaconShares = await delegationManager.operatorShares(
+                operator,
+                BEACON_CHAIN_STRATEGY
+              );
+              stakes[operator] = ethers.formatEther(beaconShares);
+            } catch (error) {
+              console.error(`Error fetching stake for ${operator}:`, error);
+              stakes[operator] = '0';
+            }
+          })
+        );
+
+        setOperatorStakes(stakes);
+      } catch (error) {
+        console.error('Error fetching operator stakes:', error);
+      }
+    };
+
+    if (uniqueOperators.length > 0) {
+      fetchOperatorStakes();
     }
-  ]
+  }, [uniqueOperators]);
+
+  const getOperatorStats = (operatorAddress: string) => {
+    const operatorAvs = avs?.filter(a => a.operator_address === operatorAddress) ?? [];
+    return {
+      totalAvs: operatorAvs.length,
+      activeSetCount: operatorAvs.filter(a => a.active_set).length,
+      errorCount: operatorAvs.filter(a => a.errors?.length > 0).length
+    };
+  };
 
   return (
     <>
@@ -117,17 +103,82 @@ export const OrgTab: React.FC<OrgTabProps> = () => {
           connected={true}
         />
         <WidgetItem
-          title="Unhealthy"
-          description={`${avs?.filter((item: AVS) => item.errors.length > 0).length ?? 0}`}
+          title="Operator Addresses"
+          description={`${uniqueOperators.length}`}
           to="/machines"
-          connected={false}
+          connected={true}
         />
       </div>
-      <SectionTitle title="Per Address" className="text-textPrimary" />
-      <div className="grid grid-cols-4 gap-4">
-        <div className="ml-auto"></div>
+      <SectionTitle title="Per Operator Address" className="text-textPrimary" />
+      <div className="bg-widgetBg rounded-lg p-4">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr>
+                <th className="px-6 py-4 text-left font-medium text-textSecondary bg-contentBg rounded-l-lg">
+                  Operator Address
+                </th>
+                {uniqueOperators.map((operator, index) => (
+                  <th
+                    key={operator}
+                    className={`px-6 py-4 text-left font-medium text-textSecondary bg-contentBg ${
+                      index === uniqueOperators.length - 1 ? 'rounded-r-lg' : ''
+                    }`}
+                  >
+                    {operator.slice(0, 6)}...{operator.slice(-4)}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-textGrey">
+              <tr>
+                <td className="px-6 py-4 font-medium text-textSecondary">
+                  Delegated ETH
+                </td>
+                {uniqueOperators.map((operator) => (
+                  <td key={operator} className="px-6 py-4 text-textPrimary">
+                    {parseFloat(operatorStakes[operator] || '0').toFixed(2)} ETH
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td className="px-6 py-4 font-medium text-textSecondary">
+                  Total AVS
+                </td>
+                {uniqueOperators.map((operator) => (
+                  <td key={operator} className="px-6 py-4 text-textPrimary">
+                    {getOperatorStats(operator).totalAvs}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td className="px-6 py-4 font-medium text-textSecondary">
+                  Active Set Count
+                </td>
+                {uniqueOperators.map((operator) => (
+                  <td key={operator} className="px-6 py-4 text-textPrimary">
+                    {getOperatorStats(operator).activeSetCount}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td className="px-6 py-4 font-medium text-textSecondary">
+                  AVS with Errors
+                </td>
+                {uniqueOperators.map((operator) => (
+                  <td key={operator} className="px-6 py-4 text-textPrimary flex items-center">
+                    <span className={`mr-2 ${
+                      getOperatorStats(operator).errorCount > 0 ? 'text-textWarning' : 'text-textPrimary'
+                    }`}>
+                      {getOperatorStats(operator).errorCount}
+                    </span>
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-      <OrgTable stats={stats.slice(0, -1)} />
-    </>
+      </>
   );
 };

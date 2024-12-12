@@ -5,10 +5,10 @@ interface HealthStatusProps {
   errors: string[];
 }
 
-const HealthStatus: React.FC<HealthStatusProps> = ({ isConnected, errors = [] }) => {
+export const HealthStatus: React.FC<HealthStatusProps> = ({ isConnected, errors = [] }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
-  // Don't show tooltip if there are no errors
+  // Don't   show tooltip if there are no errors
   if (isConnected || errors.length === 0) {
     return (
       <div className="flex items-center justify-center">

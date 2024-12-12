@@ -202,8 +202,8 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
           <Table>
             <Tr>
               <Th content="AVS"></Th>
-              <Th content="Type"></Th>
               <Th content="Chain"></Th>
+              <Th content="Type"></Th>
               <Th content="Version" tooltip="Can show blank if AVS doesn't ship with docker container."></Th>
               <Th content="Latest"></Th>
               <Th content="Health"></Th>
@@ -220,8 +220,8 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
                     name={avs.avs_name}
                   />
                 </Td>
-                <Td content={avs.avs_type}></Td>
                 <Td content={getChainLabel(avs.chain)}></Td>
+                <Td content={avs.avs_type}></Td>
                 <Td content={avs.avs_version === "0.0.0" ? "unknown" : avs.avs_version}></Td>
                 <Td content=""></Td>
                 <Td>

@@ -139,6 +139,7 @@ export const Machine: React.FC<MachineProps> = () => {
         <Tr>
           <Th content="AVS"></Th>
           <Th content="Chain"></Th>
+          <Th content="Type"></Th>
           <Th content="Version" tooltip="Can show blank if AVS doesn't ship with docker container."></Th>
           <Th content="Latest"></Th>
           <Th content="Health"></Th>
@@ -162,8 +163,8 @@ export const Machine: React.FC<MachineProps> = () => {
                   //to={`/machines/avs/${avs.avs_name}`}
                   />
               </Td>
-
               <Td content={getChainLabel(avs.chain)}></Td>
+              <Td content={avs.avs_type}></Td>
               <Td content={avs.avs_version === "0.0.0" ? "Unknown" : avs.avs_version}></Td>
               <Td content="">{/*TBU*/}</Td>
               <Td>

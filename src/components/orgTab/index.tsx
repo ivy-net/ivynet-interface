@@ -8,6 +8,7 @@ import { apiFetch } from "../../utils";
 import { AxiosResponse } from "axios";
 import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
+import { EmptyAddresses } from "./EmptyAddresses";
 
 // Contract constants
 const DELEGATION_MANAGER_PROXY = '0x39053D51B77DC0d36036Fc1fCc8Cb819df8Ef37A';
@@ -45,7 +46,6 @@ export const OrgTab: React.FC<OrgTabProps> = () => {
 
         const stakes: { [key: string]: string } = {};
 
-        // Fetch stakes for all operators in parallel
         await Promise.all(
           uniqueOperators.map(async (operator) => {
             try {
@@ -84,100 +84,87 @@ export const OrgTab: React.FC<OrgTabProps> = () => {
   return (
     <>
       <Topbar title="Overview" />
-      <SectionTitle title="Global Stats" className="text-textPrimary" />
-      <div className="grid grid-cols-4 gap-4">
-        <WidgetItem
-          title="Machines"
-          description={`${new Set(avs?.map((a: AVS) => a.machine_id)).size ?? 0}`}
-          to="/machines"
-        />
-        <WidgetItem
-          title="AVS Nodes"
-          description={`${avs?.length ?? 0}`}
-          to="/machines"
-        />
-        <WidgetItem
-          title="Active Set"
-          description={`${avs?.filter((item: AVS) => item.active_set === true).length ?? 0}`}
-          to="/machines"
-          connected={true}
-        />
-        <WidgetItem
-          title="Operator Addresses"
-          description={`${uniqueOperators.length}`}
-          connected={true}
-        />
-      </div>
-      <SectionTitle title="Per Operator Address" className="text-textPrimary" />
-      <div className="bg-widgetBg rounded-lg p-4">
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                <th className="px-6 py-4 text-left font-medium text-textSecondary bg-contentBg rounded-l-lg">
-                  Operator Address
-                </th>
-                {uniqueOperators.map((operator, index) => (
-                  <th
-                    key={operator}
-                    className={`px-6 py-4 text-left font-medium text-textSecondary bg-contentBg ${
-                      index === uniqueOperators.length - 1 ? 'rounded-r-lg' : ''
-                    }`}
-                  >
-                    {operator.slice(0, 6)}...{operator.slice(-4)}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-textGrey">
-              <tr>
-                <td className="px-6 py-4 font-medium text-textSecondary">
-                  Delegated ETH
-                </td>
-                {uniqueOperators.map((operator) => (
-                  <td key={operator} className="px-6 py-4 text-textPrimary">
-                    {parseFloat(operatorStakes[operator] || '0').toFixed(2)} ETH
-                  </td>
-                ))}
-              </tr>
-              <tr>
-                <td className="px-6 py-4 font-medium text-textSecondary">
-                  Total AVS
-                </td>
-                {uniqueOperators.map((operator) => (
-                  <td key={operator} className="px-6 py-4 text-textPrimary">
-                    {getOperatorStats(operator).totalAvs}
-                  </td>
-                ))}
-              </tr>
-              <tr>
-                <td className="px-6 py-4 font-medium text-textSecondary">
-                  Active Set Count
-                </td>
-                {uniqueOperators.map((operator) => (
-                  <td key={operator} className="px-6 py-4 text-textPrimary">
-                    {getOperatorStats(operator).activeSetCount}
-                  </td>
-                ))}
-              </tr>
-              <tr>
-                <td className="px-6 py-4 font-medium text-textSecondary">
-                  AVS with Errors
-                </td>
-                {uniqueOperators.map((operator) => (
-                  <td key={operator} className="px-6 py-4">
-                    <span className={`mr-2 ${
-                      getOperatorStats(operator).errorCount > 0 ? 'text-textWarning' : 'text-textPrimary'
-                    }`}>
-                      {getOperatorStats(operator).errorCount}
-                    </span>
-                  </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      </>
+      {uniqueOperators.length === 0 ? (
+        <EmptyAddresses />
+      ) : (
+        <>
+          <SectionTitle title="Global Stats" className="text-textPrimary" />
+          <div className="grid grid-cols-4 gap-4">
+            <WidgetItem
+              title="Machines"
+              description={`${new Set(avs?.map((a: AVS) => a.machine_id)).size ?? 0}`}
+              to="/machines"
+            />
+            <WidgetItem
+              title="AVS Nodes"
+              description={`${avs?.length ?? 0}`}
+              to="/machines"
+            />
+            <WidgetItem
+              title="Active Set"
+              description={`${avs?.filter((item: AVS) => item.active_set === true).length ?? 0}`}
+              to="/machines"
+              connected={true}
+            />
+            <WidgetItem
+              title="Operator Addresses"
+              description={`${uniqueOperators.length}`}
+              connected={true}
+            />
+          </div>
+          <SectionTitle title="Per Operator Address" className="text-textPrimary" />
+          <div className="bg-widgetBg rounded-lg p-4">
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr>
+                    <th className="px-6 py-4 text-left font-medium text-textSecondary bg-contentBg rounded-l-lg">
+                      Addresses
+                    </th>
+                    <th className="px-6 py-4 text-left font-medium text-textSecondary bg-contentBg">
+                      Delegated ETH
+                    </th>
+                    <th className="px-6 py-4 text-left font-medium text-textSecondary bg-contentBg">
+                      Total AVS
+                    </th>
+                    <th className="px-6 py-4 text-left font-medium text-textSecondary bg-contentBg">
+                      Active Set Count
+                    </th>
+                    <th className="px-6 py-4 text-left font-medium text-textSecondary bg-contentBg">
+                      AVS with Errors
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-textGrey">
+                  {uniqueOperators.map((operator) => (
+                    <tr key={operator}>
+                      <td className="px-6 py-4 font-medium text-textSecondary">
+                        {operator.slice(0, 6)}...{operator.slice(-4)}
+                      </td>
+                      <td className="px-6 py-4 text-textPrimary text-center">
+                        {parseFloat(operatorStakes[operator] || '0').toFixed(2)} ETH
+                      </td>
+                      <td className="px-6 py-4 text-textPrimary text-center">
+                        {getOperatorStats(operator).totalAvs}
+                      </td>
+                      <td className="px-6 py-4 text-textPrimary text-center">
+                        {getOperatorStats(operator).activeSetCount}
+                      </td>
+                      <td className="px-6 py-4 text-textPrimary text-center">
+                        <span className="mr-2">
+                          {getOperatorStats(operator).errorCount}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
+    </>
   );
 };
+
+export default OrgTab;

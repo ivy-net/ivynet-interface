@@ -128,7 +128,7 @@ export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
     <div className="fixed left-0 top-0 w-screen h-screen flex justify-center items-center bg-black/[0.8]">
       <div className="flex flex-col bg-widgetBg w-[730px] rounded-xl p-8 gap-10">
         <div className="flex items-center">
-          <h2>Edit Keys</h2>
+          <h2>Add Operator Address</h2>
           <div onClick={() => navigate(-1)} className="ml-auto cursor-pointer">
             <img src={closeIcon} alt="close icon" />
           </div>

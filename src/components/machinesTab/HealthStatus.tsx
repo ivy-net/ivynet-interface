@@ -5,7 +5,7 @@ interface HealthStatusProps {
   errors: string[];
 }
 
-export const HealthStatus: React.FC<HealthStatusProps> = ({ isConnected, errors = [] }) => {
+ const HealthStatus: React.FC<HealthStatusProps> = ({ isConnected, errors = [] }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
   // Don't   show tooltip if there are no errors

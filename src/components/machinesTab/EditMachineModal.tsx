@@ -19,6 +19,11 @@ interface OperatorAddress {
   label: string;
 }
 
+interface PubKeyData {
+  public_key: string;
+  name: string;
+}
+
 export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
   const [selectedChain, setSelectedChain] = useState<{ value: string; label: string; } | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<OperatorAddress | null>(null);
@@ -33,29 +38,18 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
   const machine = machineResponse.data?.data;
   const avs = machine?.avs_list.find(avs => avs.avs_name === avsName);
 
-  // Fetch all machines to get operator addresses
-  const allMachinesResponse = useSWR<AxiosResponse<any[]>, any>('machine', apiFetcher);
+  // Fetch operator addresses from pubkey endpoint
+  const pubkeysResponse = useSWR<AxiosResponse<PubKeyData[]>, any>('pubkey', apiFetcher);
 
   useEffect(() => {
-    if (allMachinesResponse.data?.data) {
-      // Extract unique operator addresses from all machines
-      const addresses = new Set<string>();
-      allMachinesResponse.data.data.forEach(machine => {
-        machine.avs_list.forEach((avs: any) => {
-          if (avs.operator_address) {
-            addresses.add(avs.operator_address);
-          }
-        });
-      });
-
-      // Convert to react-select format
-      const addressOptions = Array.from(addresses).map(address => ({
-        value: address,
-        label: address
+    if (pubkeysResponse.data?.data) {
+      const addressOptions = pubkeysResponse.data.data.map((pubkey: PubKeyData) => ({
+        value: pubkey.public_key,
+        label: pubkey.public_key
       }));
       setOperatorAddresses(addressOptions);
     }
-  }, [allMachinesResponse.data]);
+  }, [pubkeysResponse.data]);
 
   useEffect(() => {
     if (avs) {
@@ -69,19 +63,52 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
     }
   }, [avs]);
 
+  const addNewPubKey = async (publicKey: string) => {
+      try {
+        // Build URL with query parameters
+        const baseUrl = `${process.env.REACT_APP_API_ENDPOINT}/pubkey`;
+        const url = new URL(baseUrl);
+        url.searchParams.set('public_key', publicKey.trim());
+        url.searchParams.set('name', 'operator'); // Providing a default name since it's required
+
+        console.log('Making pubkey POST request to:', url.toString());
+
+        await apiFetch(url.toString(), "POST");
+        await pubkeysResponse.mutate();
+      } catch (err: any) {
+        console.error('Error details:', {
+          status: err.response?.status,
+          statusText: err.response?.statusText,
+          data: err.response?.data
+        });
+
+        const errorMessage = err.response?.data?.error || 'Failed to add public key';
+        toast.error(errorMessage, { theme: "dark" });
+        throw err;
+      }
+    };
+
   const editMachine = async (machineId: string, avsName: string, chain: string, address: string) => {
-    const url = `machine/${machineId}`;
-    const urlObj = new URL(`${process.env.REACT_APP_API_ENDPOINT}/${url}`);
-    urlObj.searchParams.set("avs_name", avsName);
-    urlObj.searchParams.set("chain", chain);
-    urlObj.searchParams.set("operator_address", address);
-    const fetchUrl = urlObj.toString();
     try {
+      // If this is a new address (not in the existing options), add it to pubkey endpoint first
+      const isNewAddress = !operatorAddresses.some(opt => opt.value === address);
+      if (isNewAddress) {
+        await addNewPubKey(address);
+      }
+
+      // Then update the machine
+      const url = `machine/${machineId}`;
+      const urlObj = new URL(`${process.env.REACT_APP_API_ENDPOINT}/${url}`);
+      urlObj.searchParams.set("avs_name", avsName);
+      urlObj.searchParams.set("chain", chain);
+      urlObj.searchParams.set("operator_address", address);
+      const fetchUrl = urlObj.toString();
+
       await apiFetch(fetchUrl, "PUT");
       toast.success(getMessage("MachineEditedMessage"), { theme: "dark" });
       navigate("/machines", { state: { refetch: true } });
     } catch (err) {
-      // Handle error
+      toast.error("Failed to update machine", { theme: "dark" });
     }
   };
 
@@ -149,6 +176,7 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
                 styles={selectStyles}
                 isClearable
                 placeholder="Select or enter an operator address..."
+                formatCreateLabel={(inputValue) => `Use address: ${inputValue}`}
               />
             </div>
           </div>

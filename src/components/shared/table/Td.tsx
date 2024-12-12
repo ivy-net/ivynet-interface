@@ -14,6 +14,7 @@ interface TdProps {
   isChecked?: boolean
   diskStatus?: DiskStatus
   content?: string
+  avs_type?: string
   to?: string
   children?: React.ReactNode;
   className?: string;
@@ -26,7 +27,7 @@ interface TdProps {
   addressOptions?: string[]
 };
 
-export const Td: React.FC<TdProps> = ({ content, children, to, isConnected, isChecked, diskStatus, className, score = "", chain, onChainSelect, address, onAddressSubmit, tooltip, addressOptions = []}) => {
+export const Td: React.FC<TdProps> = ({ content, avs_type, children, to, isConnected, isChecked, diskStatus, className, score = "", chain, onChainSelect, address, onAddressSubmit, tooltip, addressOptions = []}) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const hoverClasses = to ? "hover:bg-widgetHoverBg" : "";
   const hasConnectedIcon = isConnected !== undefined;

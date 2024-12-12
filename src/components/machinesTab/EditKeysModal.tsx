@@ -25,43 +25,45 @@ interface AvsOption {
   machineId?: string;
 }
 
+interface PubKeyData {
+  public_key: string;
+  name: string;
+}
+
 export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
   const [selectedChain, setSelectedChain] = useState<{ value: string; label: string; } | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<OperatorAddress | null>(null);
   const [selectedAvs, setSelectedAvs] = useState<AvsOption | null>(null);
   const [operatorAddresses, setOperatorAddresses] = useState<OperatorAddress[]>([]);
   const [avsOptions, setAvsOptions] = useState<AvsOption[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const apiFetcher = (url: string) => apiFetch(url, "GET");
   const avsResponse = useSWR<AxiosResponse<any[]>, any>('avs', apiFetcher);
+  const pubkeysResponse = useSWR<AxiosResponse<PubKeyData[]>, any>('pubkey', apiFetcher);
 
   useEffect(() => {
     if (avsResponse.data?.data) {
-      // Create options list from AVS data, including operator addresses and machine IDs
-      const addresses = new Set<string>();
-      const avsOptionsList = avsResponse.data.data.map((avs: any) => {
-        if (avs.operator_address) {
-          addresses.add(avs.operator_address);
-        }
-        return {
-          value: avs.avs_name,
-          label: avs.avs_name,
-          chain: avs.chain,
-          machineId: avs.machine_id
-        };
-      });
-
-      // Set operator addresses for the dropdown
-      const addressOptions = Array.from(addresses).map(address => ({
-        value: address,
-        label: address
+      const avsOptionsList = avsResponse.data.data.map((avs: any) => ({
+        value: avs.avs_name,
+        label: avs.avs_name,
+        chain: avs.chain,
+        machineId: avs.machine_id
       }));
-      setOperatorAddresses(addressOptions);
-
       setAvsOptions(avsOptionsList);
     }
   }, [avsResponse.data]);
+
+  useEffect(() => {
+    if (pubkeysResponse.data?.data) {
+      const addressOptions = pubkeysResponse.data.data.map((pubkey: PubKeyData) => ({
+        value: pubkey.public_key,
+        label: pubkey.public_key
+      }));
+      setOperatorAddresses(addressOptions);
+    }
+  }, [pubkeysResponse.data]);
 
   useEffect(() => {
     if (selectedAvs?.chain && !selectedChain) {
@@ -73,21 +75,93 @@ export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
     }
   }, [selectedAvs]);
 
-  const editKeys = async (machineId: string, avsName: string, chain: string, address: string) => {
-    const url = `machine/${machineId}`;
-    const urlObj = new URL(`${process.env.REACT_APP_API_ENDPOINT}/${url}`);
-    urlObj.searchParams.set("avs_name", avsName);
-    urlObj.searchParams.set("chain", chain);
-    urlObj.searchParams.set("operator_address", address);
-    const fetchUrl = urlObj.toString();
-    try {
-      await apiFetch(fetchUrl, "PUT");
-      toast.success(getMessage("MachineEditedMessage"), { theme: "dark" });
-      navigate("/machines", { state: { refetch: true } });
-    } catch (err) {
-      toast.error("Failed to update machine", { theme: "dark" });
+  const validateAddress = (address: string): boolean => {
+    if (!address || address.trim() === '') {
+      toast.error("Operator address cannot be empty", { theme: "dark" });
+      return false;
     }
+
+    const trimmedAddress = address.trim();
+    if (!trimmedAddress.match(/^0x[a-fA-F0-9]{40}$/)) {
+      toast.error("Invalid Ethereum address format", { theme: "dark" });
+      return false;
+    }
+
+    return true;
   };
+
+  const addNewPubKey = async (publicKey: string): Promise<boolean> => {
+      if (!validateAddress(publicKey)) {
+        return false;
+      }
+
+      const trimmedAddress = publicKey.trim();
+
+      try {
+        // Build URL with query parameters
+        const baseUrl = `${process.env.REACT_APP_API_ENDPOINT}/pubkey`;
+        const url = new URL(baseUrl);
+        url.searchParams.set('public_key', trimmedAddress);
+        url.searchParams.set('name', 'operator'); // Providing a default name since it's required
+
+        console.log('Making pubkey POST request to:', url.toString());
+
+        await apiFetch(url.toString(), "POST");
+        await pubkeysResponse.mutate();
+        return true;
+      } catch (err: any) {
+        console.error('Error details:', {
+          status: err.response?.status,
+          statusText: err.response?.statusText,
+          data: err.response?.data
+        });
+
+        const errorMessage = err.response?.data?.error || 'Failed to add public key';
+        toast.error(errorMessage, { theme: "dark" });
+        return false;
+      }
+    };
+    
+const editKeys = async (machineId: string, avsName: string, chain: string, address: string) => {
+  if (!validateAddress(address)) {
+    return;
+  }
+
+  setIsSubmitting(true);
+
+  try {
+    const trimmedAddress = address.trim();
+
+    // If this is a new address, add it to pubkey endpoint first
+    const isNewAddress = !operatorAddresses.some(opt => opt.value === trimmedAddress);
+    if (isNewAddress) {
+      console.log('Adding new pubkey:', trimmedAddress);
+      const success = await addNewPubKey(trimmedAddress);
+      if (!success) {
+        setIsSubmitting(false);
+        return;
+      }
+    }
+      // Then update the machine
+      const url = `machine/${machineId}`;
+            const urlObj = new URL(`${process.env.REACT_APP_API_ENDPOINT}/${url}`);
+            urlObj.searchParams.set("avs_name", avsName);
+            urlObj.searchParams.set("chain", chain);
+            urlObj.searchParams.set("operator_address", trimmedAddress);
+            const fetchUrl = urlObj.toString();
+
+            console.log('Making machine PUT request to:', fetchUrl);
+            await apiFetch(fetchUrl, "PUT");
+            toast.success(getMessage("MachineEditedMessage"), { theme: "dark" });
+            navigate("/machines", { state: { refetch: true } });
+          } catch (err: any) {
+            console.error('Full error object:', err);
+            const errorMessage = err.response?.data?.error || 'Failed to update machine';
+            toast.error(errorMessage, { theme: "dark" });
+          } finally {
+            setIsSubmitting(false);
+          }
+        };
 
   const selectStyles = {
     control: (baseStyles: any, state: any) => ({
@@ -129,7 +203,7 @@ export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
       <div className="flex flex-col bg-widgetBg w-[730px] rounded-xl p-8 gap-10">
         <div className="flex items-center">
           <h2>Add Operator Address</h2>
-          <div onClick={() => navigate(-1)} className="ml-auto cursor-pointer">
+          <div onClick={() => !isSubmitting && navigate(-1)} className="ml-auto cursor-pointer">
             <img src={closeIcon} alt="close icon" />
           </div>
         </div>
@@ -145,6 +219,7 @@ export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
               }}
               options={avsOptions}
               styles={selectStyles}
+              isDisabled={isSubmitting}
             />
           </div>
 
@@ -155,6 +230,7 @@ export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
               onChange={(value) => setSelectedChain(value as { value: string; label: string; } | null)}
               options={chains}
               styles={selectStyles}
+              isDisabled={isSubmitting}
             />
           </div>
 
@@ -166,6 +242,7 @@ export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
               options={operatorAddresses}
               styles={selectStyles}
               isClearable
+              isDisabled={isSubmitting}
               placeholder="Select or enter an operator address..."
               formatCreateLabel={(inputValue) => `Use address: ${inputValue}`}
             />
@@ -174,33 +251,38 @@ export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
 
         <div className="flex gap-4 ml-auto">
           <div
-            onClick={() => navigate(-1)}
-            className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textPrimary cursor-pointer"
+            onClick={() => !isSubmitting && navigate(-1)}
+            className={`px-4 py-2 rounded-lg bg-bgButton text-textPrimary
+              ${!isSubmitting ? 'hover:bg-textGrey cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
           >
             Cancel
           </div>
           <div
             onClick={() => {
-              if (selectedAvs?.value && selectedChain?.value && selectedAddress?.value) {
-                // Use the machine_id from selectedAvs instead of the AVS name
-                const machineId = selectedAvs.machineId;
-                if (machineId) {
-                  editKeys(
-                    machineId,
-                    selectedAvs.value,
-                    selectedChain.value,
-                    selectedAddress.value
-                  );
-                } else {
-                  toast.error("Could not find machine ID for this AVS", { theme: "dark" });
-                }
-              } else {
+              if (isSubmitting) return;
+
+              if (!selectedAvs?.value || !selectedChain?.value || !selectedAddress?.value) {
                 toast.error("Please fill in all fields", { theme: "dark" });
+                return;
               }
+
+              const machineId = selectedAvs.machineId;
+              if (!machineId) {
+                toast.error("Could not find machine ID for this AVS", { theme: "dark" });
+                return;
+              }
+
+              editKeys(
+                machineId,
+                selectedAvs.value,
+                selectedChain.value,
+                selectedAddress.value
+              );
             }}
-            className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textPrimary cursor-pointer"
+            className={`px-4 py-2 rounded-lg bg-bgButton text-textPrimary
+              ${!isSubmitting ? 'hover:bg-textGrey cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
           >
-            Save Changes
+            {isSubmitting ? 'Saving...' : 'Save Changes'}
           </div>
         </div>
       </div>

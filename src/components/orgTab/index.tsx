@@ -19,18 +19,32 @@ const DELEGATION_MANAGER_ABI = [
 
 interface OrgTabProps { }
 
+interface PubKeyData {
+  public_key: string;
+  name: string;
+}
+
 export const OrgTab: React.FC<OrgTabProps> = () => {
   const [operatorStakes, setOperatorStakes] = useState<{ [key: string]: string }>({});
 
+  // Fetch AVS data
   const { data: avsResponse } = useSWR<AxiosResponse<AVS[]>>(
     'avs',
     () => apiFetch('avs', 'GET')
   );
 
-  const avs = avsResponse?.data;
+  // Fetch operator addresses from pubkey endpoint
+  const { data: pubkeysResponse } = useSWR<AxiosResponse<PubKeyData[]>>(
+    'pubkey',
+    () => apiFetch('pubkey', 'GET')
+  );
 
-  const uniqueOperators = avs
-    ? Array.from(new Set(avs.map(item => item.operator_address).filter((addr): addr is string => addr !== null)))
+  const avs = avsResponse?.data;
+  const pubkeys = pubkeysResponse?.data;
+
+  // Get unique operators from pubkey endpoint instead of AVS data
+  const uniqueOperators = pubkeys
+    ? Array.from(new Set(pubkeys.map(item => item.public_key)))
     : [];
 
   // Fetch operator stakes

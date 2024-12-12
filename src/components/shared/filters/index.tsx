@@ -10,9 +10,10 @@ interface Filter {
 interface FiltersProps {
   filters: Filter[];
   children?: React.ReactNode;
+  onSearch?: (term: string) => void;
 };
 
-export const Filters: React.FC<FiltersProps> = ({ filters, children }) => {
+export const Filters: React.FC<FiltersProps> = ({ filters, children, onSearch }) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const selectFilter = (query: string) => {
@@ -29,22 +30,29 @@ export const Filters: React.FC<FiltersProps> = ({ filters, children }) => {
     if (!filterParam) {
       return query === filters[0].query;
     }
-
     return query === filterParam;
   }
 
   return (
     <div className="flex items-center">
       <div className="flex gap-6">
-        {filters.map((filter) => <div key={filter.query} className={`cursor-pointer text-base text-sidebarColor font-medium leading-5 hover:text-white ${isSelected(filter.query) ? "text-white underline underline-offset-8" : ""}`} onClick={() => selectFilter(filter.query)}>{filter.label}</div>)}
+        {filters.map((filter) => (
+          <div
+            key={filter.query}
+            className={`cursor-pointer text-base text-sidebarColor font-medium leading-5 hover:text-white ${
+              isSelected(filter.query) ? "text-white underline underline-offset-8" : ""
+            }`}
+            onClick={() => selectFilter(filter.query)}
+          >
+            {filter.label}
+          </div>
+        ))}
       </div>
-
-      <div className="ml-auto">
-      </div>
+      <div className="ml-auto"></div>
       <div className="flex gap-4">
-        {/* <SearchBar /> */}
+        <SearchBar onSearch={onSearch} />
         {children}
       </div>
     </div>
   );
-}
+};

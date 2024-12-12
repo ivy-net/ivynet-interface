@@ -1,28 +1,30 @@
 import React, { ChangeEventHandler, useState } from "react";
-import searchIcon from "./../../../images/search-icon.svg"
-
+import searchIcon from "./../../../images/search-icon.svg";
 
 interface SearchBarProps {
+  onSearch?: (term: string) => void;  // Make it optional with ?
 };
 
-export const SearchBar: React.FC<SearchBarProps> = () => {
+export const SearchBar: React.FC<SearchBarProps> = ({ onSearch = () => {} }) => {  // Provide default empty function
   const [term, setTerm] = useState("");
   const [expanded, setExpanded] = useState(false);
   const conditionalHover = expanded ? "" : "hover:bg-textGrey";
 
   const expand = () => {
-    setExpanded(true)
-  }
+    setExpanded(true);
+  };
 
   const minimize = () => {
     if (!term) {
-      setExpanded(false)
+      setExpanded(false);
     }
-  }
+  };
 
   const change: ChangeEventHandler<HTMLInputElement> = (event) => {
-    setTerm(event.currentTarget.value)
-  }
+    const newTerm = event.currentTarget.value;
+    setTerm(newTerm);
+    onSearch(newTerm);
+  };
 
   return (
     <>
@@ -34,4 +36,4 @@ export const SearchBar: React.FC<SearchBarProps> = () => {
       </div>
     </>
   );
-}
+};

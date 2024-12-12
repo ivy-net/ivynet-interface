@@ -16,15 +16,20 @@ import { Td } from "../../shared/table/Td";
 import { AvsWidget } from "../../shared/avsWidget";
 import { MachineWidget } from "../../shared/machineWidget";
 import { getChainLabel } from "../../../utils/UiMessages";
-import { AddAVSModal } from "../AddAVSModal"; // Add this import
+import { AddAVSModal } from "../AddAVSModal";
 import HealthStatus from '../HealthStatus';
+import { SearchBar } from "../../shared/searchBar";
 
 
 interface MachineProps {
 }
 
 export const Machine: React.FC<MachineProps> = () => {
-  const [showAddAvsModal, setShowAddAvsModal] = useState(false); // Add this state
+  const [showAddAvsModal, setShowAddAvsModal] = useState(false);
+  const closeModal = () => {
+    setShowAddAvsModal(false);
+  };
+  const [searchTerm, setSearchTerm] = useState("");
   const { address } = useParams();
   const apiFetcher = (url: string) => apiFetch(url, "GET");
 
@@ -36,7 +41,15 @@ export const Machine: React.FC<MachineProps> = () => {
     onError: (error) => []
   });
   const avsList = avsResponse.data?.data || [];
-  const filteredAvsList = avsList.filter(avs => avs.machine_id === address)
+  // First filter by machine_id
+  let filteredAvsList = avsList.filter(avs => avs.machine_id === address);
+
+  // Then apply search filter if there's a search term
+  if (searchTerm) {
+    filteredAvsList = filteredAvsList.filter(avs =>
+      avs.avs_name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }
 
 
   // const machineDetails = machinesResponse.data?.data?.find(
@@ -76,16 +89,22 @@ export const Machine: React.FC<MachineProps> = () => {
         <div className="flex">
           <MachineWidget name={machineName} address={machine?.machine_id || ""} isConnected={machine?.status === "Healthy"} />
           <div className="flex items-center ml-auto gap-4">
-            <button
-              onClick={() => setShowAddAvsModal(true)}
-              className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
-            >
-              Add AVS
-            </button>
-            {/* <OptionsButton className="p-2.5 border border-iconBorderColor rounded-lg" /> */}
-          </div>
+  <SearchBar onSearch={setSearchTerm} />
+  <button
+    onClick={() => setShowAddAvsModal(true)}
+    className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
+  >
+    Add AVS
+  </button>
+</div>
         </div>
-        {showAddAvsModal && <AddAVSModal />}
+        {showAddAvsModal && (
+  <AddAVSModal
+    onClose={closeModal}
+    isOpen={showAddAvsModal}
+    machineId={address}
+  />
+)}
         <div className="flex gap-6">
           <div className="flex flex-col">
             {/* <div className="text-sidebarColor text-base font-medium">Connectivity</div> */}
@@ -145,7 +164,7 @@ export const Machine: React.FC<MachineProps> = () => {
               </Td>
 
               <Td content={getChainLabel(avs.chain)}></Td>
-              <Td content={avs.avs_version}>{/*version_running*/}</Td>
+              <Td content={avs.avs_version === "0.0.0" ? "Unknown" : avs.avs_version}></Td>
               <Td content="">{/*TBU*/}</Td>
               <Td>
                 <HealthStatus

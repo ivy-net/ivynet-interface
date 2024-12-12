@@ -1,4 +1,5 @@
 import { Link, Outlet, useLocation, useSearchParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { Topbar } from "../Topbar";
 import { MachineWidget } from "../shared/machineWidget";
 import { MachinesWidget } from "../shared/machinesWidget";
@@ -14,21 +15,31 @@ import useSWR from 'swr';
 import { AVS, MachineDetails, MachinesStatus, NodeDetail, Response } from "../../interfaces/responses";
 import { apiFetch } from "../../utils";
 import { AxiosResponse } from "axios";
-import { useEffect } from "react";
 import { AvsWidget } from "../shared/avsWidget";
 import { getChainLabel } from "../../utils/UiMessages";
 import HealthStatus from './HealthStatus';
+import { AddAVSModal } from "./AddAVSModal";
 
-interface MachinesTabProps {
-};
+
+interface MachinesTabProps {};
 
 export const MachinesTab: React.FC<MachinesTabProps> = () => {
+  const [showAddAvsModal, setShowAddAvsModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const handleCloseAddAvsModal = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setShowAddAvsModal(false);
+  };
   const options = [
     { label: "IvyClient Update", link: "code/updateclient" },
     { label: "View Details", link: "" },
     { label: "Edit Address", link: "" },
     { label: "Delete Machine", link: "" },
-  ]
+  ];
+
   const filters = [
     { label: "AVS Running", query: "running" },
     { label: "Ethereum AVS", query: "ethereum" },
@@ -36,22 +47,24 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     { label: "Unhealthy", query: "unhealthy" }
   ];
 
-  const location = useLocation()
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const filter = searchParams.get("filter");
 
   const getOptions = (avs: AVS): any => {
     return options.map(option => {
       if (option.label === "View Details") {
-        return { label: option.label, link: `/machines/${avs.machine_id || ""}` }
+        return { label: option.label, link: `/machines/${avs.machine_id || ""}` };
       }
       if (option.label === "Edit Address") {
-        return { label: option.label, link: `/machines/edit/${avs.avs_name}/${avs.machine_id || ""}` }
+        return { label: option.label, link: `/machines/edit/${avs.avs_name}/${avs.machine_id || ""}` };
       }
       if (option.label === "Delete Machine") {
-        return { label: option.label, link: `/machines/delete/${avs.avs_name}/${avs.machine_id || ""}` }
+        return { label: option.label, link: `/machines/delete/${avs.avs_name}/${avs.machine_id || ""}` };
       }
-      return option
-    })
-  }
+      return option;
+    });
+  };
 
   const emptyMachineStatus = {
     total_machines: 0,
@@ -60,10 +73,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     idle_machines: [],
     updateable_machines: [],
     erroring_machines: []
-  }
-
-  const [searchParams] = useSearchParams();
-  const filter = searchParams.get("filter");
+  };
 
   const apiFetcher = (url: string) => apiFetch(url, "GET");
   const multiFetcher = (urls: string[]): any => Promise.all(urls.map(url => apiFetcher(url)));
@@ -75,9 +85,11 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     refreshWhenOffline: false,
     refreshWhenHidden: false,
     refreshInterval: 0,
-  })
-  const machinesStatus = response.data?.data.result || emptyMachineStatus
-  const machines = Array.from(new Set(machinesStatus.unhealthy_machines.concat(machinesStatus.erroring_machines).concat(machinesStatus.updateable_machines).concat(machinesStatus.idle_machines).concat(machinesStatus.healthy_machines)))
+  });
+
+  const machinesStatus = response.data?.data.result || emptyMachineStatus;
+  const machines = Array.from(new Set(machinesStatus.unhealthy_machines.concat(machinesStatus.erroring_machines).concat(machinesStatus.updateable_machines).concat(machinesStatus.idle_machines).concat(machinesStatus.healthy_machines)));
+
   const nodesResponse = useSWR<AxiosResponse<Response<NodeDetail>>[], any>(machines.map(machine => `client/${machine}`), multiFetcher as any, {
     revalidateOnFocus: true,
     revalidateOnMount: true,
@@ -85,8 +97,9 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     refreshWhenOffline: false,
     refreshWhenHidden: false,
     refreshInterval: 0,
-  })
-  const nodesInfo = nodesResponse.data?.map((ar, idx) => ar.data.result).sort((b, a) => b.machine_id.localeCompare(a.machine_id))
+  });
+
+  const nodesInfo = nodesResponse.data?.map((ar, idx) => ar.data.result).sort((b, a) => b.machine_id.localeCompare(a.machine_id));
 
   const machinesResponse = useSWR<AxiosResponse<MachineDetails[]>>(
     "machine",
@@ -118,37 +131,36 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
   if (filter && avs_data) {
     switch (filter) {
       case "running":
-        // Show all running AVS names
         filteredAvs = avs_data.filter(avs => avs.avs_name);
         break;
-
       case "ethereum":
-        // Show only AVS on mainnet chain
         filteredAvs = avs_data.filter(avs => avs.chain === "mainnet");
         break;
-
       case "active":
-        // Show only AVS where active_set is true
         filteredAvs = avs_data.filter(avs => avs.active_set === true);
         break;
-
       case "unhealthy":
-        // Show only AVS with unhealthy status
         filteredAvs = avs_data.filter(avs => avs.errors && avs.errors.length > 0);
         break;
-
       default:
         filteredAvs = avs_data;
     }
   }
 
+  // Apply search filter
+  if (searchTerm) {
+    filteredAvs = filteredAvs.filter(avs =>
+      avs.avs_name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }
+
   useEffect(() => {
     if (location.state?.refetch) {
-      response && response.mutate()
-      machinesResponse && machinesResponse.mutate()
-      avsResponse && avsResponse.mutate()
+      response && response.mutate();
+      machinesResponse && machinesResponse.mutate();
+      avsResponse && avsResponse.mutate();
     }
-  }, [location.state, response?.mutate,]);
+  }, [location.state, response?.mutate, machinesResponse?.mutate, avsResponse?.mutate]);
 
   const formatAddress = (address: string | null | undefined): string => {
     if (!address) return '';
@@ -156,24 +168,37 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
   };
 
   return (
-    <>
-      <Topbar title="Nodes Overview" />
-      <SectionTitle title="AVS Deployments" className="text-textPrimary" />
-      <MachinesWidget data={machinesStatus} details={nodesInfo} avs={avsResponse.data?.data} />
-      {filteredAvs.length === 0 && <div className="mt-24"><EmptyMachines /></div>}
-      {filteredAvs.length > 0 &&
-        <>
-          <Filters filters={filters}>
-            <Link to="edit/keys" relative="path">
-              <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">Edit Addresses</div>
-            </Link>
-            <Link to="code/installclient" relative="path">
-              <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">Install Client</div>
-            </Link>
-            <Link to="code/addavs" relative="path">
-              <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">Add AVS</div>
-            </Link>
-          </Filters>
+      <>
+        <Topbar title="Nodes Overview" />
+        <SectionTitle title="AVS Deployments" className="text-textPrimary" />
+        <MachinesWidget data={machinesStatus} details={nodesInfo} avs={avsResponse.data?.data} />
+        {filteredAvs.length === 0 && <div className="mt-24"><EmptyMachines /></div>}
+        {filteredAvs.length > 0 && (
+          <>
+            <Filters
+              filters={filters}
+              onSearch={setSearchTerm}
+            >
+              <Link to="edit/keys" relative="path">
+                <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">Edit Addresses</div>
+              </Link>
+              <Link to="code/installclient" relative="path">
+                <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">Install Client</div>
+              </Link>
+              {/* Replace Link with button */}
+              <button
+                onClick={() => setShowAddAvsModal(true)}
+                className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
+              >
+                Add AVS
+              </button>
+            </Filters>
+            {showAddAvsModal && (
+            <AddAVSModal
+              onClose={handleCloseAddAvsModal}
+              isOpen={showAddAvsModal}
+            />
+          )}
           <Table>
             <Tr>
               <Th content="AVS"></Th>
@@ -187,23 +212,21 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
               <Th content="Machine"></Th>
               <Th content=""></Th>
             </Tr>
-
             {filteredAvs.map((avs, index) => (
               <Tr key={`${avs.machine_id}-${avs.avs_name}`}>
                 <Td>
                   <AvsWidget
                     name={avs.avs_name}
-                    //to={`/machines/avs/${avs.avs_name}`}
-                    />
+                  />
                 </Td>
                 <Td content={getChainLabel(avs.chain)}></Td>
-                <Td content={avs.avs_version}></Td>
+                <Td content={avs.avs_version === "0.0.0" ? "Unknown" : avs.avs_version}></Td>
                 <Td content=""></Td>
                 <Td>
-                <HealthStatus
-                isConnected={avs.errors.length === 0}
-                errors={avs.errors}
-                />
+                  <HealthStatus
+                    isConnected={avs.errors.length === 0}
+                    errors={avs.errors}
+                  />
                 </Td>
                 <Td score={avs.performance_score}></Td>
                 <Td content={formatAddress(avs.operator_address) || ""}></Td>
@@ -212,15 +235,16 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
                   <MachineWidget
                     address={avs.machine_id}
                     name={getMachineName(avs.machine_id)}
-                    to={`/machines/${avs.machine_id}`} />
+                    to={`/machines/${avs.machine_id}`}
+                  />
                 </Td>
                 <Td><OptionsButton options={getOptions(avs)} /></Td>
               </Tr>
             ))}
           </Table>
         </>
-      }
+      )}
       <Outlet />
     </>
   );
-}
+};

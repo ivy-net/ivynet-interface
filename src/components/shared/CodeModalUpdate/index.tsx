@@ -1,26 +1,52 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import closeIcon from "./../../../images/x-close.svg"
 import copyIcon from "./../../../images/copy.svg"
 
 interface CodeModalUpdateProps {
-  code: string;
   title: string;
-};
+  code: string;
+  onClose?: (e?: React.MouseEvent) => void;
+  isOpen?: boolean;
+}
 
-export const CodeModalUpdate: React.FC<CodeModalUpdateProps> = ({ title, code }) => {
+export const CodeModalUpdate: React.FC<CodeModalUpdateProps> = ({
+  title,
+  code,
+  onClose,
+  isOpen = true
+}) => {
   const copyCode = () => {
     navigator.clipboard.writeText(code);
-  }
+  };
+
+  const handleClose = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onClose) {
+      onClose(e);
+    }
+  };
+
+  // If modal is not open, don't render anything
+  if (!isOpen) return null;
 
   return (
-    <div className="fixed left-0 top-0 w-screen h-screen flex justify-center items-center bg-black/[0.8] z-[1000]">
-      <div className="flex flex-col bg-widgetBg w-[730px] rounded-xl p-8 gap-8">
+    <div
+      className="fixed left-0 top-0 w-screen h-screen flex justify-center items-center bg-black/[0.8] z-[1000]"
+      onClick={handleClose} // Close when clicking backdrop
+    >
+      <div
+        className="flex flex-col bg-widgetBg w-[730px] rounded-xl p-8 gap-8"
+        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking modal content
+      >
         <div className="flex items-center">
           <h2>{title}</h2>
-          <Link to={"../.."} relative="path" className="ml-auto">
+          <button
+            onClick={handleClose}
+            className="ml-auto"
+          >
             <img src={closeIcon} alt="close icon" />
-          </Link>
+          </button>
         </div>
         <div className="flex flex-col gap-4">
           <div className="flex gap-2 text-sidebarColor items-center">
@@ -32,10 +58,16 @@ export const CodeModalUpdate: React.FC<CodeModalUpdateProps> = ({ title, code })
               {code}
             </div>
             <div className="flex flex-col justify-start w-1/4">
-              <div className="flex gap-3 w-full justify-center text-textPrimary hover:text-sidebarTextHighlightColor cursor-pointer" onClick={copyCode}>
+              <button
+                className="flex gap-3 w-full justify-center text-textPrimary hover:text-sidebarTextHighlightColor cursor-pointer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  copyCode();
+                }}
+              >
                 <img src={copyIcon} className="w-6" alt="copy icon" />
                 <div className="text-base font-medium">Copy</div>
-              </div>
+              </button>
             </div>
           </div>
           <div className="flex gap-2 text-sidebarColor items-center">
@@ -44,6 +76,6 @@ export const CodeModalUpdate: React.FC<CodeModalUpdateProps> = ({ title, code })
           </div>
         </div>
       </div>
-    </div >
+    </div>
   );
-}
+};

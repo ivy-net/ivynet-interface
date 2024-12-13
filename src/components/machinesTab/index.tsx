@@ -19,6 +19,7 @@ import { AvsWidget } from "../shared/avsWidget";
 import { getChainLabel } from "../../utils/UiMessages";
 import HealthStatus from './HealthStatus';
 import { AddAVSModal } from "./AddAVSModal";
+import { toast } from 'react-toastify';
 
 
 interface MachinesTabProps {};
@@ -37,7 +38,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     { label: "IvyClient Update", link: "code/updateclient" },
     { label: "View Details", link: "" },
     { label: "Edit Address", link: "" },
-    { label: "Delete Machine", link: "" },
+    { label: "Remove AVS", link: "" },
   ];
 
   const filters = [
@@ -59,12 +60,57 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
       if (option.label === "Edit Address") {
         return { label: option.label, link: `/machines/edit/${avs.avs_name}/${avs.machine_id || ""}` };
       }
-      if (option.label === "Delete Machine") {
-        return { label: option.label, link: `/machines/delete/${avs.avs_name}/${avs.machine_id || ""}` };
+      if (option.label === "Remove AVS") {
+        return {
+          label: option.label,
+          onClick: () => handleDeleteAVS(avs),
+          disabled: isDeleting
+        };
       }
       return option;
     });
   };
+
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteAVS = async (avs: AVS) => {
+    if (!window.confirm(`Are you sure you want to remove ${avs.avs_name}?`)) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const url = `machine/${avs.machine_id}?avs_name=${encodeURIComponent(avs.avs_name)}`;
+      console.log('Sending DELETE request to:', url);
+
+      const deleteResponse = await apiFetch(url, 'DELETE');
+      console.log('Delete response:', deleteResponse);
+
+      if (deleteResponse.status === 200) {
+        // Force clear the cache before refetching
+        response.mutate(undefined, { revalidate: true });
+        machinesResponse.mutate(undefined, { revalidate: true });
+        avsResponse.mutate(undefined, { revalidate: true });
+
+        // Wait a brief moment to ensure backend state is updated
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Now refetch with cache cleared
+        await Promise.all([
+          response.mutate(),
+          machinesResponse.mutate(),
+          avsResponse.mutate()
+        ]);
+
+        toast.success(`Successfully removed ${avs.avs_name}`, { theme: "dark" });
+      }
+    } catch (error: any) {
+      console.error('Delete AVS error:', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
 
   const emptyMachineStatus = {
     total_machines: 0,
@@ -116,8 +162,8 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     return machine?.name?.replace(/"/g, '') || "";
   };
 
-  const avsResponse = useSWR<AxiosResponse<AVS[]>>('avs', apiFetcher, {
-    onSuccess: (data) => console.log("AVS data received:", data?.data),
+  const avsResponse = useSWR<AxiosResponse<AVS[]>>('avs', apiFetch, {
+    onSuccess: (data) => console.log("AVS data updated:", data?.data),
     onError: (error) => {
       console.error('AVS fetch error:', error);
       return [];
@@ -166,6 +212,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     if (!address) return '';
     return `${address.slice(0, 4)}...${address.slice(-4)}`;
   };
+
 
   return (
       <>

@@ -30,7 +30,7 @@ export const DeleteMachineModal: React.FC<DeleteMachineModalProps> = () => {
     <div className="fixed left-0 top-0 w-screen h-screen flex justify-center items-center bg-black/[0.8]">
       <div className="flex flex-col bg-widgetBg w-[730px] rounded-xl p-8 gap-10">
         <div className="flex items-center">
-          <h2>Delete Machine</h2>
+          <h2>Remove AVS</h2>
           <Link to="/machines" relative="path" className="ml-auto">
             <img src={closeIcon} alt="close icon" />
           </Link>

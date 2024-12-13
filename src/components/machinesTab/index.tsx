@@ -24,6 +24,16 @@ import { toast } from 'react-toastify';
 
 interface MachinesTabProps {};
 
+interface VersionInfo {
+  node_type: string;
+  chain: string;
+  latest_version: string;
+  latest_version_digest: string;
+  breaking_change_version: string | null;
+  breaking_change_datetime: string | null;
+}
+
+
 export const MachinesTab: React.FC<MachinesTabProps> = () => {
   const [showAddAvsModal, setShowAddAvsModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -200,6 +210,19 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     );
   }
 
+  const versionsResponse = useSWR<AxiosResponse<VersionInfo[]>>(
+    'info/avs/version',
+    apiFetch,
+    {
+      onSuccess: (data) => console.log("Version data updated:", data?.data),
+      onError: (error) => {
+        console.error('Version fetch error:', error);
+        return [];
+      }
+    }
+  );
+
+
   useEffect(() => {
     if (location.state?.refetch) {
       response && response.mutate();
@@ -211,6 +234,23 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
   const formatAddress = (address: string | null | undefined): string => {
     if (!address) return '';
     return `${address.slice(0, 4)}...${address.slice(-4)}`;
+  };
+
+  const getLatestVersion = (nodeType: string | null, chain: string | null): string => {
+    if (!versionsResponse.data?.data || !nodeType || !chain) return "";
+
+    const versionInfo = versionsResponse.data.data.find(
+      v => v.node_type === nodeType && v.chain === chain
+    );
+
+    return versionInfo?.latest_version || "";
+  };
+
+
+const formatTimestamp = (timestamp: string): string => {
+    if (!timestamp) return '';
+    // Remove milliseconds, replace 'T' with space, and add UTC
+    return timestamp.split('.')[0].replace('T', ' ') + ' UTC';
   };
 
 
@@ -249,15 +289,16 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
           <Table>
             <Tr>
               <Th content="AVS"></Th>
-              <Th content="Chain"></Th>
               <Th content="Type"></Th>
+              <Th content="Chain"></Th>
+              <Th content="Address"></Th>
               <Th content="Version" tooltip="Can show blank if AVS doesn't ship with docker container."></Th>
               <Th content="Latest"></Th>
               <Th content="Health"></Th>
               <Th content="Score" tooltip="Can show 0 if AVS doesn't have performance score metric."></Th>
-              <Th content="Address"></Th>
               <Th content="Active Set" tooltip="Add chain and operator public address to see AVS Active Set status."></Th>
               <Th content="Machine"></Th>
+              <Th content="Last Updated"></Th>
               <Th content=""></Th>
             </Tr>
             {filteredAvs.map((avs, index) => (
@@ -267,18 +308,17 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
                     name={avs.avs_name}
                   />
                 </Td>
-                <Td content={getChainLabel(avs.chain)}></Td>
                 <Td content={avs.avs_type}></Td>
+                <Td content={getChainLabel(avs.chain)}></Td>
+                <Td content={formatAddress(avs.operator_address) || ""}></Td>
                 <Td content={avs.avs_version === "0.0.0" ? "unknown" : avs.avs_version}></Td>
-                <Td content=""></Td>
-                <Td>
+                <Td content={getLatestVersion(avs.avs_type, avs.chain)}></Td>                <Td>
                   <HealthStatus
                     isConnected={avs.errors.length === 0}
                     errors={avs.errors}
                   />
                 </Td>
                 <Td score={avs.performance_score}></Td>
-                <Td content={formatAddress(avs.operator_address) || ""}></Td>
                 <Td isChecked={avs.active_set}></Td>
                 <Td>
                   <MachineWidget
@@ -287,6 +327,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
                     to={`/machines/${avs.machine_id}`}
                   />
                 </Td>
+                <Td content={formatTimestamp(avs.updated_at)}></Td>
                 <Td><OptionsButton options={getOptions(avs)} /></Td>
               </Tr>
             ))}

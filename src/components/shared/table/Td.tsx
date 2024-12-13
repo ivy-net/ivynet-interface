@@ -24,10 +24,11 @@ interface TdProps {
   address?: string;
   onAddressSubmit?: (address: string) => void;
   tooltip?: string;
+  last_update?: string;
   addressOptions?: string[]
 };
 
-export const Td: React.FC<TdProps> = ({ content, avs_type, children, to, isConnected, isChecked, diskStatus, className, score = "", chain, onChainSelect, address, onAddressSubmit, tooltip, addressOptions = []}) => {
+export const Td: React.FC<TdProps> = ({ content, avs_type, children, to, isConnected, isChecked, diskStatus, className, score = "", chain, onChainSelect, address, onAddressSubmit, tooltip, last_update, addressOptions = []}) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const hoverClasses = to ? "hover:bg-widgetHoverBg" : "";
   const hasConnectedIcon = isConnected !== undefined;

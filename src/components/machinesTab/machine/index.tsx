@@ -78,6 +78,14 @@ export const Machine: React.FC<MachineProps> = () => {
   const diskTotal = machine && byteSize(
     machine.system_metrics.disk_info.usage + machine.system_metrics.disk_info.free).toString();
 
+
+    const formatTimestamp = (timestamp: string): string => {
+        if (!timestamp) return '';
+        // Remove milliseconds, replace 'T' with space, and add UTC
+        return timestamp.split('.')[0].replace('T', ' ') + ' UTC';
+      };
+
+
     const formatAddress = (address: string | null | undefined): string => {
       if (!address) return '';
       return `${address.slice(0, 4)}...${address.slice(-4)}`;
@@ -147,6 +155,7 @@ export const Machine: React.FC<MachineProps> = () => {
           <Th content="Address"></Th>
           <Th content="Active Set" tooltip="Add chain and operator public address to see AVS Active Set status."></Th>
           <Th content="Machine"></Th>
+          <Th content="Last Updated"></Th>
           <Th content=""></Th>
         </Tr>
 
@@ -181,6 +190,7 @@ export const Machine: React.FC<MachineProps> = () => {
                   address={avs.machine_id}
                   name={machineName} />
               </Td>
+                  <Td content={formatTimestamp(avs.updated_at)}></Td>
               {/* <Td><OptionsButton options={getOptions(avs)} /></Td> */}
             </Tr>
           )

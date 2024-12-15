@@ -21,8 +21,7 @@ import HealthStatus from './HealthStatus';
 import { AddAVSModal } from "./AddAVSModal";
 import { toast } from 'react-toastify';
 
-
-interface MachinesTabProps {};
+interface MachinesTabProps {}
 
 interface VersionInfo {
   node_type: string;
@@ -33,10 +32,11 @@ interface VersionInfo {
   breaking_change_datetime: string | null;
 }
 
-
 export const MachinesTab: React.FC<MachinesTabProps> = () => {
   const [showAddAvsModal, setShowAddAvsModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const handleCloseAddAvsModal = (e?: React.MouseEvent) => {
     if (e) {
       e.preventDefault();
@@ -44,6 +44,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     }
     setShowAddAvsModal(false);
   };
+
   const options = [
     { label: "IvyClient Update", link: "code/updateclient" },
     { label: "View Details", link: "" },
@@ -61,6 +62,44 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const filter = searchParams.get("filter");
+
+  const getTimeStatus = (timestamp: string | null | undefined): JSX.Element => {
+    if (!timestamp) {
+      return (
+        <div className="flex items-center justify-center relative group">
+          <div className="w-2 h-2 rounded-full bg-red-500" />
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded py-2 px-3 whitespace-nowrap">
+            <div className="font-medium">Last Node Metrics Received:</div>
+            <div className="text-gray-300">Not Available</div>
+          </div>
+        </div>
+      );
+    }
+
+    const now = new Date();
+    const updateTime = new Date(timestamp);
+    const diffMinutes = (now.getTime() - updateTime.getTime()) / (1000 * 60);
+
+    // Format the timestamp for tooltip
+    const formattedTime = timestamp.split('.')[0].replace('T', ' ') + ' UTC';
+
+    let dotColor = 'bg-gray-500'; // default color
+    if (diffMinutes > 30) {
+      dotColor = 'bg-red-500';
+    } else if (diffMinutes < 5) {
+      dotColor = 'bg-green-500';
+    }
+
+    return (
+      <div className="flex items-center justify-center relative group">
+        <div className={`w-2 h-2 rounded-full ${dotColor}`} />
+        <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded py-2 px-3 whitespace-nowrap">
+          <div className="font-medium">Last Metrics Received:</div>
+          <div className="text-gray-300">{formattedTime}</div>
+        </div>
+      </div>
+    );
+  };
 
   const getOptions = (avs: AVS): any => {
     return options.map(option => {
@@ -80,8 +119,6 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
       return option;
     });
   };
-
-  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDeleteAVS = async (avs: AVS) => {
     if (!window.confirm(`Are you sure you want to remove ${avs.avs_name}?`)) {
@@ -120,7 +157,6 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
       setIsDeleting(false);
     }
   };
-
 
   const emptyMachineStatus = {
     total_machines: 0,
@@ -223,7 +259,6 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     }
   );
 
-
   useEffect(() => {
     if (location.state?.refetch) {
       response && response.mutate();
@@ -247,97 +282,88 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     return versionInfo?.latest_version || "";
   };
 
-
-const formatTimestamp = (timestamp: string): string => {
-    if (!timestamp) return '';
-    // Remove milliseconds, replace 'T' with space, and add UTC
-    return timestamp.split('.')[0].replace('T', ' ') + ' UTC';
-  };
-
-
-  // Update this section in your MachinesTab component
   return (
-      <>
-        <Topbar title="Nodes Overview" />
-        <SectionTitle title="AVS Deployments" className="text-textPrimary" />
-        <MachinesWidget data={machinesStatus} details={nodesInfo} avs={avsResponse.data?.data} />
-        {filteredAvs.length === 0 && !searchTerm && <div className="mt-24"><EmptyMachines /></div>}
+    <>
+      <Topbar title="Nodes Overview" />
+      <SectionTitle title="AVS Deployments" className="text-textPrimary" />
+      <MachinesWidget data={machinesStatus} details={nodesInfo} avs={avsResponse.data?.data} />
+      {filteredAvs.length === 0 && !searchTerm && <div className="mt-24"><EmptyMachines /></div>}
 
-        <Filters
-          filters={filters}
-          onSearch={setSearchTerm}
+      <Filters
+        filters={filters}
+        onSearch={setSearchTerm}
+      >
+        <Link to="edit/keys" relative="path">
+          <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">Edit Addresses</div>
+        </Link>
+        <Link to="code/installclient" relative="path">
+          <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">Install Client</div>
+        </Link>
+        <button
+          onClick={() => setShowAddAvsModal(true)}
+          className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
         >
-          <Link to="edit/keys" relative="path">
-            <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">Edit Addresses</div>
-          </Link>
-          <Link to="code/installclient" relative="path">
-            <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">Install Client</div>
-          </Link>
-          <button
-            onClick={() => setShowAddAvsModal(true)}
-            className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
-          >
-            Add AVS
-          </button>
-        </Filters>
+          Add AVS
+        </button>
+      </Filters>
 
-        {showAddAvsModal && (
-          <AddAVSModal
-            onClose={handleCloseAddAvsModal}
-            isOpen={showAddAvsModal}
-          />
-        )}
+      {showAddAvsModal && (
+        <AddAVSModal
+          onClose={handleCloseAddAvsModal}
+          isOpen={showAddAvsModal}
+        />
+      )}
 
-        {(!avsResponse.error && (avsResponse.data?.data?.length ?? 0) > 0 || searchTerm) && (
-          <Table>
-            <Tr>
-              <Th content="AVS"></Th>
-              <Th content="Type"></Th>
-              <Th content="Chain"></Th>
-              <Th content="Address"></Th>
-              <Th content="Version" tooltip="Can show blank if AVS doesn't ship with docker container."></Th>
-              <Th content="Latest"></Th>
-              <Th content="Health"></Th>
-              <Th content="Score" tooltip="Can show 0 if AVS doesn't have performance score metric."></Th>
-              <Th content="Active Set" tooltip="Add chain and operator public address to see AVS Active Set status."></Th>
-              <Th content="Machine"></Th>
-              <Th content="Last Updated"></Th>
-              <Th content=""></Th>
+      {(!avsResponse.error && (avsResponse.data?.data?.length ?? 0) > 0 || searchTerm) && (
+        <Table>
+          <Tr>
+            <Th content="AVS"></Th>
+            <Th content="Type"></Th>
+            <Th content="Chain"></Th>
+            <Th content="Address"></Th>
+            <Th content="Version" tooltip="Can show blank if AVS doesn't ship with docker container."></Th>
+            <Th content="Latest"></Th>
+            <Th content="Health"></Th>
+            <Th content="Score" tooltip="Can show 0 if AVS doesn't have performance score metric."></Th>
+            <Th content="Active Set" tooltip="Add chain and operator public address to see AVS Active Set status."></Th>
+            <Th content="Machine"></Th>
+            <Th content="Last Metrics"></Th>
+            <Th content=""></Th>
+          </Tr>
+          {filteredAvs.map((avs, index) => (
+            <Tr key={`${avs.machine_id}-${avs.avs_name}`}>
+              <Td>
+                <AvsWidget name={avs.avs_name} />
+              </Td>
+              <Td content={avs.avs_type}></Td>
+              <Td content={getChainLabel(avs.chain)}></Td>
+              <Td content={formatAddress(avs.operator_address) || ""}></Td>
+              <Td content={avs.avs_version === "0.0.0" ? "unknown" : avs.avs_version}></Td>
+              <Td content={getLatestVersion(avs.avs_type, avs.chain)}></Td>
+              <Td>
+                <HealthStatus
+                  isConnected={avs.errors.length === 0}
+                  errors={avs.errors}
+                />
+              </Td>
+              <Td score={avs.performance_score}></Td>
+              <Td isChecked={avs.active_set}></Td>
+              <Td>
+                <MachineWidget
+                  address={avs.machine_id}
+                  name={getMachineName(avs.machine_id)}
+                  to={`/machines/${avs.machine_id}`}
+                />
+              </Td>
+              <Td>
+                {getTimeStatus(avs.updated_at)}
+              </Td>
+              <Td><OptionsButton options={getOptions(avs)} /></Td>
             </Tr>
-            {filteredAvs.map((avs, index) => (
-              <Tr key={`${avs.machine_id}-${avs.avs_name}`}>
-                <Td>
-                  <AvsWidget
-                    name={avs.avs_name}
-                  />
-                </Td>
-                <Td content={avs.avs_type}></Td>
-                <Td content={getChainLabel(avs.chain)}></Td>
-                <Td content={formatAddress(avs.operator_address) || ""}></Td>
-                <Td content={avs.avs_version === "0.0.0" ? "unknown" : avs.avs_version}></Td>
-                <Td content={getLatestVersion(avs.avs_type, avs.chain)}></Td>
-                <Td>
-                  <HealthStatus
-                    isConnected={avs.errors.length === 0}
-                    errors={avs.errors}
-                  />
-                </Td>
-                <Td score={avs.performance_score}></Td>
-                <Td isChecked={avs.active_set}></Td>
-                <Td>
-                  <MachineWidget
-                    address={avs.machine_id}
-                    name={getMachineName(avs.machine_id)}
-                    to={`/machines/${avs.machine_id}`}
-                  />
-                </Td>
-                <Td content={formatTimestamp(avs.updated_at)}></Td>
-                <Td><OptionsButton options={getOptions(avs)} /></Td>
-              </Tr>
-            ))}
-          </Table>
-        )}
-        <Outlet />
-      </>
-    );
-  };
+          ))}
+        </Table>
+      )}
+      <Outlet />
+    </>
+  );
+};

@@ -97,21 +97,21 @@ export const OrgTab: React.FC<OrgTabProps> = () => {
 
   return (
     <>
-      <Topbar title="Overview" />
+      <Topbar title="Address Overview" />
       {uniqueOperators.length === 0 ? (
         <EmptyAddresses />
       ) : (
         <>
           <SectionTitle title="Global Stats" className="text-textPrimary" />
           <div className="grid grid-cols-4 gap-4">
+          <WidgetItem
+            title="AVS Nodes"
+            description={`${avs?.length ?? 0}`}
+            to="/machines"
+          />
             <WidgetItem
               title="Machines"
               description={`${new Set(avs?.map((a: AVS) => a.machine_id)).size ?? 0}`}
-              to="/machines"
-            />
-            <WidgetItem
-              title="AVS Nodes"
-              description={`${avs?.length ?? 0}`}
               to="/machines"
             />
             <WidgetItem

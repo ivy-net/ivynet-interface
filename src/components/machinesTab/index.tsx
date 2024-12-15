@@ -94,24 +94,22 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     // Convert the time difference to minutes
     const diffMinutes = diffMs / (1000 * 60);
     // Format the timestamp for the tooltip
-  
+
 
 
 
     // Format the timestamp for tooltip
     const formattedTime = timestamp.split('.')[0].replace('T', ' ') + ' UTC';
-
-    let dotColor = 'bg-green-500'; // default to green for recent metrics
+    let dotColorClass = 'bg-positive';
     if (diffMinutes >= 30) {
-      dotColor = 'bg-red-500'; // red for metrics older than 30 minutes
+        dotColorClass = 'bg-textWarning';
     } else if (diffMinutes >= 15) {
-      dotColor = 'ivygrey'; // yellow for metrics between 15-30 minutes
+        dotColorClass = 'bg-ivygrey';
     }
-
 
     return (
       <div className="flex items-center justify-center relative group">
-        <div className={`w-2 h-2 rounded-full ${dotColor}`} />
+        <div className={`h-2 w-2 rounded-full ${dotColorClass}`} />
         <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded py-2 px-3 whitespace-nowrap">
           <div className="font-medium">Last Metrics Received:</div>
           <div className="text-gray-300">{formattedTime}</div>

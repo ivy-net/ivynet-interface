@@ -22,14 +22,14 @@ export const MachinesWidget: React.FC<MachinesWidgetProps> = ({ data, details, a
 
   return (
     <div className="grid grid-cols-4 gap-4">
+    <WidgetItem
+      title="AVS Nodes"
+      description={`${runningNodes}`}
+      to="/machines?filter=running"
+    />
       <WidgetItem
         title="Machines"
         description={`${runningMachines}`}
-        to="/machines?filter=running"
-      />
-      <WidgetItem
-        title="AVS Nodes"
-        description={`${runningNodes}`}
         to="/machines?filter=running"
       />
       <WidgetItem

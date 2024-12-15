@@ -206,7 +206,8 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
   // Apply search filter
   if (searchTerm) {
     filteredAvs = filteredAvs.filter(avs =>
-      avs.avs_name.toLowerCase().includes(searchTerm.toLowerCase())
+      avs.avs_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      avs.avs_type.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }
 
@@ -254,38 +255,40 @@ const formatTimestamp = (timestamp: string): string => {
   };
 
 
+  // Update this section in your MachinesTab component
   return (
       <>
         <Topbar title="Nodes Overview" />
         <SectionTitle title="AVS Deployments" className="text-textPrimary" />
         <MachinesWidget data={machinesStatus} details={nodesInfo} avs={avsResponse.data?.data} />
-        {filteredAvs.length === 0 && <div className="mt-24"><EmptyMachines /></div>}
-        {filteredAvs.length > 0 && (
-          <>
-            <Filters
-              filters={filters}
-              onSearch={setSearchTerm}
-            >
-              <Link to="edit/keys" relative="path">
-                <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">Edit Addresses</div>
-              </Link>
-              <Link to="code/installclient" relative="path">
-                <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">Install Client</div>
-              </Link>
-              {/* Replace Link with button */}
-              <button
-                onClick={() => setShowAddAvsModal(true)}
-                className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
-              >
-                Add AVS
-              </button>
-            </Filters>
-            {showAddAvsModal && (
-            <AddAVSModal
-              onClose={handleCloseAddAvsModal}
-              isOpen={showAddAvsModal}
-            />
-          )}
+        {filteredAvs.length === 0 && !searchTerm && <div className="mt-24"><EmptyMachines /></div>}
+
+        <Filters
+          filters={filters}
+          onSearch={setSearchTerm}
+        >
+          <Link to="edit/keys" relative="path">
+            <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">Edit Addresses</div>
+          </Link>
+          <Link to="code/installclient" relative="path">
+            <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">Install Client</div>
+          </Link>
+          <button
+            onClick={() => setShowAddAvsModal(true)}
+            className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
+          >
+            Add AVS
+          </button>
+        </Filters>
+
+        {showAddAvsModal && (
+          <AddAVSModal
+            onClose={handleCloseAddAvsModal}
+            isOpen={showAddAvsModal}
+          />
+        )}
+
+        {(!avsResponse.error && (avsResponse.data?.data?.length ?? 0) > 0 || searchTerm) && (
           <Table>
             <Tr>
               <Th content="AVS"></Th>
@@ -312,7 +315,8 @@ const formatTimestamp = (timestamp: string): string => {
                 <Td content={getChainLabel(avs.chain)}></Td>
                 <Td content={formatAddress(avs.operator_address) || ""}></Td>
                 <Td content={avs.avs_version === "0.0.0" ? "unknown" : avs.avs_version}></Td>
-                <Td content={getLatestVersion(avs.avs_type, avs.chain)}></Td>                <Td>
+                <Td content={getLatestVersion(avs.avs_type, avs.chain)}></Td>
+                <Td>
                   <HealthStatus
                     isConnected={avs.errors.length === 0}
                     errors={avs.errors}
@@ -332,9 +336,8 @@ const formatTimestamp = (timestamp: string): string => {
               </Tr>
             ))}
           </Table>
-        </>
-      )}
-      <Outlet />
-    </>
-  );
-};
+        )}
+        <Outlet />
+      </>
+    );
+  };

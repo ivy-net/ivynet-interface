@@ -143,60 +143,56 @@ export const Machine: React.FC<MachineProps> = () => {
       </div>
 
       <SectionTitle title="AVS Overview"></SectionTitle>
-      <Table>
-        <Tr>
-          <Th content="AVS"></Th>
-          <Th content="Chain"></Th>
-          <Th content="Type"></Th>
-          <Th content="Version" tooltip="Can show blank if AVS doesn't ship with docker container."></Th>
-          <Th content="Latest"></Th>
-          <Th content="Health"></Th>
-          <Th content="Score" tooltip="Can show 0 if AVS doesn't have performance score metric."></Th>
-          <Th content="Address"></Th>
-          <Th content="Active Set" tooltip="Add chain and operator public address to see AVS Active Set status."></Th>
-          <Th content="Machine"></Th>
-          <Th content="Last Updated"></Th>
-          <Th content=""></Th>
-        </Tr>
+      {/* Show table when we have initial data or when searching */}
+      {(!avsResponse.error && (avsList?.length ?? 0) > 0 || searchTerm) && (
+        <Table>
+          <Tr>
+            <Th content="AVS"></Th>
+            <Th content="Chain"></Th>
+            <Th content="Type"></Th>
+            <Th content="Version" tooltip="Can show blank if AVS doesn't ship with docker container."></Th>
+            <Th content="Latest"></Th>
+            <Th content="Health"></Th>
+            <Th content="Score" tooltip="Can show 0 if AVS doesn't have performance score metric."></Th>
+            <Th content="Address"></Th>
+            <Th content="Active Set" tooltip="Add chain and operator public address to see AVS Active Set status."></Th>
+            <Th content="Machine"></Th>
+            <Th content="Last Updated"></Th>
+            <Th content=""></Th>
+          </Tr>
 
-        {filteredAvsList?.map((avs, index) => {
-          // Console log inside a block statement
-          // console.log("Looking up machine_id:", avs.machine_id, "Mapped name:", getMachineName(avs.machine_id));
-
-          // Return the JSX
-          return (
+          {filteredAvsList.map((avs, index) => (
             <Tr key={`${avs.machine_id}-${avs.avs_name}`}>
               <Td>
                 <AvsWidget
                   name={avs.avs_name}
-                  //to={`/machines/avs/${avs.avs_name}`}
-                  />
+                />
               </Td>
               <Td content={getChainLabel(avs.chain)}></Td>
               <Td content={avs.avs_type}></Td>
               <Td content={avs.avs_version === "0.0.0" ? "Unknown" : avs.avs_version}></Td>
-              <Td content="">{/*TBU*/}</Td>
+              <Td content=""></Td>
               <Td>
                 <HealthStatus
                   isConnected={avs.errors.length === 0}
                   errors={avs.errors}
                 />
               </Td>
-              <Td score={avs.performance_score}>{/*performance score*/}</Td>
+              <Td score={avs.performance_score}></Td>
               <Td content={formatAddress(avs.operator_address) || ""}></Td>
-              <Td isChecked={avs.active_set}> {/*active - set*/}</Td>
+              <Td isChecked={avs.active_set}></Td>
               <Td>
                 <MachineWidget
                   address={avs.machine_id}
                   name={machineName} />
               </Td>
-                  <Td content={formatTimestamp(avs.updated_at)}></Td>
-              {/* <Td><OptionsButton options={getOptions(avs)} /></Td> */}
+              <Td content={formatTimestamp(avs.updated_at)}></Td>
+              <Td></Td>
             </Tr>
-          )
-        })}
+          ))}
+        </Table>
+      )}
 
-      </Table>
       <div>
         {/* <PerformanceWidget date={fakeData.issues.date.date_1} address={fakeData.address} issue={fakeData.issues.issue.issue_1} />
         <PerformanceWidget date={fakeData.issues.date.date_2} address={fakeData.address} issue={fakeData.issues.issue.issue_2} /> */}

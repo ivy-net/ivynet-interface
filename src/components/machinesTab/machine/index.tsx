@@ -166,7 +166,7 @@ export const Machine: React.FC<MachineProps> = () => {
             <Th content="Address"></Th>
             <Th content="Active Set" tooltip="Add chain and operator public address to see AVS Active Set status."></Th>
             <Th content="Machine"></Th>
-            <Th content="Last Updated"></Th>
+            <Th content="Last Metrics"></Th>
             <Th content=""></Th>
           </Tr>
 

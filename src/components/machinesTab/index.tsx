@@ -111,7 +111,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
       <div className="flex items-center justify-center relative group">
         <div className={`h-2 w-2 rounded-full ${dotColorClass}`} />
         <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded py-2 px-3 whitespace-nowrap">
-          <div className="font-medium">Last Metrics Received:</div>
+          <div className="font-medium">Latest Metrics Received:</div>
           <div className="text-gray-300">{formattedTime}</div>
         </div>
       </div>

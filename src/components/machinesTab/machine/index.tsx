@@ -108,7 +108,7 @@ export const Machine: React.FC<MachineProps> = () => {
         <div className="flex items-center justify-center relative group">
           <div className={`w-2 h-2 rounded-full ${dotColorClass}`} />
           <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded py-2 px-3 whitespace-nowrap">
-            <div className="font-medium">Last Metrics Received:</div>
+            <div className="font-medium">Latest Metrics Received:</div>
             <div className="text-gray-300">{formattedTime}</div>
           </div>
         </div>
@@ -123,7 +123,13 @@ export const Machine: React.FC<MachineProps> = () => {
     <>
       <Topbar goBackTo="/machines" />
       <div className="flex">
-        <MachineWidget name={machineName} address={machine?.machine_id || ""} isConnected={machine?.status === "Healthy"} />
+      <MachineWidget
+        name={machineName}
+        address={machine?.machine_id || ""}
+        isConnected={machine?.status === "Healthy"}
+        showCopy={true}
+        isHeader={true}  // New prop to indicate this is the header version
+      />
         <div className="flex items-center ml-auto gap-4">
           <SearchBar onSearch={setSearchTerm} />
           <button

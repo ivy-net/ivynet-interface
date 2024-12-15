@@ -64,44 +64,56 @@ export const Machine: React.FC<MachineProps> = () => {
   const diskTotal = machine && byteSize(
     machine.system_metrics.disk_info.usage + machine.system_metrics.disk_info.free).toString();
 
-  const getTimeStatus = (timestamp: string | null | undefined): JSX.Element => {
-    if (!timestamp) {
+    const getTimeStatus = (timestamp: string | null | undefined): JSX.Element => {
+      if (!timestamp) {
+        return (
+          <div className="flex items-center justify-center relative group">
+            <div className="w-2 h-2 rounded-full bg-red-500" />
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded py-2 px-3 whitespace-nowrap">
+              <div className="font-medium">Last Node Metrics Received:</div>
+              <div className="text-gray-300">Not Available</div>
+            </div>
+          </div>
+        );
+      }
+
+      // Parse the timestamp and force UTC
+      const updateTimeUTC = new Date(timestamp);
+
+      // Get current time and convert to UTC
+      const now = new Date();
+      const nowUTC = new Date(now.getUTCFullYear(),
+                             now.getUTCMonth(),
+                             now.getUTCDate(),
+                             now.getUTCHours(),
+                             now.getUTCMinutes(),
+                             now.getUTCSeconds());
+
+      // Calculate the time difference in milliseconds
+      const diffMs = nowUTC.getTime() - updateTimeUTC.getTime();
+
+      // Convert the time difference to minutes
+      const diffMinutes = diffMs / (1000 * 60);
+      // Format the timestamp for the tooltip
+      const formattedTime = timestamp.split('.')[0].replace('T', ' ') + ' UTC';
+
+      let dotColor = 'bg-green-500'; // default to green for recent metrics
+      if (diffMinutes > 30) {
+        dotColor = 'bg-red-500'; // red for metrics older than 30 minutes
+      } else if (diffMinutes > 15) {
+        dotColor = 'ivygrey'; // yellow for metrics between 15-30 minutes
+      }
+
       return (
         <div className="flex items-center justify-center relative group">
-          <div className="w-2 h-2 rounded-full bg-red-500" />
+          <div className={`w-2 h-2 rounded-full ${dotColor}`} />
           <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded py-2 px-3 whitespace-nowrap">
-            <div className="font-medium">Last Node Metrics Received:</div>
-            <div className="text-gray-300">Not Available</div>
+            <div className="font-medium">Last Metrics Received:</div>
+            <div className="text-gray-300">{formattedTime}</div>
           </div>
         </div>
       );
-    }
-
-    const now = new Date();
-    const updateTime = new Date(timestamp);
-    const diffMinutes = (now.getTime() - updateTime.getTime()) / (1000 * 60);
-
-    // Format the timestamp for tooltip
-    const formattedTime = timestamp.split('.')[0].replace('T', ' ') + ' UTC';
-
-    let dotColor = 'bg-gray-500'; // default color
-    if (diffMinutes > 30) {
-      dotColor = 'bg-red-500';
-    } else if (diffMinutes < 5) {
-      dotColor = 'bg-green-500';
-    }
-
-    return (
-      <div className="flex items-center justify-center relative group">
-        <div className={`w-2 h-2 rounded-full ${dotColor}`} />
-        <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded py-2 px-3 whitespace-nowrap">
-          <div className="font-medium">Last Node Metrics Received:</div>
-          <div className="text-gray-300">{formattedTime}</div>
-        </div>
-      </div>
-    );
-  };
-
+    };
   const formatAddress = (address: string | null | undefined): string => {
     if (!address) return '';
     return `${address.slice(0, 4)}...${address.slice(-4)}`;
@@ -166,7 +178,7 @@ export const Machine: React.FC<MachineProps> = () => {
             <Th content="Address"></Th>
             <Th content="Active Set" tooltip="Add chain and operator public address to see AVS Active Set status."></Th>
             <Th content="Machine"></Th>
-            <Th content="Last Metrics"></Th>
+            <Th content="Latest Update"></Th>
             <Th content=""></Th>
           </Tr>
 

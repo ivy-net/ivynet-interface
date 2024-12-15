@@ -76,19 +76,38 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
       );
     }
 
+    // Parse the timestamp and force UTC
+    const updateTimeUTC = new Date(timestamp);
+
+    // Get current time and convert to UTC
     const now = new Date();
-    const updateTime = new Date(timestamp);
-    const diffMinutes = (now.getTime() - updateTime.getTime()) / (1000 * 60);
+    const nowUTC = new Date(now.getUTCFullYear(),
+                           now.getUTCMonth(),
+                           now.getUTCDate(),
+                           now.getUTCHours(),
+                           now.getUTCMinutes(),
+                           now.getUTCSeconds());
+
+    // Calculate the time difference in milliseconds
+    const diffMs = nowUTC.getTime() - updateTimeUTC.getTime();
+
+    // Convert the time difference to minutes
+    const diffMinutes = diffMs / (1000 * 60);
+    // Format the timestamp for the tooltip
+  
+
+
 
     // Format the timestamp for tooltip
     const formattedTime = timestamp.split('.')[0].replace('T', ' ') + ' UTC';
 
-    let dotColor = 'bg-gray-500'; // default color
-    if (diffMinutes > 30) {
-      dotColor = 'bg-red-500';
-    } else if (diffMinutes < 5) {
-      dotColor = 'bg-green-500';
+    let dotColor = 'bg-green-500'; // default to green for recent metrics
+    if (diffMinutes >= 30) {
+      dotColor = 'bg-red-500'; // red for metrics older than 30 minutes
+    } else if (diffMinutes >= 15) {
+      dotColor = 'ivygrey'; // yellow for metrics between 15-30 minutes
     }
+
 
     return (
       <div className="flex items-center justify-center relative group">
@@ -327,7 +346,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
             <Th content="Score" tooltip="Can show 0 if AVS doesn't have performance score metric."></Th>
             <Th content="Active Set" tooltip="Add chain and operator public address to see AVS Active Set status."></Th>
             <Th content="Machine"></Th>
-            <Th content="Last Metrics"></Th>
+            <Th content="Latest Update"></Th>
             <Th content=""></Th>
           </Tr>
           {filteredAvs.map((avs, index) => (

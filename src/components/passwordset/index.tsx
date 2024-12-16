@@ -20,7 +20,7 @@ export const PasswordSet: React.FC<PasswordSetProps> = () => {
       // Send only password in body, token in URL
       const response = await apiFetch(`authorize/set_password`, "POST", JSON.stringify({
         password,
-        token
+        verification_id: token
       }))
       console.log(response)
       navigate("/")

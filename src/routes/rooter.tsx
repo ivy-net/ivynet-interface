@@ -21,20 +21,21 @@ import { AddAVSModal } from '../components/machinesTab/AddAVSModal';
 import { EditKeysModal } from '../components/machinesTab/EditKeysModal';
 import { DeleteMachineModal } from '../components/machinesTab/DeleteMachineModal';
 import { EditMachineModal } from '../components/machinesTab/EditMachineModal';
+import { PasswordSet} from '../components/passwordset';
 
 const authLoader: LoaderFunction = ({ request }) => {
   // Skip auth check for public routes
-  const publicPaths = ['/login', '/signup', '/reset', '/welcome'];
-  const url = new URL(request.url);
-  if (publicPaths.includes(url.pathname)) {
-    return null;
-  }
+  const publicPaths = ['/login', '/signup', '/reset', '/welcome', '/password_set'];
+   const url = new URL(request.url);
+   if (publicPaths.some(path => url.pathname.startsWith(path))) {  // Using startsWith to handle parameters
+     return null;
+   }
 
-  if (!localStorage.getItem("session_id")) {
-    return redirect("/login");
-  }
-  return null;
-};
+   if (!localStorage.getItem("session_id")) {
+     return redirect("/login");
+   }
+   return null;
+ };
 
 
 export const router = createBrowserRouter([
@@ -195,4 +196,9 @@ export const router = createBrowserRouter([
     path: "welcome",
     element: <Welcome />
   },
+
+  {
+    path: "password_set/:token",  // Changed from setPassword/:token to match the URL format
+    element: <PasswordSet />
+  }
 ]);

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ivySmall from "../../images/ivy-small.svg"
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { apiFetch } from "../../utils";
@@ -12,19 +12,22 @@ interface LoginProps {
 export const Login: React.FC<LoginProps> = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const navigate = useNavigate();
 
 
   const login = async () => {
-    try {
-      await apiFetch("authorize", "POST", JSON.stringify({ email, password }))
-      navigate("/")
-    } catch (err: any) {
+  try {
+    const response = await apiFetch("authorize", "POST", JSON.stringify({ email, password }));
+    // Access session_id from response.data instead of directly from response
+    localStorage.setItem("session_id", response.data.session_id);
+    navigate("/");
+  } catch (err: any) {
+    if (err.status !== 401) {
       toast.error(getMessage(err), { theme: "dark" });
-      console.log(err)
     }
+    console.log(err);
   }
+};
 
   return (
     <div className="flex items-center justify-center h-screen w-screen bg-contentBg">

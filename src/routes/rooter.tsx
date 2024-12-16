@@ -2,10 +2,7 @@ import { App } from '../App';
 import { AvsTab } from '../components/avsTab';
 import { SettingsTab } from '../components/settingsTab';
 import { HelpTab } from '../components/helpTab';
-import {
-  createBrowserRouter,
-  redirect,
-} from "react-router-dom";
+import {createBrowserRouter, redirect, LoaderFunction} from "react-router-dom";
 import { MachinesTab } from '../components/machinesTab';
 import { InstallClientModal } from '../components/machinesTab/InstallClientModal';
 import { UpdateClientModal } from '../components/machinesTab/UpdateClientModal';
@@ -25,13 +22,28 @@ import { EditKeysModal } from '../components/machinesTab/EditKeysModal';
 import { DeleteMachineModal } from '../components/machinesTab/DeleteMachineModal';
 import { EditMachineModal } from '../components/machinesTab/EditMachineModal';
 
+const authLoader: LoaderFunction = ({ request }) => {
+  // Skip auth check for public routes
+  const publicPaths = ['/login', '/signup', '/reset', '/welcome'];
+  const url = new URL(request.url);
+  if (publicPaths.includes(url.pathname)) {
+    return null;
+  }
+
+  if (!localStorage.getItem("session_id")) {
+    return redirect("/login");
+  }
+  return null;
+};
+
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     // shouldRevalidate: () => true,
-    // loader: () => {
+     loader: authLoader,
+     //() => {
     //   if (!localStorage.getItem("session_id")) {
     //     return redirect("/login")
     //   }
@@ -40,10 +52,8 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "",
-        loader: () => {
-          return redirect("/machines");
-        },
-      },
+        loader: () => redirect("/machines"),
+           },
       // {
       //   path: "overview",
       //   element: <OverviewTab />

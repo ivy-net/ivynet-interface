@@ -21,7 +21,7 @@ import { AddAVSModal } from '../components/machinesTab/AddAVSModal';
 import { EditKeysModal } from '../components/machinesTab/EditKeysModal';
 import { DeleteMachineModal } from '../components/machinesTab/DeleteMachineModal';
 import { EditMachineModal } from '../components/machinesTab/EditMachineModal';
-import { PasswordSet} from '../components/passwordset';
+import { PasswordSet } from '../components/passwordset/index';
 
 const authLoader: LoaderFunction = ({ request }) => {
   // Skip auth check for public routes

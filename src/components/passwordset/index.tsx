@@ -18,8 +18,9 @@ export const PasswordSet: React.FC<PasswordSetProps> = () => {
   const handleSubmit = async () => {
     try {
       // Send only password in body, token in URL
-      const response = await apiFetch(`authorize/set_password/${token}`, "POST", JSON.stringify({
-        password
+      const response = await apiFetch(`authorize/set_password`, "POST", JSON.stringify({
+        password,
+        token
       }))
       console.log(response)
       navigate("/")

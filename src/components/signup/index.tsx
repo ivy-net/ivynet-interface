@@ -44,10 +44,11 @@ export const Signup: React.FC<SignupProps> = () => {
           <img className="w-[48px] h-[48px]" src={ivySmall} alt="ivy-logo" />
           <div className="text-ivywhite text-2xl leading-9 font-bold">Create Account</div>
           <div className="text-textPrimary text-sm leading-6 font-normal">
-            <span className="font-bold">{email}</span>
-            <span>, please update your password in order to access </span>
-            <span className="font-bold">{company}'s </span>
-            <span>space in </span>
+            {/*<span className="font-bold">{email}</span>/*}*/}
+
+            <span>Please update your password in order to access </span>
+          {/*  <span className="font-bold">{company}'s </span>
+            <span>space in </span>*/}
             <span className="font-bold">Ivynet</span>
           </div>
         </div>

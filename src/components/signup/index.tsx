@@ -27,7 +27,6 @@ export const Signup: React.FC<SignupProps> = () => {
     }
   }
 
-
   const passwordMismatch = (): boolean => {
     return password !== "" && password2 !== "" && password !== password2
   }

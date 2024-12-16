@@ -18,14 +18,21 @@ export const apiFetch = async<T>(resource: string, method: Method, data?: T, con
     headers["Content-Type"] = "application/json"
 
     // Special handling for password set endpoint
-    const isPasswordSetEndpoint = resource.includes("password_set");
+    const isPasswordSetEndpoint = resource.startsWith("password_set/");
     const baseUrl = isPasswordSetEndpoint
-      ? process.env.IVY_ROOT_URL
+      ? "https://metrics.ivynet.dev"
       : process.env.REACT_APP_API_ENDPOINT;
+
+    // Remove any duplicate password_set in the resource
+    const cleanedResource = isPasswordSetEndpoint
+      ? resource
+      : resource.replace(/^password_set\//, '');
 
     const url = resource.toString().startsWith("http")
       ? resource.toString()
-      : `${baseUrl}/${resource}`;
+      : `${baseUrl}/${cleanedResource}`;
+
+    console.log('API Request URL:', url);  // For debugging
 
     let config: Partial<AxiosRequestConfig> = {
       url,

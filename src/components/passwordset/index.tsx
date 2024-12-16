@@ -17,9 +17,9 @@ export const PasswordSet: React.FC<PasswordSetProps> = () => {
 
   const handleSubmit = async () => {
     try {
-      const response = await apiFetch("authorize/set_password", "POST", JSON.stringify({
-        password,
-        token
+      // Send only password in body, token in URL
+      const response = await apiFetch(`authorize/set_password/${token}`, "POST", JSON.stringify({
+        password
       }))
       console.log(response)
       navigate("/")
@@ -52,7 +52,6 @@ export const PasswordSet: React.FC<PasswordSetProps> = () => {
         {/*  <span className="font-bold">{company}'s </span>
           <span>space in </span>*/}
           <span className="font-bold">Ivynet</span>
-            <span className="font-bold">Ivynet</span>
           </div>
         </div>
         <div className="flex flex-col gap-6">

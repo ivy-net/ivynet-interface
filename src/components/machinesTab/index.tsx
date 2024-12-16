@@ -10,7 +10,6 @@ import { Th } from "../shared/table/Th";
 import { Tr } from "../shared/table/Tr";
 import { Filters } from "../shared/filters";
 import { SectionTitle } from "../shared/sectionTitle";
-import { EmptyMachines } from "./EmptyMachines";
 import useSWR from 'swr';
 import { AVS, MachineDetails, MachinesStatus, NodeDetail, Response } from "../../interfaces/responses";
 import { apiFetch } from "../../utils";
@@ -19,6 +18,7 @@ import { AvsWidget } from "../shared/avsWidget";
 import { getChainLabel } from "../../utils/UiMessages";
 import HealthStatus from './HealthStatus';
 import { AddAVSModal } from "./AddAVSModal";
+import { EmptyMachines } from "./EmptyMachines";
 import { toast } from 'react-toastify';
 
 interface MachinesTabProps {}
@@ -43,6 +43,10 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
       e.stopPropagation();
     }
     setShowAddAvsModal(false);
+  };
+
+  const hasActiveFilter = () => {
+    return filter && filter !== "running"; // Since "running" is your default filter
   };
 
   const options = [
@@ -304,8 +308,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
       <Topbar title="Nodes Overview" />
       <SectionTitle title="AVS Deployments" className="text-textPrimary" />
       <MachinesWidget data={machinesStatus} details={nodesInfo} avs={avsResponse.data?.data} />
-      {filteredAvs.length === 0 && !searchTerm && <div className="mt-24"><EmptyMachines /></div>}
-
+      {filteredAvs.length === 0 && !searchTerm &&!filter && <div className="mt-24"><EmptyMachines /></div>}
       <Filters
         filters={filters}
         onSearch={setSearchTerm}
@@ -332,55 +335,57 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
       )}
 
       {(!avsResponse.error && (avsResponse.data?.data?.length ?? 0) > 0 || searchTerm) && (
-        <Table>
-          <Tr>
-            <Th content="AVS"></Th>
-            <Th content="Type"></Th>
-            <Th content="Chain"></Th>
-            <Th content="Address"></Th>
-            <Th content="Version" tooltip="Can show blank if AVS doesn't ship with docker container."></Th>
-            <Th content="Latest"></Th>
-            <Th content="Health"></Th>
-            <Th content="Score" tooltip="Can show 0 if AVS doesn't have performance score metric."></Th>
-            <Th content="Active Set" tooltip="Add chain and operator public address to see AVS Active Set status."></Th>
-            <Th content="Machine"></Th>
-            <Th content="Latest Update"></Th>
-            <Th content=""></Th>
-          </Tr>
-          {filteredAvs.map((avs, index) => (
-            <Tr key={`${avs.machine_id}-${avs.avs_name}`}>
-              <Td>
-                <AvsWidget name={avs.avs_name} />
-              </Td>
-              <Td content={avs.avs_type}></Td>
-              <Td content={getChainLabel(avs.chain)}></Td>
-              <Td content={formatAddress(avs.operator_address) || ""}></Td>
-              <Td content={avs.avs_version === "0.0.0" ? "unknown" : avs.avs_version}></Td>
-              <Td content={getLatestVersion(avs.avs_type, avs.chain)}></Td>
-              <Td>
-                <HealthStatus
-                  isConnected={avs.errors.length === 0}
-                  errors={avs.errors}
-                />
-              </Td>
-              <Td score={avs.performance_score}></Td>
-              <Td isChecked={avs.active_set}></Td>
-              <Td>
-                <MachineWidget
-                  address={avs.machine_id}
-                  name={getMachineName(avs.machine_id)}
-                  to={`/machines/${avs.machine_id}`}
-                />
-              </Td>
-              <Td>
-                {getTimeStatus(avs.updated_at)}
-              </Td>
-              <Td><OptionsButton options={getOptions(avs)} /></Td>
-            </Tr>
-          ))}
-        </Table>
+        <>
+          {filteredAvs.length === 0 && !filter && !searchTerm ? (
+            <div className="mt-24"><EmptyMachines /></div>
+          ) : (
+            <Table>
+              <Tr>
+                <Th content="AVS"></Th>
+                <Th content="Type"></Th>
+                <Th content="Chain"></Th>
+                <Th content="Address"></Th>
+                <Th content="Version" tooltip="Can show blank if AVS doesn't ship with docker container."></Th>
+                <Th content="Latest"></Th>
+                <Th content="Health"></Th>
+                <Th content="Score" tooltip="Can show 0 if AVS doesn't have performance score metric."></Th>
+                <Th content="Active Set" tooltip="Add chain and operator public address to see AVS Active Set status."></Th>
+                <Th content="Machine"></Th>
+                <Th content="Latest Update"></Th>
+                <Th content=""></Th>
+              </Tr>
+              {filteredAvs.map((avs, index) => (
+                <Tr key={`${avs.machine_id}-${avs.avs_name}`}>
+                  <Td><AvsWidget name={avs.avs_name} /></Td>
+                  <Td content={avs.avs_type}></Td>
+                  <Td content={getChainLabel(avs.chain)}></Td>
+                  <Td content={formatAddress(avs.operator_address) || ""}></Td>
+                  <Td content={avs.avs_version === "0.0.0" ? "unknown" : avs.avs_version}></Td>
+                  <Td content={getLatestVersion(avs.avs_type, avs.chain)}></Td>
+                  <Td>
+                    <HealthStatus
+                      isConnected={avs.errors.length === 0}
+                      errors={avs.errors}
+                    />
+                  </Td>
+                  <Td score={avs.performance_score}></Td>
+                  <Td isChecked={avs.active_set}></Td>
+                  <Td>
+                    <MachineWidget
+                      address={avs.machine_id}
+                      name={getMachineName(avs.machine_id)}
+                      to={`/machines/${avs.machine_id}`}
+                    />
+                  </Td>
+                  <Td>{getTimeStatus(avs.updated_at)}</Td>
+                  <Td><OptionsButton options={getOptions(avs)} /></Td>
+                </Tr>
+              ))}
+            </Table>
+          )}
+        </>
       )}
       <Outlet />
     </>
   );
-};
+}; // Close the component function

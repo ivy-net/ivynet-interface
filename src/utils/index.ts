@@ -18,13 +18,13 @@ export const apiFetch = async<T>(resource: string, method: Method, data?: T, con
     headers["Content-Type"] = "application/json"
 
     // Special handling for set password endpoint
-    const isSetPasswordEndpoint = resource.startsWith("authorize/set_password");
+    const isSetPasswordEndpoint = resource.includes("authorize/set_password");
     const baseUrl = isSetPasswordEndpoint
       ? "https://metrics.ivynet.dev"
       : process.env.REACT_APP_API_ENDPOINT;
 
     const url = resource.startsWith("http")
-      ? resource
+      ? resource 
       : `${baseUrl}/${resource}`;
 
     console.log('API Request URL:', url);  // For debugging

@@ -14,13 +14,26 @@ export const shortenAddress = (input: string) => {
 
 export const apiFetch = async<T>(resource: string, method: Method, data?: T, configs?: Partial<AxiosRequestConfig>) => {
   try {
-
     let headers: any = {}
     headers["Content-Type"] = "application/json"
 
-    const url = resource.toString().startsWith("http") ? resource.toString() : `${process.env.REACT_APP_API_ENDPOINT}/${resource}`;
+    // Special handling for password set endpoint
+    const isPasswordSetEndpoint = resource.includes("password_set");
+    const baseUrl = isPasswordSetEndpoint
+      ? process.env.IVY_ROOT_URL
+      : process.env.REACT_APP_API_ENDPOINT;
 
-    let config: Partial<AxiosRequestConfig> = { url, method, headers, withCredentials: true }
+    const url = resource.toString().startsWith("http")
+      ? resource.toString()
+      : `${baseUrl}/${resource}`;
+
+    let config: Partial<AxiosRequestConfig> = {
+      url,
+      method,
+      headers,
+      withCredentials: true
+    }
+
     if (data) {
       config.data = data
     }
@@ -29,7 +42,10 @@ export const apiFetch = async<T>(resource: string, method: Method, data?: T, con
     return response
   }
   catch (err: any) {
-    const errorMsg = !err.status ? getMessage(err.message) : getMessage(err.response.data) || getMessage(err.message)
+    const errorMsg = !err.status
+      ? getMessage(err.message)
+      : getMessage(err.response.data) || getMessage(err.message)
+
     if (err.status === 401) {
       toast.error(errorMsg, { theme: "dark", toastId: errorMsg });
       router.navigate("/login")

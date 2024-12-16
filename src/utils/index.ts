@@ -11,7 +11,6 @@ export const shortenAddress = (input: string) => {
   return input.slice(0, 4) + "..." + input.slice(input.length - 4, input.length)
 }
 
-
 export const apiFetch = async<T>(resource: string, method: Method, data?: T, configs?: Partial<AxiosRequestConfig>) => {
   try {
     let headers: any = {}
@@ -19,12 +18,10 @@ export const apiFetch = async<T>(resource: string, method: Method, data?: T, con
 
     // Special handling for set password endpoint
     const isSetPasswordEndpoint = resource.includes("authorize/set_password");
-    const baseUrl = isSetPasswordEndpoint
-      ? "https://metrics.ivynet.dev"
-      : process.env.REACT_APP_API_ENDPOINT;
+    const baseUrl = process.env.REACT_APP_API_ENDPOINT || "https://api2.test.ivynet.dev";
 
     const url = resource.startsWith("http")
-      ? resource 
+      ? resource
       : `${baseUrl}/${resource}`;
 
     console.log('API Request URL:', url);  // For debugging
@@ -64,7 +61,7 @@ export const apiFetch = async<T>(resource: string, method: Method, data?: T, con
 
 export const validateEmail = (email: string) => {
   return !!email.toLowerCase().match(
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(@".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
   )
 };
 

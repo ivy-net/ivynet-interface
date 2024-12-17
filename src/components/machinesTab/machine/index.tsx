@@ -250,25 +250,25 @@ const handleCloseRescanModal = () => {
           <Tr>
             <Th content="AVS" sortKey="avs_name" currentSort={sortConfig} onSort={setSortConfig}></Th>
             <Th content="Type" sortKey="avs_type" currentSort={sortConfig} onSort={setSortConfig}></Th>
-              <Th content="Chain" className="pr-4" sortKey="chain" currentSort={sortConfig} onSort={setSortConfig}></Th>
+              <Th content="Chain" className="pr-1" sortKey="chain" currentSort={sortConfig} onSort={setSortConfig}></Th>
             <Th
               content="Version"
-              className="pr-4"
+              className="pr-1"
               currentSort={sortConfig}
               onSort={setSortConfig}
               tooltip="Can show blank if AVS doesn't ship with docker container."
             ></Th>
             <Th
               content="Latest"
-              className="pr-4"
+              className="pr-1"
               currentSort={sortConfig}
               onSort={setSortConfig}
               tooltip="Add chain for latest version."
             ></Th>
-            <Th content="Health" className="pr-4" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}></Th>
+            <Th content="Health" className="pr-1" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}></Th>
             <Th
               content="Score"
-              className="pr-4"
+              className="pr-1"
               sortKey="performance_score"
               currentSort={sortConfig}
               onSort={setSortConfig}
@@ -282,8 +282,8 @@ const handleCloseRescanModal = () => {
               onSort={setSortConfig}
               tooltip="Add chain and operator public address to see AVS Active Set status."
             ></Th>
+            <Th content="Last Connected" sortKey="updated_at" currentSort={sortConfig} onSort={setSortConfig}></Th>
             <Th content="Machine" sortKey="machine_id" currentSort={sortConfig} onSort={setSortConfig}></Th>
-            <Th content="Latest Update" sortKey="updated_at" currentSort={sortConfig} onSort={setSortConfig}></Th>
             <Th content=""></Th>
           </Tr>
 
@@ -310,14 +310,14 @@ const handleCloseRescanModal = () => {
               {/*<Td content={formatAddress(avs.operator_address) || ""}></Td>*/}
 
               <Td isChecked={avs.active_set}></Td>
+              <Td className="flex items-center justify-center">
+                {getTimeStatus(avs.updated_at)}
+              </Td>
               <Td>
                 <MachineWidget
                   address={avs.machine_id}
                   name={machineName}
                 />
-              </Td>
-              <Td className="flex items-center justify-center">
-                {getTimeStatus(avs.updated_at)}
               </Td>
               <Td></Td>
             </Tr>

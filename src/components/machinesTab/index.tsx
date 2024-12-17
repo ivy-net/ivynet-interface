@@ -396,24 +396,24 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
             <Table>
               <Tr>
                 <Th content="AVS" sortKey="avs_name" currentSort={sortConfig} onSort={setSortConfig}></Th>
-                <Th content="Type" className="pr-2" sortKey="avs_type" currentSort={sortConfig} onSort={setSortConfig}></Th>
-                <Th content="Chain" className="pr-4" sortKey="chain" currentSort={sortConfig} onSort={setSortConfig}></Th>
+                <Th content="Type" className="pr-1" sortKey="avs_type" currentSort={sortConfig} onSort={setSortConfig}></Th>
+                <Th content="Chain" className="pr-1" sortKey="chain" currentSort={sortConfig} onSort={setSortConfig}></Th>
                 {/*<Th content="Address" sortKey="operator_address" currentSort={sortConfig} onSort={setSortConfig}></Th>*/}
                 <Th
-                  content="Version" className="pr-4"
+                  content="Version" className="pr-1"
                   //sortKey="avs_version"
                   currentSort={sortConfig}
                   onSort={setSortConfig}
                   tooltip="Can show blank if AVS doesn't ship with docker container."
                 ></Th>
-                <Th content="Latest" className="pr-4" //sortKey="latest_version"
+                <Th content="Latest" className="pr-1" //sortKey="latest_version"
                 currentSort={sortConfig} onSort={setSortConfig}
                 tooltip="Add chain for latest version."
                 ></Th>
-                <Th content="Health" className="pr-4" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}
+                <Th content="Health" className="pr-1" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}
                 ></Th>
                 <Th
-                  content="Score" className="pr-4"
+                  content="Score" 
                   sortKey="performance_score"
                   currentSort={sortConfig}
                   onSort={setSortConfig}
@@ -426,8 +426,8 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
                   onSort={setSortConfig}
                   tooltip="Add chain and operator public address to see AVS Active Set status."
                 ></Th>
+                <Th content="Last Connected" sortKey="updated_at" currentSort={sortConfig} onSort={setSortConfig}></Th>
                 <Th content="Machine" sortKey="machine_id" currentSort={sortConfig} onSort={setSortConfig}></Th>
-                <Th content="Latest Update" sortKey="updated_at" currentSort={sortConfig} onSort={setSortConfig}></Th>
                 <Th   content=""></Th>
               </Tr>
               {sortedAvs.map((avs, index) => (
@@ -452,6 +452,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
                   </Td>
                   <Td score={avs.performance_score}></Td>
                   <Td isChecked={avs.active_set}></Td>
+                  <Td>{getTimeStatus(avs.updated_at)}</Td>
                   <Td>
                     <MachineWidget
                       address={avs.machine_id}
@@ -459,7 +460,6 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
                       to={`/machines/${avs.machine_id}`}
                     />
                   </Td>
-                  <Td>{getTimeStatus(avs.updated_at)}</Td>
                   <Td><OptionsButton options={getOptions(avs)} /></Td>
                 </Tr>
               ))}

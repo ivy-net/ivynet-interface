@@ -22,10 +22,11 @@ import { EditKeysModal } from '../components/machinesTab/EditKeysModal';
 import { DeleteMachineModal } from '../components/machinesTab/DeleteMachineModal';
 import { EditMachineModal } from '../components/machinesTab/EditMachineModal';
 import { PasswordSet } from '../components/passwordset/index';
+import { PasswordReset } from '../components/passwordreset/index';
 
 const authLoader: LoaderFunction = ({ request }) => {
   // Skip auth check for public routes
-  const publicPaths = ['/login', '/signup', '/reset', '/welcome', '/password_set'];
+  const publicPaths = ['/login', '/signup', '/reset', '/welcome', '/password_set', '/password_reset'];
    const url = new URL(request.url);
    if (publicPaths.some(path => url.pathname.startsWith(path))) {  // Using startsWith to handle parameters
      return null;
@@ -196,7 +197,11 @@ export const router = createBrowserRouter([
     path: "welcome",
     element: <Welcome />
   },
-
+  // In your router configuration
+{
+  path: "password_reset/:token",  // Add this new route
+  element: <PasswordReset />
+},
   {
     path: "password_set/:token",  // Changed from setPassword/:token to match the URL format
     element: <PasswordSet />

@@ -70,7 +70,7 @@ export const Machine: React.FC<MachineProps> = () => {
           <div className="flex items-center justify-center relative group">
             <div className="w-2 h-2 rounded-full bg-red-500" />
             <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded py-2 px-3 whitespace-nowrap">
-              <div className="font-medium">Last Node Metrics Received:</div>
+              <div className="font-medium">Latest Metrics Update:</div>
               <div className="text-gray-300">Not Available</div>
             </div>
           </div>

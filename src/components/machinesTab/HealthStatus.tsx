@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckedIcon } from "../shared/checkedIcon";  // Update the import path as needed
+import { CheckedIcon } from "../shared/checkedIcon";
 
 interface HealthStatusProps {
   isChecked: boolean;
@@ -9,23 +9,40 @@ interface HealthStatusProps {
 const HealthStatus: React.FC<HealthStatusProps> = ({ isChecked, errors = [] }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
+  const handleErrorClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    window.open('https://docs.ivynet.dev/docs/client/clientDocs#node-error-definitions', '_blank');
+  };
+
   return (
-    <div className="relative">
+    <div
+      className="relative group"
+      onMouseLeave={() => setShowTooltip(false)}
+    >
+      {/* Clickable icon with buffer zone */}
       <div
-        className="flex items-center justify-center"
+        className="flex items-center justify-center cursor-pointer p-3 -m-3"
         onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
       >
         <CheckedIcon isChecked={isChecked} />
       </div>
+
+      {/* Tooltip */}
       {showTooltip && !isChecked && errors.length > 0 && (
-        <div className="absolute z-50 left-1/2 transform -translate-x-1/2 mt-2 w-64">
+        <div
+          className="absolute z-50 left-1/2 transform -translate-x-1/2 mt-2 w-64"
+          onMouseEnter={() => setShowTooltip(true)}
+        >
           <div className="bg-widgetBg border border-textGrey text-textPrimary p-3 rounded-lg shadow-lg">
             <div className="space-y-2">
               <p className="font-medium text-sm text-textSecondary">Errors:</p>
               <ul className="space-y-1">
                 {errors.map((error, index) => (
-                  <li key={index} className="text-sm text-textWarning flex items-start">
+                  <li
+                    key={index}
+                    className="text-sm text-textWarning flex items-start cursor-pointer hover:text-textGrey transition-colors duration-200"
+                    onClick={handleErrorClick}
+                  >
                     <span className="mr-2">•</span>
                     <span>{error}</span>
                   </li>

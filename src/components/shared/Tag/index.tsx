@@ -5,7 +5,7 @@ import arrowUpRight from "./../../../images/tag-arrow-up-right.svg"
 interface TagProps {
   label: string;
   to?: string;
-};
+}
 
 export const Tag: React.FC<TagProps> = ({ label, to }) => {
   const hoverClasses = to !== undefined ? "hover:bg-textGrey" : "";

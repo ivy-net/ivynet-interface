@@ -9,7 +9,7 @@ import { Th } from "../shared/table/Th";
 import { Tr } from "../shared/table/Tr";
 
 interface AvsTabProps {
-};
+}
 
 export const AvsTab: React.FC<AvsTabProps> = () => {
   const filters = [

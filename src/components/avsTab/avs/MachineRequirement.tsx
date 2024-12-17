@@ -3,7 +3,7 @@ import React from "react";
 interface MachineRequirementProps {
   title: string;
   requirement: string;
-};
+}
 
 export const MachineRequirement: React.FC<MachineRequirementProps> = ({ title, requirement }) => {
 

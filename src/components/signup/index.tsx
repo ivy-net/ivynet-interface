@@ -6,7 +6,7 @@ import { getMessage } from "../../utils/UiMessages";
 import { toast } from "react-toastify";
 
 interface SignupProps {
-};
+}
 
 export const Signup: React.FC<SignupProps> = () => {
   const email = "someemail@gmail.com"

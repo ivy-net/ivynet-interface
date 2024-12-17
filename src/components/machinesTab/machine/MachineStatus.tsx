@@ -6,7 +6,7 @@ interface MachineStatusProps {
   status?: string;
   connected?: boolean | null;
   children?: React.ReactNode;
-};
+}
 
 export const MachineStatus: React.FC<MachineStatusProps> = ({ title, status, connected = null, children }) => {
 

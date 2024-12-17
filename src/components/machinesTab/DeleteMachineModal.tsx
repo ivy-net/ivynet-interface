@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 
 
 interface DeleteMachineModalProps {
-};
+}
 
 export const DeleteMachineModal: React.FC<DeleteMachineModalProps> = () => {
   const { avsName, machineId } = useParams();

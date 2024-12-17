@@ -6,7 +6,7 @@ import { getMessage } from "../../utils/UiMessages";
 import { toast } from "react-toastify";
 
 interface ForgotPasswordProps {
-};
+}
 
 export const ForgotPassword: React.FC<ForgotPasswordProps> = () => {
   const [email, setEmail] = useState("");

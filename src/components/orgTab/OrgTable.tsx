@@ -9,7 +9,7 @@ import { Tooltip } from 'react-tooltip';
 
 interface OrgTableProps {
   stats: any[];
-};
+}
 
 export const OrgTable: React.FC<OrgTableProps> = ({ stats }) => {
 

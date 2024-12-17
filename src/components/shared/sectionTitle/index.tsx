@@ -3,7 +3,7 @@ import React from "react";
 interface SectionTitleProps {
   title: string;
   className?: string;
-};
+}
 
 export const SectionTitle: React.FC<SectionTitleProps> = ({ title, className = "" }) => {
 

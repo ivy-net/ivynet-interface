@@ -7,7 +7,7 @@ interface MachineWidgetProps {
   name: string;
   address: string;
   isConnected: boolean;
-};
+}
 
 export const MachineWidget: React.FC<MachineWidgetProps> = ({ name, address, isConnected }) => {
 

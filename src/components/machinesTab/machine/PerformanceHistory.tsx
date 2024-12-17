@@ -7,7 +7,7 @@ interface PerformanceWidgetProps {
   date: string;
   address: string;
   issue: string;
-};
+}
 
 
 export const PerformanceWidget: React.FC<PerformanceWidgetProps> = ({ date, address, issue }) => {

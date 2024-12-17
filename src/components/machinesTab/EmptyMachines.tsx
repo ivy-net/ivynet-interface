@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 
 interface EmptyMachinesProps {
-};
+}
 
 export const EmptyMachines: React.FC<EmptyMachinesProps> = () => {
 

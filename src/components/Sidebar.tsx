@@ -7,7 +7,7 @@ import { ReactComponent as Org } from "../images/org.svg"
 import { OverviewTab } from "./overviewTab";
 
 interface SidebarProps {
-};
+}
 
 export const Sidebar: React.FC<SidebarProps> = () => {
   return (

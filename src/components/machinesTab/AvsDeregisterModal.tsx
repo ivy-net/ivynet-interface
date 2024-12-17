@@ -3,7 +3,7 @@ import { CodeModal } from "../shared/CodeModal";
 
 
 interface AvsDeregisterModalProps {
-};
+}
 
 export const AvsDeregisterModal: React.FC<AvsDeregisterModalProps> = () => {
   const title = "Deregister AVS";

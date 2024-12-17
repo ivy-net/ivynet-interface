@@ -4,7 +4,7 @@ import uncheckedIcon from "./../../../images/unchecked.svg";
 
 interface CheckedIconProps {
   isChecked: boolean
-};
+}
 
 export const CheckedIcon: React.FC<CheckedIconProps> = ({ isChecked }) => {
 

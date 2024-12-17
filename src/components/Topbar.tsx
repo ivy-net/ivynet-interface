@@ -5,7 +5,7 @@ import { GoBackButton } from "./shared/goBackButton"
 interface TopbarProps {
   title?: string
   goBackTo?: string;
-};
+}
 
 export const Topbar: React.FC<TopbarProps> = ({ title, goBackTo }) => {
   return (

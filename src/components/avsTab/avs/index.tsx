@@ -16,7 +16,7 @@ import { MachineWidget } from "../../shared/machineWidget";
 
 
 interface AvsModalProps {
-};
+}
 
 export const AvsModal: React.FC<AvsModalProps> = () => {
   const { avsName } = useParams();

@@ -7,7 +7,7 @@ import { apiFetch } from "../../utils";
 import { getMessage } from "../../utils/UiMessages";
 
 interface LoginProps {
-};
+}
 
 export const Login: React.FC<LoginProps> = () => {
   const [email, setEmail] = useState("");

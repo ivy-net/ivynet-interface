@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 
 interface EmptyAddressesProps {
-};
+}
 
 export const EmptyAddresses: React.FC<EmptyAddressesProps> = () => {
 

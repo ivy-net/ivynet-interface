@@ -4,7 +4,7 @@ import { DiskStatus } from "../../../interfaces/data";
 
 interface DiskSpaceStatusProps {
   status: DiskStatus
-};
+}
 
 export const DiskSpaceStatus: React.FC<DiskSpaceStatusProps> = ({ status }) => {
   let statusStyling = ""

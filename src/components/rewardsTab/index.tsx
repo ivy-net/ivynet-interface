@@ -1,7 +1,7 @@
 import { Topbar } from "../Topbar";
 
 interface RewardsTabProps {
-};
+}
 
 export const RewardsTab: React.FC<RewardsTabProps> = () => {
   return (

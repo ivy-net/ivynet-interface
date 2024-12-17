@@ -5,7 +5,7 @@ import Select from 'react-select';
 
 
 interface AddUserModalProps {
-};
+}
 
 export const AddUserModal: React.FC<AddUserModalProps> = () => {
   const roles = [

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 interface GoBackButtonProps {
   to: string;
-};
+}
 
 export const GoBackButton: React.FC<GoBackButtonProps> = ({ to }) => {
 

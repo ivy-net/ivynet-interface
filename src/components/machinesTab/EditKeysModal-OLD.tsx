@@ -9,7 +9,7 @@ import { Td } from "../shared/table/Td";
 
 
 interface EditKeysModalProps {
-};
+}
 
 export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
   const keys = [

@@ -26,7 +26,7 @@ interface TdProps {
   tooltip?: string;
   last_update?: string;
   addressOptions?: string[]
-};
+}
 
 export const Td: React.FC<TdProps> = ({ content, avs_type, children, to, isConnected, isChecked, diskStatus, className, score = "", chain, onChainSelect, address, onAddressSubmit, tooltip, last_update, addressOptions = []}) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);

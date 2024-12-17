@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 
 interface WelcomeProps {
-};
+}
 
 export const Welcome: React.FC<WelcomeProps> = () => {
 

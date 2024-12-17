@@ -1,7 +1,7 @@
 import { WidgetItem } from "../../shared/machinesWidget/widgetItem";
 
 interface AvsInfoProps {
-};
+}
 
 export const AvsInfo: React.FC<AvsInfoProps> = () => {
 

@@ -6,7 +6,7 @@ import copyIcon from "./../../../images/copy.svg"
 interface CodeModalProps {
   code: string;
   title: string;
-};
+}
 
 export const CodeModal: React.FC<CodeModalProps> = ({ title, code }) => {
   const copyCode = () => {

@@ -3,7 +3,7 @@ import { MachinesWidget } from "../shared/machinesWidget";
 import { SectionTitle } from "../shared/sectionTitle";
 
 interface OverviewTabProps {
-};
+}
 
 export const OverviewTab: React.FC<OverviewTabProps> = () => {
   return (

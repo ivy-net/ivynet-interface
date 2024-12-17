@@ -5,7 +5,7 @@ import idleIcon from "./../../../images/idle.svg";
 
 interface ConnectedIconProps {
   isConnected: boolean | null
-};
+}
 
 export const ConnectedIcon: React.FC<ConnectedIconProps> = ({ isConnected }) => {
 

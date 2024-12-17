@@ -9,7 +9,7 @@ interface WidgetItemProps {
   connected?: boolean | null;
   size?: "sm" | "lg";
   className?: string;
-};
+}
 
 export const WidgetItem: React.FC<WidgetItemProps> = ({ title, description, to, connected, size = "lg", className = "" }) => {
   const conditionalClasses = to ? "hover:bg-widgetHoverBg" : "";

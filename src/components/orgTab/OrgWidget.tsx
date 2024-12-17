@@ -3,7 +3,7 @@ import { WidgetItem } from "../shared/machinesWidget/widgetItem";
 
 interface OrgWidgetProps {
   data: any;
-};
+}
 
 export const OrgWidget: React.FC<OrgWidgetProps> = ({ data }) => {
   const total = data[data.length - 1]

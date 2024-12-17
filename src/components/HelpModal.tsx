@@ -4,7 +4,7 @@ import closeIcon from "../images/x-close.svg"
 import Select from 'react-select';
 
 interface HelpModalProps {
-};
+}
 
 export const HelpModal: React.FC<HelpModalProps> = () => {
   const roles = [

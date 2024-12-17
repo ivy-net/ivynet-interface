@@ -8,7 +8,7 @@ interface AvsWidgetProps {
   name: string;
   description?: string;
   to?: string;
-};
+}
 
 export const AvsWidget: React.FC<AvsWidgetProps> = ({ name, description = "", to = "" }) => {
   const hoverClasses = to ? "hover:bg-widgetHoverBg" : "";

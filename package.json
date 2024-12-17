@@ -32,13 +32,9 @@
     "build:qa": "env-cmd -f .env.qa build",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "eject": "react-scripts eject",
+    "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
+    "lint:fix": "eslint 'src/**/*.{js,jsx,ts,tsx}' --fix"
   },
   "browserslist": {
     "production": [
@@ -56,6 +52,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/byte-size": "^8.1.2",
     "env-cmd": "^10.1.0",
+    "eslint": "^8.57.1",
     "tailwindcss": "^3.4.4"
   }
 }

@@ -6,7 +6,7 @@ interface UserProps {
   role?: string;
   desc: string;
   size?: "sm" | "md"
-};
+}
 
 export const User: React.FC<UserProps> = ({ name, desc, role, size = "sm" }) => {
   const sizes = {

@@ -112,17 +112,16 @@ export const OrgTab: React.FC<OrgTabProps> = () => {
             <WidgetItem
               title="Machines"
               description={`${new Set(avs?.map((a: AVS) => a.machine_id)).size ?? 0}`}
-              to="/machines"
+            />
+            <WidgetItem
+              title="Addresses"
+              description={`${uniqueOperators.length}`}
+              connected={true}
             />
             <WidgetItem
               title="Active Set"
               description={`${avs?.filter((item: AVS) => item.active_set === true).length ?? 0}`}
-              to="/machines"
-              connected={true}
-            />
-            <WidgetItem
-              title="Operator Addresses"
-              description={`${uniqueOperators.length}`}
+              to="/machines?filter=active"
               connected={true}
             />
           </div>

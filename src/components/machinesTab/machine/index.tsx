@@ -8,7 +8,6 @@ import { MachinesStatus, NodeDetail, Response, AVS, MachineDetails } from "../..
 import { apiFetch } from "../../../utils";
 import { useParams } from "react-router-dom";
 import byteSize from 'byte-size';
-import { ConditionalLink } from "../../shared/conditionalLink";
 import { Table } from "../../shared/table";
 import { Tr } from "../../shared/table/Tr";
 import { Th } from "../../shared/table/Th";
@@ -19,19 +18,35 @@ import { getChainLabel } from "../../../utils/UiMessages";
 import { AddAVSModal } from "../AddAVSModal";
 import HealthStatus from '../HealthStatus';
 import { SearchBar } from "../../shared/searchBar";
+import { sortData } from '../../../utils/SortData';
+import ChainCell from "../ChainCell";
+import { RescanModal } from '../Rescan';
 
+interface VersionInfo {
+  node_type: string;
+  chain: string;
+  latest_version: string;
+  latest_version_digest: string;
+  breaking_change_version: string | null;
+  breaking_change_datetime: string | null;
+}
 interface MachineProps {}
 
 export const Machine: React.FC<MachineProps> = () => {
   const [showAddAvsModal, setShowAddAvsModal] = useState(false);
+  const [showRescanModal, setShowRescanModal] = useState(false);
   const closeModal = () => {
     setShowAddAvsModal(false);
   };
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortConfig, setSortConfig] = useState<{ key: string | null; direction: 'asc' | 'desc' | 'none' }>({
+  key: null,
+  direction: 'none'});
   const { address } = useParams();
   const apiFetcher = (url: string) => apiFetch(url, "GET");
 
   const machinesResponse = useSWR<AxiosResponse<MachineDetails[]>>("machine", apiFetcher);
+
 
   const avsResponse = useSWR<AxiosResponse<AVS[]>>('avs', apiFetcher, {
     onSuccess: (data) => console.log("AVS data received:", data?.data),
@@ -44,6 +59,11 @@ export const Machine: React.FC<MachineProps> = () => {
     filteredAvsList = filteredAvsList.filter(avs =>
       avs.avs_name.toLowerCase().includes(searchTerm.toLowerCase())
     );
+  }
+
+  let sortedAvsList = filteredAvsList;
+  if (sortConfig.key) {
+  sortedAvsList = sortData(filteredAvsList, sortConfig);
   }
 
   const machineResponse = useSWR<AxiosResponse<MachineDetails[]>, any>(`machine`, apiFetcher);
@@ -65,88 +85,142 @@ export const Machine: React.FC<MachineProps> = () => {
     machine.system_metrics.disk_info.usage + machine.system_metrics.disk_info.free).toString();
 
     const getTimeStatus = (timestamp: string | null | undefined): JSX.Element => {
-      if (!timestamp) {
-        return (
-          <div className="flex items-center justify-center relative group">
-            <div className="w-2 h-2 rounded-full bg-red-500" />
-            <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded py-2 px-3 whitespace-nowrap">
-              <div className="font-medium">Latest Metrics Update:</div>
-              <div className="text-gray-300">Not Available</div>
-            </div>
-          </div>
-        );
-      }
-
-      // Parse the timestamp and force UTC
-      const updateTimeUTC = new Date(timestamp);
-
-      // Get current time and convert to UTC
-      const now = new Date();
-      const nowUTC = new Date(now.getUTCFullYear(),
-                             now.getUTCMonth(),
-                             now.getUTCDate(),
-                             now.getUTCHours(),
-                             now.getUTCMinutes(),
-                             now.getUTCSeconds());
-
-      // Calculate the time difference in milliseconds
-      const diffMs = nowUTC.getTime() - updateTimeUTC.getTime();
-
-      // Convert the time difference to minutes
-      const diffMinutes = diffMs / (1000 * 60);
-      // Format the timestamp for the tooltip
-      const formattedTime = timestamp.split('.')[0].replace('T', ' ') + ' UTC';
-
-      let dotColorClass = 'bg-positive';
-      if (diffMinutes >= 30) {
-          dotColorClass = 'bg-textWarning';
-      } else if (diffMinutes >= 15) {
-          dotColorClass = 'bg-ivygrey';
-      }
-
+    if (!timestamp) {
       return (
         <div className="flex items-center justify-center relative group">
-          <div className={`w-2 h-2 rounded-full ${dotColorClass}`} />
+          <div className="w-2 h-2 rounded-full bg-red-500" />
           <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded py-2 px-3 whitespace-nowrap">
-            <div className="font-medium">Latest Metrics Received:</div>
-            <div className="text-gray-300">{formattedTime}</div>
+            <div className="font-medium">Last Node Metrics Received:</div>
+            <div className="text-gray-300">Not Available</div>
           </div>
         </div>
       );
-    };
+    }
+
+    // Parse the timestamp and force UTC
+    const updateTimeUTC = new Date(timestamp);
+
+    // Get current time and convert to UTC
+    const now = new Date();
+    const nowUTC = new Date(now.getUTCFullYear(),
+                           now.getUTCMonth(),
+                           now.getUTCDate(),
+                           now.getUTCHours(),
+                           now.getUTCMinutes(),
+                           now.getUTCSeconds());
+
+    // Calculate the time difference in milliseconds
+    const diffMs = nowUTC.getTime() - updateTimeUTC.getTime();
+
+    // Convert time differences to various units
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    // Create human-readable time difference
+    let timeAgo;
+    if (diffMinutes < 1) {
+      timeAgo = 'Just now';
+    } else if (diffMinutes < 60) {
+      timeAgo = `${diffMinutes} ${diffMinutes === 1 ? 'Minute' : 'Minutes'} Ago`;
+    } else if (diffHours < 24) {
+      timeAgo = `${diffHours} ${diffHours === 1 ? 'Hour' : 'Hours'} Ago`;
+    } else {
+      timeAgo = `${diffDays} ${diffDays === 1 ? 'Day' : 'Days'} Ago`;
+    }
+
+    // Determine dot color based on time difference
+    let dotColorClass = 'bg-positive';
+    if (diffMinutes >= 30) {
+      dotColorClass = 'bg-textWarning';
+    } else if (diffMinutes >= 15) {
+      dotColorClass = 'bg-ivygrey';
+    }
+
+
+    return (
+      <div className="flex items-center justify-center relative group">
+        <div className={`h-2 w-2 rounded-full ${dotColorClass}`} />
+        <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded py-1 px-3 whitespace-nowrap">
+          <div className="font-medium">{timeAgo}</div>
+        </div>
+      </div>
+    );
+  };
   const formatAddress = (address: string | null | undefined): string => {
     if (!address) return '';
     return `${address.slice(0, 4)}...${address.slice(-4)}`;
   };
 
+  const versionsResponse = useSWR<AxiosResponse<VersionInfo[]>>(
+  'info/avs/version',
+  apiFetch,
+  {
+    onSuccess: (data) => console.log("Version data updated:", data?.data),
+    onError: (error) => {
+      console.error('Version fetch error:', error);
+      return [];
+    }
+  }
+);
+
+const getLatestVersion = (nodeType: string | null, chain: string | null): string => {
+  if (!versionsResponse.data?.data || !nodeType || !chain) return "";
+
+  const versionInfo = versionsResponse.data.data.find(
+    v => v.node_type === nodeType && v.chain === chain
+  );
+
+  return versionInfo?.latest_version || "";
+};
+
+const handleCloseRescanModal = () => {
+  setShowRescanModal(false);
+};
+
   return (
     <>
       <Topbar goBackTo="/machines" />
       <div className="flex">
-      <MachineWidget
-        name={machineName}
-        address={machine?.machine_id || ""}
-        isConnected={machine?.status === "Healthy"}
-        showCopy={true}
-        isHeader={true}  // New prop to indicate this is the header version
-      />
-        <div className="flex items-center ml-auto gap-4">
-          <SearchBar onSearch={setSearchTerm} />
-          <button
-            onClick={() => setShowAddAvsModal(true)}
-            className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
-          >
-            Add AVS
-          </button>
-        </div>
-      </div>
-      {showAddAvsModal && (
-        <AddAVSModal
-          onClose={closeModal}
-          isOpen={showAddAvsModal}
-          machineId={address}
-        />
-      )}
+    <MachineWidget
+      name={machineName}
+      address={machine?.machine_id || ""}
+      isConnected={machine?.status === "Healthy"}
+      showCopy={true}
+      isHeader={true}
+    />
+    <div className="flex items-center ml-auto gap-4">
+      <SearchBar onSearch={setSearchTerm} />
+      <button
+        onClick={() => setShowAddAvsModal(true)}
+        className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
+      >
+        Add AVS
+      </button>
+      <button
+        onClick={() => setShowRescanModal(true)}
+        className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
+      >
+        Rescan
+      </button>
+    </div>
+  </div>
+
+  {showAddAvsModal && (
+    <AddAVSModal
+      onClose={closeModal}
+      isOpen={showAddAvsModal}
+      machineId={address}
+    />
+  )}
+
+  {showRescanModal && (
+    <RescanModal
+      onClose={handleCloseRescanModal}
+      isOpen={showRescanModal}
+      machineId={address}
+    />
+  )}
       <div className="flex gap-6">
         <div className="flex flex-col">
           <div className="text-sidebarColor text-base font-medium">Machine Status</div>
@@ -174,29 +248,58 @@ export const Machine: React.FC<MachineProps> = () => {
       {(!avsResponse.error && (avsList?.length ?? 0) > 0 || searchTerm) && (
         <Table>
           <Tr>
-            <Th content="AVS"></Th>
-            <Th content="Chain"></Th>
-            <Th content="Type"></Th>
-            <Th content="Version" tooltip="Can show blank if AVS doesn't ship with docker container."></Th>
-            <Th content="Latest"></Th>
-            <Th content="Health"></Th>
-            <Th content="Score" tooltip="Can show 0 if AVS doesn't have performance score metric."></Th>
-            <Th content="Address"></Th>
-            <Th content="Active Set" tooltip="Add chain and operator public address to see AVS Active Set status."></Th>
-            <Th content="Machine"></Th>
-            <Th content="Latest Update"></Th>
+            <Th content="AVS" sortKey="avs_name" currentSort={sortConfig} onSort={setSortConfig}></Th>
+            <Th content="Type" sortKey="avs_type" currentSort={sortConfig} onSort={setSortConfig}></Th>
+              <Th content="Chain" className="pr-4" sortKey="chain" currentSort={sortConfig} onSort={setSortConfig}></Th>
+            <Th
+              content="Version"
+              className="pr-4"
+              currentSort={sortConfig}
+              onSort={setSortConfig}
+              tooltip="Can show blank if AVS doesn't ship with docker container."
+            ></Th>
+            <Th
+              content="Latest"
+              className="pr-4"
+              currentSort={sortConfig}
+              onSort={setSortConfig}
+              tooltip="Add chain for latest version."
+            ></Th>
+            <Th content="Health" className="pr-4" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}></Th>
+            <Th
+              content="Score"
+              className="pr-4"
+              sortKey="performance_score"
+              currentSort={sortConfig}
+              onSort={setSortConfig}
+              tooltip="Can show 0 if AVS doesn't have performance score metric."
+            ></Th>
+            {/*<Th content="Address" sortKey="operator_address" currentSort={sortConfig} onSort={setSortConfig}></Th>*/}
+            <Th
+              content="Active Set"
+              sortKey="active_set"
+              currentSort={sortConfig}
+              onSort={setSortConfig}
+              tooltip="Add chain and operator public address to see AVS Active Set status."
+            ></Th>
+            <Th content="Machine" sortKey="machine_id" currentSort={sortConfig} onSort={setSortConfig}></Th>
+            <Th content="Latest Update" sortKey="updated_at" currentSort={sortConfig} onSort={setSortConfig}></Th>
             <Th content=""></Th>
           </Tr>
 
-          {filteredAvsList.map((avs, index) => (
+          {sortedAvsList.map((avs, index) => (
             <Tr key={`${avs.machine_id}-${avs.avs_name}`}>
-              <Td>
-                <AvsWidget name={avs.avs_name} />
-              </Td>
-              <Td content={getChainLabel(avs.chain)}></Td>
+              <Td><AvsWidget name={avs.avs_name} /></Td>
               <Td content={avs.avs_type}></Td>
-              <Td content={avs.avs_version === "0.0.0" ? "Unknown" : avs.avs_version}></Td>
-              <Td content=""></Td>
+              <Td>
+                <ChainCell
+                  chain={avs.chain}
+                  avsName={avs.avs_name}
+                  machineId={avs.machine_id || ""}
+                />
+              </Td>
+              <Td content={avs.avs_version === "0.0.0" ? "unknown" : avs.avs_version}></Td>
+              <Td content={getLatestVersion(avs.avs_type, avs.chain)}></Td>
               <Td>
                 <HealthStatus
                   isConnected={avs.errors.length === 0}
@@ -204,7 +307,8 @@ export const Machine: React.FC<MachineProps> = () => {
                 />
               </Td>
               <Td score={avs.performance_score}></Td>
-              <Td content={formatAddress(avs.operator_address) || ""}></Td>
+              {/*<Td content={formatAddress(avs.operator_address) || ""}></Td>*/}
+
               <Td isChecked={avs.active_set}></Td>
               <Td>
                 <MachineWidget

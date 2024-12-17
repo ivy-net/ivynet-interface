@@ -21,7 +21,7 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = () => {
     } catch (err: any) {
       toast.error(getMessage(err), { theme: "dark" });
       console.log(err)
-    }
+    } 
   }
 
   const buttonClasses = validateEmail(email) ? "border-accent text-accent" : "text-accent/60 border-accent/60 cursor-not-allowed"
@@ -42,7 +42,7 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = () => {
               </div>
             </form>
           </div>
-          <button className={`py-2.5 px-4 bg-accent/[0.10] border rounded-lg w-full ${buttonClasses}`} disabled={!validateEmail(email)} onClick={forgotPassword}>Recover Password</button>
+          <button className={`py-2.5 px-4 bg-accent/[0.10] border rounded-lg w-full ${buttonClasses}`} disabled={!validateEmail(email)} onClick={forgotPassword}>Reset Password</button>
         </div>
         <div className="flex text-ivygrey gap-1 justify-center">
           <div>Still remember the password?</div>

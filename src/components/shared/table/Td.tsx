@@ -55,9 +55,9 @@ const [showDropdown, setShowDropdown] = useState(false);
          </div>
        </ConditionalLink>
      )}
-     {hasConnectedIcon && <ConnectedIcon isConnected={isConnected} />}
-     {hasCheckedIcon && <CheckedIcon isChecked={isChecked} />}
-     {hasDiskStatus && <DiskSpaceStatus status={diskStatus} />}
+     {hasConnectedIcon && <div className="flex justify-center"><ConnectedIcon isConnected={isConnected} /></div>}
+          {hasCheckedIcon && <div className="flex justify-center"><CheckedIcon isChecked={isChecked} /></div>}
+          {hasDiskStatus && <div className="flex justify-center"><DiskSpaceStatus status={diskStatus} /></div>}
      {score !== undefined && score !== 0 && (
        <div className="text-sm text-white">{score}</div>
      )}

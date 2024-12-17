@@ -1,13 +1,34 @@
 import { MachinesStatus, NodeDetail, AVS } from "../../../interfaces/responses";
 import { WidgetItem } from "./widgetItem";
+import { apiFetch } from "../../../utils";
+import { AxiosResponse } from "axios";
+import useSWR from 'swr';
 
 interface MachinesWidgetProps {
   data: MachinesStatus;
   details?: NodeDetail[];
   avs?: AVS[];
-};
+}
+
+interface PubKeyData {
+  public_key: string;
+  name: string;
+}
 
 export const MachinesWidget: React.FC<MachinesWidgetProps> = ({ data, details, avs }) => {
+  // Fetch operator addresses from pubkey endpoint
+  const { data: pubkeysResponse } = useSWR<AxiosResponse<PubKeyData[]>>(
+    'pubkey',
+    () => apiFetch('pubkey', 'GET')
+  );
+
+  const pubkeys = pubkeysResponse?.data;
+
+  // Get unique operators from pubkey endpoint instead of AVS data
+  const uniqueOperators = pubkeys
+    ? Array.from(new Set(pubkeys.map(item => item.public_key)))
+    : [];
+
   // Get the number of unique machines that have running AVS
   const runningMachines = new Set(avs?.filter(a => a.avs_name).map(a => a.machine_id)).size;
 
@@ -22,20 +43,20 @@ export const MachinesWidget: React.FC<MachinesWidgetProps> = ({ data, details, a
 
   return (
     <div className="grid grid-cols-4 gap-4">
-    <WidgetItem
-      title="AVS Nodes"
-      description={`${runningNodes}`}
-      to="/machines?filter=running"
-    />
+      <WidgetItem
+        title="AVS Nodes"
+        description={`${runningNodes}`}
+        to="/machines?filter=running"
+      />
       <WidgetItem
         title="Machines"
         description={`${runningMachines}`}
         to="/machines?filter=running"
       />
       <WidgetItem
-        title="Active Set"
-        description={`${activeSetCount}`}
-        to="/machines?filter=active"
+        title="Addresses"
+        description={`${uniqueOperators.length}`}
+        to="/overview"
         connected={true}
       />
       <WidgetItem

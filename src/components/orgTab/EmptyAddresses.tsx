@@ -12,7 +12,7 @@ export const EmptyAddresses: React.FC<EmptyAddressesProps> = () => {
     <div className="flex flex-col w-full justify-center items-center gap-5">
       <img className="w-[76px]" src={server} alt="server" />
       <div className="w-[552px]">
-        <span className="justify-center text-base font-medium text-ivywhite">Add operator address </span>
+        <span className="justify-center text-base font-medium text-ivywhite">Add an operator address </span>
         <span className="justify-center text-sidebarColor">on the Nodes Overview tab in order to view your metrics on a per address basis</span>
       </div>
       <Link to="/machines">

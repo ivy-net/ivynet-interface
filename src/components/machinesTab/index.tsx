@@ -396,24 +396,24 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
             <Table>
               <Tr>
                 <Th content="AVS" sortKey="avs_name" currentSort={sortConfig} onSort={setSortConfig}></Th>
-                <Th content="Type" className="pr-1" sortKey="avs_type" currentSort={sortConfig} onSort={setSortConfig}></Th>
-                <Th content="Chain" className="pr-1" sortKey="chain" currentSort={sortConfig} onSort={setSortConfig}></Th>
+                <Th content="Type" sortKey="avs_type" currentSort={sortConfig} onSort={setSortConfig}></Th>
+                <Th content="Chain" sortKey="chain" currentSort={sortConfig} onSort={setSortConfig}></Th>
                 {/*<Th content="Address" sortKey="operator_address" currentSort={sortConfig} onSort={setSortConfig}></Th>*/}
                 <Th
-                  content="Version" className="pr-1"
+                  content="Version"
                   //sortKey="avs_version"
                   currentSort={sortConfig}
                   onSort={setSortConfig}
                   tooltip="Can show blank if AVS doesn't ship with docker container."
                 ></Th>
-                <Th content="Latest" className="pr-1" //sortKey="latest_version"
+                <Th content="Latest" //sortKey="latest_version"
                 currentSort={sortConfig} onSort={setSortConfig}
                 tooltip="Add chain for latest version."
                 ></Th>
-                <Th content="Health" className="pr-1" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}
+                <Th content="Health" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}
                 ></Th>
                 <Th
-                  content="Score" 
+                  content="Score"
                   sortKey="performance_score"
                   currentSort={sortConfig}
                   onSort={setSortConfig}

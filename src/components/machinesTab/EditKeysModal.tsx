@@ -262,134 +262,125 @@ export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
 //    };
 
     // The return statement should look like this:
-  return (
-      <div className="fixed left-0 top-0 w-screen h-screen flex justify-center items-center bg-black/[0.8]">
-        <div className="flex flex-col bg-widgetBg w-[730px] rounded-xl p-8 gap-10">
-          <div className="flex items-center">
-            <h2>Add Address Details</h2>
-            <div onClick={() => !isSubmitting && navigate(-1)} className="ml-auto cursor-pointer">
-              <img src={closeIcon} alt="close icon" />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-5">
-            <div className="flex flex-col gap-1.5">
-              <div className="text-sm leading-5 font-medium text-ivygrey">AVS Name</div>
-              <Select
-                value={selectedAvs}
-                onChange={(value) => {
-                  setSelectedAvs(value as AvsOption);
-                  setSelectedChain(null);
-                }}
-                options={avsOptions}
-                styles={selectStyles}
-                isDisabled={isSubmitting}
-                placeholder="Select an AVS..."
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <div className="text-sm leading-5 font-medium text-ivygrey">Chain</div>
-              <Select
-                value={selectedChain}
-                onChange={(value) => setSelectedChain(value)}
-                options={chains}
-                styles={selectStyles}
-                isDisabled={isSubmitting}
-                placeholder="Select a chain..."
-              />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <div className="text-sm leading-5 font-medium text-ivygrey">Operator Address</div>
-              <CreatableSelect<SelectOption>
-              value={selectedAddress ? {
-                value: selectedAddress.value,
-                label: `${(selectedAddress.value)} | ${operatorName}`
-              } : null}
-              onChange={handleAddressChange}
-              options={operatorData.map(entry => ({
-                value: entry.public_key,
-                label: `${(entry.public_key)} | ${entry.name}`
-              }))}
-              styles={{
-                ...selectStyles,
-                option: (baseStyles: any, state: any) => ({
-                  ...baseStyles,
-                  backgroundColor: state.isSelected ? '#374151' : 'transparent',
-                  color: '#667085',
-                  '&:hover': {
-                    backgroundColor: '#4B5563',
-                  },
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }),
-                singleValue: (baseStyles: any) => ({
-                  ...baseStyles,
-                  color: '#667085',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }),
-              }}
-              isDisabled={isSubmitting}
-              isClearable
-              placeholder="Select or enter an operator address..."
-            />
-            </div>
-
-            {selectedAddress && !operatorData.some(entry => entry.public_key === selectedAddress.value) && (
-              <div className="flex flex-col gap-1.5">
-                <div className="text-sm leading-5 font-medium text-ivygrey">Operator Name</div>
-                <input
-                  type="text"
-                  value={operatorName}
-                  onChange={(e) => setOperatorName(e.target.value)}
-                  className="bg-transparent border border-gray-600 rounded-lg p-2 text-gray-400"
-                  placeholder="Enter operator name..."
-                  disabled={isSubmitting}
-                />
-              </div>
-            )}
-            {selectedAddress && operatorData.some(entry => entry.public_key === selectedAddress.value) && (
-              <div className="flex flex-col gap-1.5">
-                <div className="text-sm leading-5 font-medium text-ivygrey">Operator Name</div>
-                <div className="p-2 text-gray-400">
-                  {operatorName}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="flex gap-4 ml-auto">
-            <div
-              onClick={() => !isSubmitting && navigate(-1)}
-              className={`px-4 py-2 rounded-lg bg-bgButton text-textPrimary
-                ${!isSubmitting ? 'hover:bg-textGrey cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
-            >
-              Cancel
-            </div>
-            <button
-              disabled={!isValid || isSubmitting}
-              onClick={() => {
-                if (!selectedAvs?.machineId || !selectedAvs.value || !selectedChain?.value || !selectedAddress?.value) {
-                  toast.error("Please fill in all fields", { theme: "dark" });
-                  return;
-                }
-
-                editKeys(
-                  selectedAvs.machineId,
-                  selectedAvs.value,
-                  selectedChain.value,
-                  selectedAddress.value
-                );
-              }}
-              className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textPrimary disabled:opacity-50"
-            >
-              {isSubmitting ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
+    return (
+  <div className="fixed left-0 top-0 w-screen h-screen flex justify-center items-center bg-black/[0.8]">
+    <div className="flex flex-col bg-widgetBg w-[730px] rounded-xl p-8 gap-10">
+      <div className="flex items-center">
+        <h2>Add Address Details</h2>
+        <div onClick={() => !isSubmitting && navigate(-1)} className="ml-auto cursor-pointer">
+          <img src={closeIcon} alt="close icon" />
         </div>
       </div>
-    )};
+
+      <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-1.5">
+          <div className="text-sm leading-5 font-medium text-ivygrey">AVS Name</div>
+          <Select
+            value={selectedAvs}
+            onChange={(value) => {
+              setSelectedAvs(value as AvsOption);
+              setSelectedChain(null);
+            }}
+            options={avsOptions}
+            styles={selectStyles}
+            isDisabled={isSubmitting}
+            placeholder="Select an AVS..."
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <div className="text-sm leading-5 font-medium text-ivygrey">Chain</div>
+          <Select
+            value={selectedChain}
+            onChange={(value) => setSelectedChain(value)}
+            options={chains}
+            styles={selectStyles}
+            isDisabled={isSubmitting}
+            placeholder="Select a chain..."
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <div className="text-sm leading-5 font-medium text-ivygrey">Operator Name</div>
+          <input
+            type="text"
+            value={operatorName}
+            onChange={(e) => setOperatorName(e.target.value)}
+            className="bg-transparent border border-gray-600 rounded-lg p-2 text-gray-400 placeholder-[#667085]"
+            placeholder="Enter operator name..."
+            disabled={isSubmitting || (selectedAddress?.value ? operatorData.some(entry => entry.public_key === selectedAddress.value) : false)}
+          />
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <div className="text-sm leading-5 font-medium text-ivygrey">Operator Address</div>
+          <CreatableSelect<SelectOption>
+            value={selectedAddress ? {
+              value: selectedAddress.value,
+              label: `${(selectedAddress.value)} | ${operatorName}`
+            } : null}
+            onChange={handleAddressChange}
+            options={operatorData.map(entry => ({
+              value: entry.public_key,
+              label: `${(entry.public_key)} | ${entry.name}`
+            }))}
+            styles={{
+              ...selectStyles,
+              option: (baseStyles: any, state: any) => ({
+                ...baseStyles,
+                backgroundColor: state.isSelected ? '#374151' : 'transparent',
+                color: '#667085',
+                '&:hover': {
+                  backgroundColor: '#4B5563',
+                },
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }),
+              singleValue: (baseStyles: any) => ({
+                ...baseStyles,
+                color: '#667085',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }),
+            }}
+            isDisabled={isSubmitting}
+            isClearable
+            placeholder="Select or enter an operator address..."
+          />
+        </div>
+      </div>
+
+      <div className="flex gap-4 ml-auto">
+        <div
+          onClick={() => !isSubmitting && navigate(-1)}
+          className={`px-4 py-2 rounded-lg bg-bgButton text-textPrimary
+            ${!isSubmitting ? 'hover:bg-textGrey cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+        >
+          Cancel
+        </div>
+        <button
+          disabled={!isValid || isSubmitting}
+          onClick={() => {
+            if (!selectedAvs?.machineId || !selectedAvs.value || !selectedChain?.value || !selectedAddress?.value) {
+              toast.error("Please fill in all fields", { theme: "dark" });
+              return;
+            }
+
+            editKeys(
+              selectedAvs.machineId,
+              selectedAvs.value,
+              selectedChain.value,
+              selectedAddress.value
+            );
+          }}
+          className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textPrimary disabled:opacity-50"
+        >
+          {isSubmitting ? 'Saving...' : 'Save Changes'}
+        </button>
+      </div>
+    </div>
+  </div>
+);
+};

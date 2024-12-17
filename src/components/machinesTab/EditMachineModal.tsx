@@ -179,7 +179,7 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
   const isValid = selectedChain && selectedAddress &&
     (operatorName || operatorData.some(entry => entry.public_key === selectedAddress.value));
 
-  return (
+    return (
     <div className="fixed left-0 top-0 w-screen h-screen flex justify-center items-center bg-black/[0.8]">
       <div className="flex flex-col bg-widgetBg w-[730px] rounded-xl p-8 gap-10">
         <div className="flex items-center">
@@ -201,62 +201,54 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
                 placeholder="Select a chain..."
               />
             </div>
+
+            <div className="flex flex-col gap-1.5">
+              <div className="text-md leading-5 font-lg text-ivygrey">Operator Name</div>
+              <input
+                type="text"
+                value={operatorName}
+                onChange={(e) => setOperatorName(e.target.value)}
+                className="bg-transparent border border-gray-600 rounded-lg p-2 text-gray-400 placeholder-[#667085]"
+                placeholder="Enter operator name..."
+                disabled={isSubmitting || (selectedAddress?.value ? operatorData.some(entry => entry.public_key === selectedAddress.value) : false)}
+              />
+            </div>
+
             <div className="flex flex-col gap-1.5">
               <div className="text-md leading-5 font-lg text-ivygrey">Operator Address</div>
               <CreatableSelect<SelectOption>
-              value={selectedAddress}
-              onChange={handleAddressChange}
-              options={operatorData.map(entry => ({
-                value: entry.public_key,
-                label: `${entry.public_key} | ${entry.name}`
-              }))}
-              styles={{
-                ...selectStyles,
-                option: (baseStyles: any, state: any) => ({
-                  ...baseStyles,
-                  backgroundColor: state.isSelected ? '#374151' : 'transparent',
-                  color: '#667085',
-                  '&:hover': {
-                    backgroundColor: '#4B5563',
-                  },
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }),
-                singleValue: (baseStyles: any) => ({
-                  ...baseStyles,
-                  color: '#667085',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }),
-              }}
-              isDisabled={isSubmitting}
-              isClearable
-              placeholder="Select or enter an operator address..."
-            />
+                value={selectedAddress}
+                onChange={handleAddressChange}
+                options={operatorData.map(entry => ({
+                  value: entry.public_key,
+                  label: `${entry.public_key} | ${entry.name}`
+                }))}
+                styles={{
+                  ...selectStyles,
+                  option: (baseStyles: any, state: any) => ({
+                    ...baseStyles,
+                    backgroundColor: state.isSelected ? '#374151' : 'transparent',
+                    color: '#667085',
+                    '&:hover': {
+                      backgroundColor: '#4B5563',
+                    },
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }),
+                  singleValue: (baseStyles: any) => ({
+                    ...baseStyles,
+                    color: '#667085',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }),
+                }}
+                isDisabled={isSubmitting}
+                isClearable
+                placeholder="Select or enter an operator address..."
+              />
             </div>
-            {selectedAddress && !operatorData.some(entry => entry.public_key === selectedAddress.value) && (
-              <div className="flex flex-col gap-1.5">
-                <div className="text-md leading-5 font-lg text-ivygrey">Operator Name</div>
-                <input
-                  type="text"
-                  value={operatorName}
-                  onChange={(e) => setOperatorName(e.target.value)}
-                  className="bg-transparent border border-gray-600 rounded-lg p-2 text-gray-400"
-                  placeholder="Enter operator name..."
-                  disabled={isSubmitting}
-                />
-              </div>
-            )}
-            {selectedAddress && operatorData.some(entry => entry.public_key === selectedAddress.value) && (
-              <div className="flex flex-col gap-1.5">
-                <div className="text-md leading-5 font-lg text-ivygrey">Operator Name</div>
-                <div className="p-2 text-gray-400">
-                  {operatorName}
-                </div>
-              </div>
-            )}
           </div>
         </div>
         <div className="flex gap-4 ml-auto">

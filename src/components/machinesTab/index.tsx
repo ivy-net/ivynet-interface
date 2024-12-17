@@ -82,7 +82,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
 
   const filters = [
     { label: "AVS Running", query: "running" },
-    { label: "Ethereum AVS", query: "ethereum" },
+    { label: "Mainnet AVS", query: "ethereum" },
     { label: "Active Set", query: "active" },
     { label: "Unhealthy", query: "unhealthy" }
   ];

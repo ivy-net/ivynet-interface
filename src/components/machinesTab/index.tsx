@@ -94,13 +94,9 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
   const getTimeStatus = (timestamp: string | null | undefined): JSX.Element => {
   if (!timestamp) {
     return (
-      <div className="flex items-center justify-center relative group">
-        <div className="w-2 h-2 rounded-full bg-red-500" />
-        <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded py-2 px-3 whitespace-nowrap">
-          <div className="font-medium">Last Node Metrics Received:</div>
-          <div className="text-gray-300">Not Available</div>
-        </div>
-      </div>
+      <span className="text-textWarning">
+        Not Available
+      </span>
     );
   }
 
@@ -127,7 +123,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
   // Create human-readable time difference
   let timeAgo;
   if (diffMinutes < 1) {
-    timeAgo = 'Just now';
+    timeAgo = '< 1 Minute Ago';
   } else if (diffMinutes < 60) {
     timeAgo = `${diffMinutes} ${diffMinutes === 1 ? 'Minute' : 'Minutes'} Ago`;
   } else if (diffHours < 24) {
@@ -136,20 +132,17 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     timeAgo = `${diffDays} ${diffDays === 1 ? 'Day' : 'Days'} Ago`;
   }
 
-  // Determine dot color based on time difference
-  let dotColorClass = 'bg-positive';
-  if (diffMinutes >= 30) {
-    dotColorClass = 'bg-textWarning';
+  // Determine text color class based on time difference
+  let textColorClass = 'text-positive';
+  if (diffMinutes >= 60) {
+    textColorClass = 'text-textWarning';
   } else if (diffMinutes >= 15) {
-    dotColorClass = 'bg-ivygrey';
+    textColorClass = 'text-ivygrey';
   }
 
   return (
-    <div className="flex items-center justify-center relative group">
-      <div className={`h-2 w-2 rounded-full ${dotColorClass}`} />
-      <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded py-2 px-3 whitespace-nowrap">
-        <div className="font-medium">{timeAgo}</div>
-      </div>
+    <div className={`text-sm ${textColorClass} text-center`}>
+      {timeAgo}
     </div>
   );
 };
@@ -413,12 +406,13 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
                 <Th content="Health" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}
                 ></Th>
                 <Th
-                  content="Score"
-                  sortKey="performance_score"
-                  currentSort={sortConfig}
-                  onSort={setSortConfig}
-                  tooltip="Can show 0 if AVS doesn't have performance score metric."
-                ></Th>
+                content="Score"
+                sortKey="performance_score"
+                currentSort={sortConfig}
+                onSort={setSortConfig}
+                tooltip="Can show 0 if AVS doesn't have performance score metric."
+                className="text-center"
+              ></Th>
                 <Th
                   content="Active Set"
                   sortKey="active_set"
@@ -446,13 +440,13 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
                   <Td content={getLatestVersion(avs.avs_type, avs.chain)}></Td>
                   <Td>
                     <HealthStatus
-                      isConnected={avs.errors.length === 0}
+                      isChecked={avs.errors.length === 0}
                       errors={avs.errors}
                     />
                   </Td>
-                  <Td score={avs.performance_score}></Td>
+                  <Td score={avs.performance_score} className="text-center"></Td>
                   <Td isChecked={avs.active_set}></Td>
-                  <Td>{getTimeStatus(avs.updated_at)}</Td>
+                  <Td className="w-42">{getTimeStatus(avs.updated_at)}</Td>
                   <Td>
                     <MachineWidget
                       address={avs.machine_id}
@@ -470,4 +464,4 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
       <Outlet />
     </>
   );
-}; // Close the component function
+};

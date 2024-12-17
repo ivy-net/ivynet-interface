@@ -13,7 +13,6 @@ interface WidgetItemProps {
 
 export const WidgetItem: React.FC<WidgetItemProps> = ({ title, description, to, connected, size = "lg", className = "" }) => {
   const conditionalClasses = to ? "hover:bg-widgetHoverBg" : "";
-
   return (
     <ConditionalLink to={to}>
       <div className={`flex bg-widgetBg p-5 rounded-xl ${conditionalClasses} ${className}`}>
@@ -22,7 +21,7 @@ export const WidgetItem: React.FC<WidgetItemProps> = ({ title, description, to, 
           {size === "lg" && <div className="text-5xl font-semibold">{description}</div>}
           <div className="flex gap-1">
             {connected !== undefined && <ConnectedIcon isConnected={connected} />}
-            <div className="text-textSecondary text-sm font-normal">{title}</div>
+            <div className="text-textSecondary text-sm font-normal whitespace-nowrap">{title}</div>
           </div>
         </div>
         {to &&

@@ -51,7 +51,6 @@ export const MachinesWidget: React.FC<MachinesWidgetProps> = ({ data, details, a
       <WidgetItem
         title="Machines"
         description={`${runningMachines}`}
-        to="/machines?filter=running"
       />
       <WidgetItem
         title="Addresses"

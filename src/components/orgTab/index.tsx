@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { SearchBar } from "../shared/searchBar";
 import { SectionTitle } from "../shared/sectionTitle";
 import { Topbar } from "../Topbar";
@@ -24,9 +25,8 @@ interface PubKeyData {
   name: string;
 }
 
-export const OrgTab: React.FC<OrgTabProps> = () => {
+const OrgTab: React.FC<OrgTabProps> = () => {
   const [operatorStakes, setOperatorStakes] = useState<{ [key: string]: string }>({});
-
   // Fetch AVS data
   const { data: avsResponse } = useSWR<AxiosResponse<AVS[]>>(
     'avs',
@@ -95,89 +95,93 @@ export const OrgTab: React.FC<OrgTabProps> = () => {
     };
   };
 
+  const getOperatorName = (operatorAddress: string) => {
+    const pubkeyData = pubkeys?.find(item => item.public_key === operatorAddress);
+    return pubkeyData?.name || '';
+  };
+
   return (
-    <>
-      <Topbar title="Address Overview" />
-      {uniqueOperators.length === 0 ? (
-        <EmptyAddresses />
-      ) : (
-        <>
-          <SectionTitle title="Global Stats" className="text-textPrimary" />
-          <div className="grid grid-cols-4 gap-4">
-          <WidgetItem
-            title="AVS Nodes"
-            description={`${avs?.length ?? 0}`}
-            to="/machines"
-          />
-            <WidgetItem
-              title="Machines"
-              description={`${new Set(avs?.map((a: AVS) => a.machine_id)).size ?? 0}`}
-            />
-            <WidgetItem
-              title="Addresses"
-              description={`${uniqueOperators.length}`}
-              connected={true}
-            />
-            <WidgetItem
-              title="Active Set"
-              description={`${avs?.filter((item: AVS) => item.active_set === true).length ?? 0}`}
-              to="/machines?filter=active"
-              connected={true}
-            />
-          </div>
+  <>
+    <Topbar title="Address Overview" />
+    {uniqueOperators.length === 0 ? (
+      <EmptyAddresses />
+    ) : (
+      <>
+        <SectionTitle title="Global Stats" className="text-textPrimary" />
+        <div className="grid grid-cols-4 gap-4">
+          <WidgetItem title="AVS Nodes" description={`${avs?.length ?? 0}`} to="/machines" />
+          <WidgetItem title="Machines" description={`${new Set(avs?.map((a: AVS) => a.machine_id)).size ?? 0}`} />
+          <WidgetItem title="Addresses" description={`${uniqueOperators.length}`} connected={true} />
+          <WidgetItem title="Active Set" description={`${avs?.filter((item: AVS) => item.active_set === true).length ?? 0}`} to="/machines?filter=active" connected={true} />
+        </div>
+
+        <div className="flex items-center justify-between">
           <SectionTitle title="Per Operator Address" className="text-textPrimary" />
-          <div className="bg-widgetBg rounded-lg p-4">
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr>
-                    <th className="px-6 py-4 text-left font-medium text-textSecondary bg-contentBg rounded-l-lg">
-                      Addresses
-                    </th>
-                    <th className="px-6 py-4 text-left font-medium text-textSecondary bg-contentBg">
-                      Delegated ETH
-                    </th>
-                    <th className="px-6 py-4 text-left font-medium text-textSecondary bg-contentBg">
-                      Total AVS
-                    </th>
-                    <th className="px-6 py-4 text-left font-medium text-textSecondary bg-contentBg">
-                      Active Set Count
-                    </th>
-                    <th className="px-6 py-4 text-left font-medium text-textSecondary bg-contentBg">
-                      AVS with Errors
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-textGrey">
-                  {uniqueOperators.map((operator) => (
-                    <tr key={operator}>
-                      <td className="px-6 py-4 font-medium text-textSecondary">
-                        {operator.slice(0, 6)}...{operator.slice(-4)}
-                      </td>
-                      <td className="px-6 py-4 text-textPrimary text-center">
-                        {parseFloat(operatorStakes[operator] || '0').toFixed(2)} ETH
-                      </td>
-                      <td className="px-6 py-4 text-textPrimary text-center">
-                        {getOperatorStats(operator).totalAvs}
-                      </td>
-                      <td className="px-6 py-4 text-textPrimary text-center">
-                        {getOperatorStats(operator).activeSetCount}
-                      </td>
-                      <td className="px-6 py-4 text-textPrimary text-center">
-                        <span className="mr-2">
-                          {getOperatorStats(operator).errorCount}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <Link to="/machines/edit/keys">
+            <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">
+              Add Address
             </div>
+          </Link>
+        </div>
+
+        <div className="bg-widgetBg rounded-lg p-4">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr>
+                  <th className="px-6 py-4 text-left font-medium text-textSecondary bg-contentBg rounded-l-lg">
+                    Addresses
+                  </th>
+                  <th className="px-6 py-4 text-left font-medium text-textSecondary bg-contentBg">
+                    Address Name
+                  </th>
+                  <th className="px-6 py-4 text-left font-medium text-textSecondary bg-contentBg">
+                    Delegated ETH
+                  </th>
+                  <th className="px-6 py-4 text-left font-medium text-textSecondary bg-contentBg">
+                    Total AVS
+                  </th>
+                  <th className="px-6 py-4 text-left font-medium text-textSecondary bg-contentBg">
+                    Active Set Count
+                  </th>
+                  <th className="px-6 py-4 text-left font-medium text-textSecondary bg-contentBg">
+                    AVS with Errors
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-textGrey">
+                {uniqueOperators.map((operator) => (
+                  <tr key={operator}>
+                    <td className="px-6 py-4 font-medium text-textSecondary">
+                      {operator.slice(0, 6)}...{operator.slice(-4)}
+                    </td>
+                    <td className="px-6 py-4 text-textPrimary">
+                      {getOperatorName(operator)}
+                    </td>
+                    <td className="px-6 py-4 text-textPrimary">
+                      {parseFloat(operatorStakes[operator] || '0').toFixed(2)} ETH
+                    </td>
+                    <td className="px-6 py-4 text-textPrimary">
+                      {getOperatorStats(operator).totalAvs}
+                    </td>
+                    <td className="px-6 py-4 text-textPrimary">
+                      {getOperatorStats(operator).activeSetCount}
+                    </td>
+                    <td className="px-6 py-4 text-textPrimary">
+                      <span className="mr-2">
+                        {getOperatorStats(operator).errorCount}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </>
-      )}
-    </>
-  );
+        </div>
+      </>
+    )}
+  </>
+);
 };
 
 export default OrgTab;

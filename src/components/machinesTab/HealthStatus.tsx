@@ -1,21 +1,13 @@
 import React, { useState } from 'react';
+import { CheckedIcon } from "../shared/checkedIcon";  // Update the import path as needed
 
 interface HealthStatusProps {
-  isConnected: boolean;
+  isChecked: boolean;
   errors: string[];
 }
 
- const HealthStatus: React.FC<HealthStatusProps> = ({ isConnected, errors = [] }) => {
+const HealthStatus: React.FC<HealthStatusProps> = ({ isChecked, errors = [] }) => {
   const [showTooltip, setShowTooltip] = useState(false);
-
-  // Don't   show tooltip if there are no errors
-  if (isConnected || errors.length === 0) {
-    return (
-      <div className="flex items-center justify-center">
-        <div className="w-2 h-2 rounded-full bg-positive"></div>
-      </div>
-    );
-  }
 
   return (
     <div className="relative">
@@ -24,10 +16,9 @@ interface HealthStatusProps {
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
       >
-        <div className="w-2 h-2 rounded-full bg-textWarning"></div>
+        <CheckedIcon isChecked={isChecked} />
       </div>
-
-      {showTooltip && (
+      {showTooltip && !isChecked && errors.length > 0 && (
         <div className="absolute z-50 left-1/2 transform -translate-x-1/2 mt-2 w-64">
           <div className="bg-widgetBg border border-textGrey text-textPrimary p-3 rounded-lg shadow-lg">
             <div className="space-y-2">

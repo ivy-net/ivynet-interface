@@ -413,12 +413,13 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
                 <Th content="Health" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}
                 ></Th>
                 <Th
-                  content="Score"
-                  sortKey="performance_score"
-                  currentSort={sortConfig}
-                  onSort={setSortConfig}
-                  tooltip="Can show 0 if AVS doesn't have performance score metric."
-                ></Th>
+                content="Score"
+                sortKey="performance_score"
+                currentSort={sortConfig}
+                onSort={setSortConfig}
+                tooltip="Can show 0 if AVS doesn't have performance score metric."
+                className="text-center"
+              ></Th>
                 <Th
                   content="Active Set"
                   sortKey="active_set"
@@ -446,11 +447,11 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
                   <Td content={getLatestVersion(avs.avs_type, avs.chain)}></Td>
                   <Td>
                     <HealthStatus
-                      isConnected={avs.errors.length === 0}
+                      isChecked={avs.errors.length === 0}
                       errors={avs.errors}
                     />
                   </Td>
-                  <Td score={avs.performance_score}></Td>
+                  <Td score={avs.performance_score} className="text-center"></Td>
                   <Td isChecked={avs.active_set}></Td>
                   <Td>{getTimeStatus(avs.updated_at)}</Td>
                   <Td>

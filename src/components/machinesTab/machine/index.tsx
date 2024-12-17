@@ -299,7 +299,7 @@ const handleCloseRescanModal = () => {
               <Td content={getLatestVersion(avs.avs_type, avs.chain)}></Td>
               <Td>
                 <HealthStatus
-                  isConnected={avs.errors.length === 0}
+                  isChecked={avs.errors.length === 0}
                   errors={avs.errors}
                 />
               </Td>

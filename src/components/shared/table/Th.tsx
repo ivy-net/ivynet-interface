@@ -73,7 +73,7 @@ export const Th: React.FC<ThProps> = ({
     >
       {content && (
         <div className="flex items-center gap-1">
-          <div className="text-md text-textGrey">{content}</div>
+<div className={`text-md text-textGrey ${className}`}>{content}</div>
           {getSortIcon()}
           {tooltip && (
             <div className="flex relative">

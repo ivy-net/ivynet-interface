@@ -6,6 +6,7 @@ interface SearchBarProps {
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({ onSearch = () => {} }) => {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   const [term, setTerm] = useState("");
   const [expanded, setExpanded] = useState(false);
 

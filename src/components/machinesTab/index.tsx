@@ -357,7 +357,7 @@ export const MachinesTab: React.FC = () => {
           onClose={handleCloseRescanModal}
           isOpen={showRescanModal}
         />
-      )}
+        )}
 
        {(allAvs.length > 0 || searchTerm || filter) && (
          <Table>

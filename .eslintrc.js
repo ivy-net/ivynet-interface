@@ -37,5 +37,6 @@ module.exports = {
     '@typescript-eslint/no-empty-interface': 'off',
     '@typescript-eslint/no-extra-semi': 'off',
     '@typescript-eslint/no-empty-object-type': 'off',
+    '@typescript-eslint/no-empty-function': 'off',
   }
 }

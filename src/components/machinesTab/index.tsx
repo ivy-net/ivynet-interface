@@ -54,7 +54,7 @@ export const MachinesTab: React.FC = () => {
       refreshInterval: 0,
       errorRetryCount: 3, // Changed from retryCount to errorRetryCount
       shouldRetryOnError: false,
-      onError: (error) => {
+      onError: () => {
         if (!localStorage.getItem('machine-fetch-error')) {
           toast.error('Error loading machines data. Please refresh the page to try again.', {
             theme: "dark",
@@ -306,58 +306,60 @@ export const MachinesTab: React.FC = () => {
   // Remove the separate error effect since we're handling it in the SWR config
   return (
      <>
-       <Topbar title="Nodes Overview" />
-       <SectionTitle title="AVS Deployments" className="text-textPrimary" />
-       <MachinesWidget
-         data={machineStatus}
-         avs={allAvs}
-       />
+     <Topbar title="Nodes Overview" />
+        <SectionTitle title="AVS Deployments" className="text-textPrimary" />
+        <MachinesWidget
+        data={machineStatus}
+        avs={allAvs}
+        />
 
-       {allAvs.length === 0 && !searchTerm && !filter && (
-         <div className="mt-24">
-           <EmptyMachines />
-         </div>
-       )}
+        {allAvs.length === 0 && !searchTerm && !filter && (
+        <div className="mt-24">
+          <EmptyMachines />
+        </div>
+        )}
 
-       <Filters
-         filters={filters}
-         onSearch={setSearchTerm}
-       >
-         <Link to="edit/keys" relative="path">
-           <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">Add Address</div>
-         </Link>
-         <Link to="code/installclient" relative="path">
-           <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">Install Client</div>
-         </Link>
-         <button
-           onClick={() => setShowAddAvsModal(true)}
-           className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
-         >
-           Add AVS
-         </button>
-         <button
-           onClick={() => setShowRescanModal(true)}
-           className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
-         >
-           Rescan
-         </button>
-       </Filters>
+        {(allAvs.length > 0 || searchTerm || filter) && (
+        <Filters
+          filters={filters}
+          onSearch={setSearchTerm}
+        >
+          <Link to="edit/keys" relative="path">
+            <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">Add Address</div>
+          </Link>
+          <Link to="code/installclient" relative="path">
+            <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">Install Client</div>
+          </Link>
+          <button
+            onClick={() => setShowAddAvsModal(true)}
+            className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
+          >
+            Add AVS
+          </button>
+          <button
+            onClick={() => setShowRescanModal(true)}
+            className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
+          >
+            Rescan
+          </button>
+        </Filters>
+        )}
 
-       {showAddAvsModal && (
-         <AddAVSModal
-           onClose={handleCloseAddAvsModal}
-           isOpen={showAddAvsModal}
-         />
-       )}
+        {showAddAvsModal && (
+        <AddAVSModal
+          onClose={handleCloseAddAvsModal}
+          isOpen={showAddAvsModal}
+        />
+        )}
 
-       {showRescanModal && (
-         <RescanModal
-           onClose={handleCloseRescanModal}
-           isOpen={showRescanModal}
-         />
-       )}
+        {showRescanModal && (
+        <RescanModal
+          onClose={handleCloseRescanModal}
+          isOpen={showRescanModal}
+        />
+      )}
 
-       {(allAvs.length > 0 || searchTerm) && (
+       {(allAvs.length > 0 || searchTerm || filter) && (
          <Table>
               <Tr>
                 <Th content="AVS" sortKey="avs_name" currentSort={sortConfig} onSort={setSortConfig}></Th>
@@ -396,7 +398,7 @@ export const MachinesTab: React.FC = () => {
                 <Th content="Machine" sortKey="machine_id" currentSort={sortConfig} onSort={setSortConfig}  ></Th>
                 <Th   content=""></Th>
               </Tr>
-              {filteredAvs.map((avs, index) => (
+              {filteredAvs.map((avs) => (
                 <Tr key={`${avs.machine_id}-${avs.avs_name}`}>
                   <Td><AvsWidget name={avs.avs_name} /></Td>
                   <Td content={avs.avs_type}></Td>

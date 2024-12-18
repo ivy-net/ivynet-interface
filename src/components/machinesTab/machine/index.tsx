@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { Topbar } from "../../Topbar";
 import { SectionTitle } from "../../shared/sectionTitle";
 import { MachineStatus } from "./MachineStatus";
@@ -29,46 +29,90 @@ interface VersionInfo {
   breaking_change_version: string | null;
   breaking_change_datetime: string | null;
 }
+
 interface MachineProps {}
 
 export const Machine: React.FC<MachineProps> = () => {
   const [showAddAvsModal, setShowAddAvsModal] = useState(false);
   const [showRescanModal, setShowRescanModal] = useState(false);
-  const closeModal = () => {
-    setShowAddAvsModal(false);
-  };
   const [searchTerm, setSearchTerm] = useState("");
   const [sortConfig, setSortConfig] = useState<{ key: string | null; direction: 'asc' | 'desc' | 'none' }>({
-  key: null,
-  direction: 'none'});
-  const { address } = useParams();
-  const apiFetcher = (url: string) => apiFetch(url, "GET");
-
-
-  const avsResponse = useSWR<AxiosResponse<AVS[]>>('avs', apiFetcher, {
-    onSuccess: (data) => console.log("AVS data received:", data?.data),
-    onError: (error) => []
+    key: null,
+    direction: 'none'
   });
-  const avsList = avsResponse.data?.data || [];
-  let filteredAvsList = avsList.filter(avs => avs.machine_id === address);
+  const { address } = useParams();
+  const fetcher = (url: string) => apiFetch(url, "GET");
 
-  if (searchTerm) {
-    filteredAvsList = filteredAvsList.filter(avs =>
-      avs.avs_name.toLowerCase().includes(searchTerm.toLowerCase())
+  const { data: machineResponse } = useSWR<AxiosResponse<MachineDetails[]>>(
+    'machine',
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnMount: true,
+      revalidateOnReconnect: false,
+      refreshInterval: 0,
+      errorRetryCount: 3,
+      shouldRetryOnError: false,
+    }
+  );
+
+  const { data: versionsData } = useSWR<AxiosResponse<VersionInfo[]>>(
+    'info/avs/version',
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnMount: true,
+      revalidateOnReconnect: false,
+      refreshInterval: 0,
+      errorRetryCount: 3,
+      shouldRetryOnError: false,
+    }
+  );
+
+  const machine = useMemo(() =>
+    machineResponse?.data?.find((m: MachineDetails) => m.machine_id === address),
+    [machineResponse, address]
+  );
+
+  const machineName = useMemo(() =>
+    machine?.name?.replace(/"/g, '') || "",
+    [machine]
+  );
+
+  const avsCount = useMemo(() =>
+    machine?.avs_list?.length || 0,
+    [machine]
+  );
+
+  const filteredAndSortedAvsList = useMemo(() => {
+    let avsList = machine?.avs_list || [];
+
+    if (searchTerm) {
+      avsList = avsList.filter((avs: AVS) =>
+        avs.avs_name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    return sortConfig.key ? sortData(avsList, sortConfig) : avsList;
+  }, [machine, searchTerm, sortConfig]);
+
+  const closeModal = useCallback(() => {
+    setShowAddAvsModal(false);
+  }, []);
+
+  const handleCloseRescanModal = useCallback(() => {
+    setShowRescanModal(false);
+  }, []);
+
+  const getLatestVersion = useCallback((nodeType: string | null, chain: string | null): string => {
+    if (!versionsData?.data || !nodeType || !chain) return "";
+
+    const versionInfo = versionsData.data.find(
+      (v: VersionInfo) => v.node_type === nodeType && v.chain === chain
     );
-  }
 
-  let sortedAvsList = filteredAvsList;
-  if (sortConfig.key) {
-  sortedAvsList = sortData(filteredAvsList, sortConfig);
-  }
-
-  const machineResponse = useSWR<AxiosResponse<MachineDetails[]>, any>(`machine`, apiFetcher);
-  const machineList = machineResponse.data?.data || [];
-  const machine = machineList.find(machine => machine.machine_id === address);
-  const machineName = machine?.name.replace(/"/g, '') || "";
-
-  const avsCount = machine?.avs_list?.length || 0;
+    return versionInfo?.latest_version || "";
+  }, [versionsData]);
 
   const cores = machine?.system_metrics.cores?.toString() || "0";
   const cpuUsage = (machine?.system_metrics.cpu_usage || 0).toFixed(2).toString() + "%";
@@ -80,7 +124,7 @@ export const Machine: React.FC<MachineProps> = () => {
   const diskTotal = machine && byteSize(
     machine.system_metrics.disk_info.usage + machine.system_metrics.disk_info.free).toString();
 
-    const getTimeStatus = (timestamp: string | null | undefined): JSX.Element => {
+  const getTimeStatus = (timestamp: string | null | undefined): JSX.Element => {
     if (!timestamp) {
       return (
         <span className="text-sm text-red-500">
@@ -89,7 +133,6 @@ export const Machine: React.FC<MachineProps> = () => {
       );
     }
 
-    // Parse the timestamp and force UTC
     const updateTimeUTC = new Date(timestamp);
     const now = new Date();
     const nowUTC = new Date(now.getUTCFullYear(),
@@ -99,13 +142,11 @@ export const Machine: React.FC<MachineProps> = () => {
                            now.getUTCMinutes(),
                            now.getUTCSeconds());
 
-    // Calculate the time difference in milliseconds
     const diffMs = nowUTC.getTime() - updateTimeUTC.getTime();
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
     const diffHours = Math.floor(diffMinutes / 60);
     const diffDays = Math.floor(diffHours / 24);
 
-    // Create human-readable time difference
     let timeAgo;
     if (diffMinutes < 1) {
       timeAgo = '< 1 Minute Ago';
@@ -117,7 +158,6 @@ export const Machine: React.FC<MachineProps> = () => {
       timeAgo = `${diffDays} ${diffDays === 1 ? 'Day' : 'Days'} Ago`;
     }
 
-    // Determine text color class based on time difference
     let textColorClass = 'text-positive';
     if (diffMinutes >= 60) {
       textColorClass = 'text-red-500';
@@ -131,80 +171,51 @@ export const Machine: React.FC<MachineProps> = () => {
       </span>
     );
   };
-//  const formatAddress = (address: string | null | undefined): string => {
-//    if (!address) return '';
-//    return `${address.slice(0, 4)}...${address.slice(-4)}`;
-//  };
-
-  const versionsResponse = useSWR<AxiosResponse<VersionInfo[]>>(
-  'info/avs/version',
-  apiFetch,
-  {
-    onSuccess: (data) => console.log("Version data updated:", data?.data),
-    onError: (error) => {
-      console.error('Version fetch error:', error);
-      return [];
-    }
-  }
-);
-
-const getLatestVersion = (nodeType: string | null, chain: string | null): string => {
-  if (!versionsResponse.data?.data || !nodeType || !chain) return "";
-
-  const versionInfo = versionsResponse.data.data.find(
-    v => v.node_type === nodeType && v.chain === chain
-  );
-
-  return versionInfo?.latest_version || "";
-};
-
-const handleCloseRescanModal = () => {
-  setShowRescanModal(false);
-};
 
   return (
-    <>
+<div className="space-y-6">
       <Topbar goBackTo="/machines" />
       <div className="flex">
-    <MachineWidget
-      name={machineName}
-      address={machine?.machine_id || ""}
-      isConnected={machine?.status === "Healthy"}
-      showCopy={true}
-      isHeader={true}
-    />
-    <div className="flex items-center ml-auto gap-4">
-      <SearchBar onSearch={setSearchTerm} />
-      <button
-        onClick={() => setShowAddAvsModal(true)}
-        className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
-      >
-        Add AVS
-      </button>
-      <button
-        onClick={() => setShowRescanModal(true)}
-        className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
-      >
-        Rescan
-      </button>
-    </div>
-  </div>
+        <MachineWidget
+          name={machineName}
+          address={machine?.machine_id || ""}
+          isConnected={machine?.status === "Healthy"}
+          showCopy={true}
+          isHeader={true}
+        />
+        <div className="flex items-center ml-auto gap-4">
+          <SearchBar onSearch={setSearchTerm} />
+          <button
+            onClick={() => setShowAddAvsModal(true)}
+            className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
+          >
+            Add AVS
+          </button>
+          <button
+            onClick={() => setShowRescanModal(true)}
+            className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
+          >
+            Rescan
+          </button>
+        </div>
+      </div>
 
-  {showAddAvsModal && (
-    <AddAVSModal
-      onClose={closeModal}
-      isOpen={showAddAvsModal}
-      machineId={address}
-    />
-  )}
+      {showAddAvsModal && (
+        <AddAVSModal
+          onClose={closeModal}
+          isOpen={showAddAvsModal}
+          machineId={address}
+        />
+      )}
 
-  {showRescanModal && (
-    <RescanModal
-      onClose={handleCloseRescanModal}
-      isOpen={showRescanModal}
-      machineId={address}
-    />
-  )}
+      {showRescanModal && (
+        <RescanModal
+          onClose={handleCloseRescanModal}
+          isOpen={showRescanModal}
+          machineId={address}
+        />
+      )}
+
       <div className="flex gap-6">
         <div className="flex flex-col">
           <div className="text-sidebarColor text-base font-medium">Machine Status</div>
@@ -215,6 +226,7 @@ const handleCloseRescanModal = () => {
           <div className="text-textPrimary text-base font-light">{avsCount}</div>
         </div>
       </div>
+
       <SectionTitle title="System Status"></SectionTitle>
       <div className="grid grid-cols-4 gap-4">
         <MachineStatus title="Cores" status={cores} />
@@ -229,12 +241,12 @@ const handleCloseRescanModal = () => {
       </div>
 
       <SectionTitle title="AVS Overview"></SectionTitle>
-      {((!avsResponse.error && (avsList?.length ?? 0) > 0) || searchTerm) && (
+      {((machine?.avs_list?.length ?? 0) > 0 || searchTerm) && (
         <Table>
           <Tr>
             <Th content="AVS" sortKey="avs_name" currentSort={sortConfig} onSort={setSortConfig}></Th>
             <Th content="Type" sortKey="avs_type" currentSort={sortConfig} onSort={setSortConfig}></Th>
-              <Th content="Chain" sortKey="chain" currentSort={sortConfig} onSort={setSortConfig}></Th>
+            <Th content="Chain" sortKey="chain" currentSort={sortConfig} onSort={setSortConfig}></Th>
             <Th
               content="Version"
               currentSort={sortConfig}
@@ -256,7 +268,6 @@ const handleCloseRescanModal = () => {
               tooltip="Can show 0 if AVS doesn't have performance score metric."
               className="text-center"
             ></Th>
-            {/*<Th content="Address" sortKey="operator_address" currentSort={sortConfig} onSort={setSortConfig}></Th>*/}
             <Th
               content="Active Set"
               sortKey="active_set"
@@ -269,7 +280,7 @@ const handleCloseRescanModal = () => {
             <Th content=""></Th>
           </Tr>
 
-          {sortedAvsList.map((avs, index) => (
+          {filteredAndSortedAvsList.map((avs: AVS, index: number) => (
             <Tr key={`${avs.machine_id}-${avs.avs_name}`}>
               <Td><AvsWidget name={avs.avs_name} /></Td>
               <Td content={avs.avs_type}></Td>
@@ -289,8 +300,6 @@ const handleCloseRescanModal = () => {
                 />
               </Td>
               <Td score={avs.performance_score} className="text-center"></Td>
-              {/*<Td content={formatAddress(avs.operator_address) || ""}></Td>*/}
-
               <Td isChecked={avs.active_set}></Td>
               <Td className="flex items-center justify-center">
                 {getTimeStatus(avs.updated_at)}
@@ -306,6 +315,6 @@ const handleCloseRescanModal = () => {
           ))}
         </Table>
       )}
-    </>
+    </div>
   );
 };

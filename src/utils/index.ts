@@ -17,8 +17,8 @@ export const apiFetch = async<T>(resource: string, method: Method, data?: T, con
     headers["Content-Type"] = "application/json"
 
     // Special handling for set password endpoint
-    const isSetPasswordEndpoint = resource.includes("authorize/set_password");
-    const baseUrl = process.env.REACT_APP_API_ENDPOINT || "https://api2.test.ivynet.dev";
+    //const isSetPasswordEndpoint = resource.includes("authorize/set_password");
+    const baseUrl = process.env.REACT_APP_API_ENDPOINT || "https://api1.test.ivynet.dev";
 
     const url = resource.startsWith("http")
       ? resource

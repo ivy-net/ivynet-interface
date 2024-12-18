@@ -1,3 +1,4 @@
+import React from "react"
 import { App } from '../App';
 import { AvsTab } from '../components/avsTab';
 import { SettingsTab } from '../components/settingsTab';

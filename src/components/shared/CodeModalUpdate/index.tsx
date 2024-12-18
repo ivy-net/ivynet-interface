@@ -51,7 +51,7 @@ export const CodeModalUpdate: React.FC<CodeModalUpdateProps> = ({
         <div className="flex flex-col gap-4">
           <div className="flex gap-2 text-sidebarColor items-center">
             <div className="border rounded-full text-[10px] font-bold border-sidebarColor w-[20px] h-[20px] flex justify-center items-center">1</div>
-            <div className="font-medium">Scan your machine for new nodes - See IvyNet QuickStart Guide</div>
+            <div className="font-medium">Scan your machine for new nodes</div>
           </div>
           <div className="flex p-7 border border-bgButton text-textPrimary">
             <div className="w-3/4 font-light whitespace-pre-wrap">

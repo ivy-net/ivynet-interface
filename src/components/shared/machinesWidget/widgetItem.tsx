@@ -1,3 +1,4 @@
+import React from 'react';
 import chevronRight from "./../../../images/chevron-right.svg"
 import { ConditionalLink } from "../conditionalLink";
 import { ConnectedIcon } from "../connectedIcon";

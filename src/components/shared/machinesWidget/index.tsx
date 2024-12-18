@@ -1,3 +1,4 @@
+import React from 'react';
 import { MachinesStatus, NodeDetail, AVS } from "../../../interfaces/responses";
 import { WidgetItem } from "./widgetItem";
 import { apiFetch } from "../../../utils";

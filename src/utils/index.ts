@@ -13,7 +13,7 @@ export const shortenAddress = (input: string) => {
 
 export const apiFetch = async<T>(resource: string, method: Method, data?: T, configs?: Partial<AxiosRequestConfig>) => {
   try {
-    let headers: any = {}
+    const headers: any = {}
     headers["Content-Type"] = "application/json"
 
     // Special handling for set password endpoint
@@ -26,7 +26,7 @@ export const apiFetch = async<T>(resource: string, method: Method, data?: T, con
 
     console.log('API Request URL:', url);  // For debugging
 
-    let config: Partial<AxiosRequestConfig> = {
+    const config: Partial<AxiosRequestConfig> = {
       url,
       method,
       headers,

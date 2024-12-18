@@ -15,7 +15,6 @@ import { AVS, MachineDetails, MachinesStatus, NodeDetail, Response } from "../..
 import { apiFetch } from "../../utils";
 import { AxiosResponse } from "axios";
 import { AvsWidget } from "../shared/avsWidget";
-import { getChainLabel } from "../../utils/UiMessages";
 import { sortData } from '../../utils/SortData';
 import HealthStatus from './HealthStatus';
 import { AddAVSModal } from "./AddAVSModal";
@@ -40,16 +39,8 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
   const [showAddAvsModal, setShowAddAvsModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedAvs, setSelectedAvs] = useState<AVS | null>(null);
   const [showRescanModal, setShowRescanModal] = useState(false);
 
-
-
-  const handleEditChain = (avs: AVS) => {
-  setSelectedAvs(avs);
-  setShowEditModal(true);
-};
 
   const handleCloseAddAvsModal = (e?: React.MouseEvent) => {
     if (e) {
@@ -68,10 +59,6 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
     setShowRescanModal(false);
   };
 
-
-  const hasActiveFilter = () => {
-    return filter && filter !== "running"; // Since "running" is your default filter
-  };
 
   const options = [
     { label: "IvyClient Update", link: "code/updateclient" },
@@ -315,17 +302,19 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
   );
 
   useEffect(() => {
-    if (location.state?.refetch) {
-      response && response.mutate();
-      machinesResponse && machinesResponse.mutate();
-      avsResponse && avsResponse.mutate();
-    }
-  }, [location.state, response?.mutate, machinesResponse?.mutate, avsResponse?.mutate]);
+      if (location.state?.refetch) {
+        // Only trigger mutate if the response objects exist
+        if (response) response.mutate();
+        if (machinesResponse) machinesResponse.mutate();
+        if (avsResponse) avsResponse.mutate();
+      }
+    }, [
+      location.state,
+      response,
+      machinesResponse,
+      avsResponse
+    ]);
 
-  const formatAddress = (address: string | null | undefined): string => {
-    if (!address) return '';
-    return `${address.slice(0, 4)}...${address.slice(-4)}`;
-  };
 
   const getLatestVersion = (nodeType: string | null, chain: string | null): string => {
     if (!versionsResponse.data?.data || !nodeType || !chain) return "";
@@ -381,7 +370,7 @@ export const MachinesTab: React.FC<MachinesTabProps> = () => {
         />
       )}
 
-      {(!avsResponse.error && (avsResponse.data?.data?.length ?? 0) > 0 || searchTerm) && (
+      {((!avsResponse.error && (avsResponse.data?.data?.length ?? 0) > 0) || searchTerm) && (
         <>
           {filteredAvs.length === 0 && !filter && !searchTerm ? (
             <div className="mt-24"><EmptyMachines /></div>

@@ -34,15 +34,9 @@ export const Td: React.FC<TdProps> = ({ content, avs_type, children, to, isConne
   const hasConnectedIcon = isConnected !== undefined;
   const hasCheckedIcon = isChecked !== undefined;
   const hasDiskStatus = diskStatus !== undefined;
-  const handleChainSelect = (selectedChain: Chain) => {
-    if (onChainSelect) {
-      onChainSelect(selectedChain);
-      setDropdownOpen(false);
-    }
-  };
+
 const [isEditing, setIsEditing] = useState(false);
 const [inputAddress, setInputAddress] = useState("");
-const [showTooltip, setShowTooltip] = useState(false);
 const [showDropdown, setShowDropdown] = useState(false);
 
   return (

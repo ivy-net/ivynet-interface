@@ -13,8 +13,6 @@ interface OrgTableProps {
 
 export const OrgTable: React.FC<OrgTableProps> = ({ stats }) => {
 
-
-
   return (
     <Table className="block overflow-x-auto">
       <Tr>

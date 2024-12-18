@@ -36,7 +36,7 @@ export const MachinesWidget: React.FC<MachinesWidgetProps> = ({ data, details, a
   const runningNodes = avs?.filter(a => a.avs_name).length ?? 0;
 
   // Get the number of AVS in active set
-  const activeSetCount = avs?.filter(item => item.active_set === true).length ?? 0;
+//  const activeSetCount = avs?.filter(item => item.active_set === true).length ?? 0;
 
   // Get the number of unhealthy AVS
   const unhealthyCount = avs?.filter(item => item.errors && item.errors.length > 0).length ?? 0;

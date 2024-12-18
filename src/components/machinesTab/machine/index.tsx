@@ -4,7 +4,7 @@ import { SectionTitle } from "../../shared/sectionTitle";
 import { MachineStatus } from "./MachineStatus";
 import useSWR from "swr";
 import { AxiosResponse } from "axios";
-import { MachinesStatus, NodeDetail, Response, AVS, MachineDetails } from "../../../interfaces/responses";
+import { AVS, MachineDetails } from "../../../interfaces/responses";
 import { apiFetch } from "../../../utils";
 import { useParams } from "react-router-dom";
 import byteSize from 'byte-size';
@@ -14,7 +14,6 @@ import { Th } from "../../shared/table/Th";
 import { Td } from "../../shared/table/Td";
 import { AvsWidget } from "../../shared/avsWidget";
 import { MachineWidget } from "../../shared/machineWidget";
-import { getChainLabel } from "../../../utils/UiMessages";
 import { AddAVSModal } from "../AddAVSModal";
 import HealthStatus from '../HealthStatus';
 import { SearchBar } from "../../shared/searchBar";
@@ -45,8 +44,6 @@ export const Machine: React.FC<MachineProps> = () => {
   const { address } = useParams();
   const apiFetcher = (url: string) => apiFetch(url, "GET");
 
-  const machinesResponse = useSWR<AxiosResponse<MachineDetails[]>>("machine", apiFetcher);
-
 
   const avsResponse = useSWR<AxiosResponse<AVS[]>>('avs', apiFetcher, {
     onSuccess: (data) => console.log("AVS data received:", data?.data),
@@ -72,7 +69,6 @@ export const Machine: React.FC<MachineProps> = () => {
   const machineName = machine?.name.replace(/"/g, '') || "";
 
   const avsCount = machine?.avs_list?.length || 0;
-  const avsActiveSet = machine?.avs_list?.length || 0;
 
   const cores = machine?.system_metrics.cores?.toString() || "0";
   const cpuUsage = (machine?.system_metrics.cpu_usage || 0).toFixed(2).toString() + "%";
@@ -135,10 +131,10 @@ export const Machine: React.FC<MachineProps> = () => {
       </span>
     );
   };
-  const formatAddress = (address: string | null | undefined): string => {
-    if (!address) return '';
-    return `${address.slice(0, 4)}...${address.slice(-4)}`;
-  };
+//  const formatAddress = (address: string | null | undefined): string => {
+//    if (!address) return '';
+//    return `${address.slice(0, 4)}...${address.slice(-4)}`;
+//  };
 
   const versionsResponse = useSWR<AxiosResponse<VersionInfo[]>>(
   'info/avs/version',
@@ -233,7 +229,7 @@ const handleCloseRescanModal = () => {
       </div>
 
       <SectionTitle title="AVS Overview"></SectionTitle>
-      {(!avsResponse.error && (avsList?.length ?? 0) > 0 || searchTerm) && (
+      {((!avsResponse.error && (avsList?.length ?? 0) > 0) || searchTerm) && (
         <Table>
           <Tr>
             <Th content="AVS" sortKey="avs_name" currentSort={sortConfig} onSort={setSortConfig}></Th>

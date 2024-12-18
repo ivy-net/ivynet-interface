@@ -6,12 +6,13 @@ interface TableProps {
 };
 
 export const Table: React.FC<TableProps> = ({ children, className = "" }) => {
-
   return (
-    <table className={className}>
-      <tbody>
-        {children}
-      </tbody>
-    </table>
+    <div className="relative isolate overflow-auto">
+      <table className={`w-full ${className}`}>
+        <tbody>
+          {children}
+        </tbody>
+      </table>
+    </div>
   );
 }

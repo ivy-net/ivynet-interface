@@ -1,4 +1,5 @@
-import AlertsIcon from "../images/alerts.svg"
+import React from 'react';
+//import AlertsIcon from "../images/alerts.svg"
 import { ConditionalLink } from "./shared/conditionalLink";
 import { GoBackButton } from "./shared/goBackButton"
 

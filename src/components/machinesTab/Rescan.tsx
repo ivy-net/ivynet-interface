@@ -13,7 +13,7 @@ export const RescanModal: React.FC<RescanModalProps> = ({
   machineId
 }) => {
   const title = "Not seeing your latest AVSs? Rescan!";
-  const code = `https://docs.ivynet.dev/docs/client/QuickstartGuide`;
+  const code = `https://docs.ivynet.dev/docs/client/clientdocs/#scan-for-active-nodes`;
 
   const handleClose = () => {
     if (onClose) {

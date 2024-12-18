@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import ivySmall from "../../images/ivy-small.svg"
-import { Link, useNavigate, Navigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { apiFetch } from "../../utils";

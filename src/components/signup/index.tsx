@@ -5,15 +5,18 @@ import { apiFetch } from "../../utils";
 import { getMessage } from "../../utils/UiMessages";
 import { toast } from "react-toastify";
 
-interface SignupProps {
-};
+interface ApiError {
+  message: string;
+  response?: {
+    data?: {
+      error?: string;
+    };
+  };
+}
 
-export const Signup: React.FC<SignupProps> = () => {
-  const email = "someemail@gmail.com"
-  const company = "Company"
+export const Signup: React.FC = () => {
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
-
   const navigate = useNavigate();
 
   const signup = async () => {
@@ -21,9 +24,12 @@ export const Signup: React.FC<SignupProps> = () => {
       const response = await apiFetch("authorize/set_password", "POST", JSON.stringify({ password }))
       console.log(response)
       navigate("/")
-    } catch (err: any) {
-      toast.error(getMessage(err), { theme: "dark" });
-      console.log(err)
+    } catch (err: unknown) {
+      const error = err as ApiError;
+      // Get the error message from the error object
+      const errorMessage = error.response?.data?.error || error.message || "Unknown error";
+      toast.error(getMessage(errorMessage), { theme: "dark" });
+      console.log(error)
     }
   }
 
@@ -44,11 +50,7 @@ export const Signup: React.FC<SignupProps> = () => {
           <img className="w-[48px] h-[48px]" src={ivySmall} alt="ivy-logo" />
           <div className="text-ivywhite text-2xl leading-9 font-bold">Create Account</div>
           <div className="text-textPrimary text-sm leading-6 font-normal">
-            {/*<span className="font-bold">{email}</span>/*}*/}
-
             <span>Please update your password in order to access </span>
-          {/*  <span className="font-bold">{company}'s </span>
-            <span>space in </span>*/}
             <span className="font-bold">Ivynet</span>
           </div>
         </div>
@@ -57,17 +59,35 @@ export const Signup: React.FC<SignupProps> = () => {
             <form>
               <div className="flex flex-col gap-1.5">
                 <div className="text-sm leading-5 font-medium text-ivygrey">Password*</div>
-                <input type="password" value={password} onChange={(input) => setPassword(input.currentTarget.value)} className="bg-transparent border border-textGrey py-2.5 px-3 rounded-lg outline-none focus:border-white text-ivygrey2 placeholder:text-ivygrey2 text-base font-normal" placeholder="Create a password" />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(input) => setPassword(input.currentTarget.value)}
+                  className="bg-transparent border border-textGrey py-2.5 px-3 rounded-lg outline-none focus:border-white text-ivygrey2 placeholder:text-ivygrey2 text-base font-normal"
+                  placeholder="Create a password"
+                />
               </div>
               <div className="flex flex-col gap-1.5">
                 <div className="text-sm leading-5 font-medium text-ivygrey">Password*</div>
-                <input type="password" value={password2} onChange={(input) => setPassword2(input.currentTarget.value)} className="bg-transparent border border-textGrey py-2.5 px-3 rounded-lg outline-none focus:border-white text-ivygrey2 text-base font-normal placeholder:text-ivygrey2" placeholder="Confirm Password" />
+                <input
+                  type="password"
+                  value={password2}
+                  onChange={(input) => setPassword2(input.currentTarget.value)}
+                  className="bg-transparent border border-textGrey py-2.5 px-3 rounded-lg outline-none focus:border-white text-ivygrey2 text-base font-normal placeholder:text-ivygrey2"
+                  placeholder="Confirm Password"
+                />
                 {passwordMismatch() && <div className="text-sm leading-5 font-medium text-red-800">{getMessage("ConfirmPasswordMismatch")}</div>}
                 {!passwordMismatch() && <div className="text-sm leading-5 font-medium text-ivygrey">Must be at least 8 characters.</div>}
               </div>
             </form>
           </div>
-          <button className={`py-2.5 px-4 bg-accent/[0.10] border rounded-lg w-full ${buttonClasses}`} disabled={!allowCreateBtn()} onClick={signup}>Create Account</button>
+          <button
+            className={`py-2.5 px-4 bg-accent/[0.10] border rounded-lg w-full ${buttonClasses}`}
+            disabled={!allowCreateBtn()}
+            onClick={signup}
+          >
+            Create Account
+          </button>
         </div>
         <div className="flex text-ivygrey gap-1 justify-center">
           <div>Already have an account?</div>
@@ -76,7 +96,6 @@ export const Signup: React.FC<SignupProps> = () => {
           </Link>
         </div>
       </div>
-
     </div>
   );
 }

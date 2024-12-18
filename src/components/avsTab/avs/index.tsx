@@ -5,7 +5,7 @@ import { AvsWidget } from "../../shared/avsWidget";
 import { AvsInfo } from "./AvsInfo";
 import { MachineRequirements } from "./MachineRequirements";
 import { apiFetch } from "../../../utils";
-import { AVS, MachineDetails } from "../../../interfaces/responses";
+import { AVS } from "../../../interfaces/responses";
 import { AxiosResponse } from "axios";
 import useSWR from "swr";
 import { Table } from "../../shared/table";

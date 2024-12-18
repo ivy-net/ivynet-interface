@@ -1,6 +1,6 @@
 import React from "react";
 import avsIcon from "../../../images/avs.svg"
-import { ConditionalLink } from "../conditionalLink";
+//import { ConditionalLink } from "../conditionalLink";
 import arrowUpRight from "./../../../images/arrow-up-right.svg"
 
 
@@ -14,7 +14,7 @@ export const AvsWidget: React.FC<AvsWidgetProps> = ({ name, description = "", to
   const hoverClasses = to ? "hover:bg-widgetHoverBg" : "";
 
   return (
-    <ConditionalLink to={to}>
+//    <ConditionalLink to={to}>
       <div className={`flex gap-1 p-2 rounded-lg items-center w-fit ${hoverClasses}`}>
         <div className={`flex gap-1 items-center ${hoverClasses}`}>
           <div className="p-2.5 h-[40px] w-[40px] bg-sidebarIconHighlightColor/[0.15] rounded-full relative">
@@ -27,6 +27,6 @@ export const AvsWidget: React.FC<AvsWidgetProps> = ({ name, description = "", to
           {to && <img src={arrowUpRight} alt="chevron right" />}
         </div>
       </div>
-    </ConditionalLink>
+//    </ConditionalLink>
   );
 }

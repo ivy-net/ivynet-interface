@@ -1,4 +1,73 @@
+
 import { DiskStatus } from "./data"
+
+export interface VersionInfo {
+  node_type: string;
+  chain: string;
+  latest_version: string;
+  latest_version_digest: string;
+  breaking_change_version: string | null;
+  breaking_change_datetime: string | null;
+}
+
+export interface SystemMetrics {
+  cores: number;
+  cpu_usage: number;
+  memory_info: {
+    usage: number;
+    free: number;
+    status: string;
+  };
+  disk_info: {
+    usage: number;
+    free: number;
+    status: string;
+  };
+}
+
+export interface AVSInfo extends AVS {
+  machineName?: string;
+  machineStatus?: string;
+  systemMetrics?: SystemMetrics;
+}
+
+
+
+export interface AVSInfoFull {
+  machine_id: string;
+  avs_name: string;
+  avs_type: string;
+  avs_version: string;
+  chain: string;
+  version_hash: string;
+  operator_address: string;
+  active_set: boolean;
+  created_at: string;
+  updated_at: string;
+  uptime: number;
+  performance_score: number;
+  update_status: string;
+  errors: string[];
+}
+
+export interface ConsolidatedMachine {
+  machine_id: string;
+  name: string;
+  status: string;
+  system_metrics: SystemMetrics;
+  avs_list: AVSInfo[];
+  errors: {
+    NodeError: {
+      name: string;
+      node_type: string;
+      errors: string[];
+    };
+  }[];
+}
+
+
+
+
 
 export interface MachinesStatus {
   total_machines: number,

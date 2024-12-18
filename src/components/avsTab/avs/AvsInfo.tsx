@@ -1,3 +1,4 @@
+import React from "react";
 import { WidgetItem } from "../../shared/machinesWidget/widgetItem";
 
 interface AvsInfoProps {

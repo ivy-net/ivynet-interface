@@ -33,7 +33,8 @@ export const SettingsTab: React.FC<SettingsTabProps> = () => {
   useEffect(() => {
     const fetchOrganization = async () => {
       try {
-        const response = await fetch('https://api1.test.ivynet.dev/organization/1');
+        const baseUrl = `${process.env.REACT_APP_API_ENDPOINT}/organization/1`;
+        const response = await fetch(baseUrl);
         if (!response.ok) {
           throw new Error('Failed to fetch organization data');
         }

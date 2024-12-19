@@ -10,7 +10,6 @@ interface AddAVSModalProps {
 export const AddAVSModal: React.FC<AddAVSModalProps> = ({
   onClose,
   isOpen = true,
-  machineId
 }) => {
   const title = "Add AVS on Machine";
   const code = `https://docs.ivynet.dev/docs/client/clientdocs/#usage`;

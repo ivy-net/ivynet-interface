@@ -5,7 +5,7 @@ interface SidebarItemProps {
   title: string;
   Logo: any;
   to?: string
-};
+}
 
 export const SidebarItem: React.FC<SidebarItemProps> = ({ title = "", Logo, to }) => {
   to = to !== undefined ? to : title.toLowerCase()

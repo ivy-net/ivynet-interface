@@ -11,7 +11,7 @@ interface FiltersProps {
   filters: Filter[];
   children?: React.ReactNode;
   onSearch?: (term: string) => void;
-};
+}
 
 export const Filters: React.FC<FiltersProps> = ({ filters, children, onSearch }) => {
   const [searchParams, setSearchParams] = useSearchParams();

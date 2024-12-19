@@ -10,7 +10,6 @@ interface RescanModalProps {
 export const RescanModal: React.FC<RescanModalProps> = ({
   onClose,
   isOpen = true,
-  machineId
 }) => {
   const title = "Not seeing your latest AVSs? Rescan!";
   const code = `https://docs.ivynet.dev/docs/client/clientdocs/#scan-for-active-nodes`;

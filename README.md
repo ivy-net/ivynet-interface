@@ -1,6 +1,6 @@
 # Ivynet Interface
 
-Currently, only dummy data is used. 
+Currently, only dummy data is used.
 
 ## Available Scripts
 

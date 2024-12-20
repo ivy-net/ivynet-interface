@@ -1,4 +1,4 @@
-import React from 'react'; 
+import React from 'react';
 import { SidebarItem } from "./SidebarItem";
 import { ReactComponent as Machines } from "../images/machines.svg"
 //import { ReactComponent as AVS } from "../images/avs-tab.svg"

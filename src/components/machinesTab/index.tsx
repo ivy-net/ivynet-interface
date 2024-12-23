@@ -394,7 +394,7 @@ export const MachinesTab: React.FC = () => {
                   onSort={setSortConfig}
                   tooltip="Add chain and operator public address to see AVS Active Set status."
                 ></Th>
-                <Th content="Last Connected" sortKey="updated_at" currentSort={sortConfig} onSort={setSortConfig}></Th>
+                <Th content="Last Update" sortKey="updated_at" currentSort={sortConfig} onSort={setSortConfig}></Th>
                 <Th content="Machine" sortKey="machine_id" currentSort={sortConfig} onSort={setSortConfig}  ></Th>
                 <Th   content=""></Th>
               </Tr>
@@ -416,6 +416,7 @@ export const MachinesTab: React.FC = () => {
                     <HealthStatus
                       isChecked={avs.errors.length === 0}
                       errors={avs.errors}
+                      avsName={avs.avs_name}
                     />
                   </Td>
                   <Td score={avs.performance_score} className="text-center"></Td>

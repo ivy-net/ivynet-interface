@@ -275,12 +275,12 @@ export const Machine: React.FC<MachineProps> = () => {
               onSort={setSortConfig}
               tooltip="Add chain and operator public address to see AVS Active Set status."
             ></Th>
-            <Th content="Last Connected" sortKey="updated_at" currentSort={sortConfig} onSort={setSortConfig}></Th>
+            <Th content="Last Update" sortKey="updated_at" currentSort={sortConfig} onSort={setSortConfig}></Th>
             <Th content="Machine" sortKey="machine_id" currentSort={sortConfig} onSort={setSortConfig}></Th>
             <Th content=""></Th>
           </Tr>
 
-          {filteredAndSortedAvsList.map((avs: AVS, index: number) => (
+          {filteredAndSortedAvsList.map((avs: AVS) => (
             <Tr key={`${avs.machine_id}-${avs.avs_name}`}>
               <Td><AvsWidget name={avs.avs_name} /></Td>
               <Td content={avs.avs_type}></Td>

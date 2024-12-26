@@ -162,6 +162,10 @@ export const router = createBrowserRouter([
           },
         ]
       },
+      {
+        path: "adduser",
+        element: <AddUserModal />
+      },
       // {
       //   path: "rewards",
       //   element: <RewardsTab />

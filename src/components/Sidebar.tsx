@@ -20,7 +20,6 @@ export const Sidebar: React.FC<SidebarProps> = () => {
     </Link>
     <div className="flex flex-col h-full">
         {/* <SidebarItem title="Overview" Logo={Machines} /> */}
-        <SidebarItem title="Invite" Logo={AVS} to="/adduser" />
         <SidebarItem title="Nodes" Logo={Machines} to="machines" />
         {/* <SidebarItem title="Overview" Logo={OverviewTab} /> */}
         {/* <SidebarItem title="AVS" Logo={AVS} to="avs" /> */}
@@ -28,6 +27,7 @@ export const Sidebar: React.FC<SidebarProps> = () => {
         {/* <SidebarItem title="Rewards" Logo={Rewards} /> */}
         <div className="mt-auto">
         {/*  <SidebarItem title="Organization" Logo={Settings} />*/}
+        <SidebarItem title="Invite" Logo={AVS} to="/adduser" />
           <SidebarItem title="Help" Logo={Help} to="./help" />
         </div>
       </div>

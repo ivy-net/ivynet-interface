@@ -251,13 +251,13 @@ export const Machine: React.FC<MachineProps> = () => {
               content="Version"
               currentSort={sortConfig}
               onSort={setSortConfig}
-              tooltip="Can show blank if AVS doesn't ship with docker container."
+              tooltip="Currently N/A if AVS lacks docker container or requires local build. Semantic versioning isn't universal."
             ></Th>
             <Th
               content="Latest"
               currentSort={sortConfig}
               onSort={setSortConfig}
-              tooltip="Add chain for latest version."
+              tooltip="Add chain for latest version. Semantic versioning isn't universal."
             ></Th>
             <Th content="Health" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}></Th>
             <Th
@@ -265,7 +265,7 @@ export const Machine: React.FC<MachineProps> = () => {
               sortKey="performance_score"
               currentSort={sortConfig}
               onSort={setSortConfig}
-              tooltip="Can show 0 if AVS doesn't have performance score metric."
+              tooltip="Currently N/A if AVS doesn't have metrics."
               className="text-center"
             ></Th>
             <Th
@@ -291,8 +291,8 @@ export const Machine: React.FC<MachineProps> = () => {
                   machineId={avs.machine_id || ""}
                 />
               </Td>
-              <Td content={avs.avs_version === "0.0.0" ? "unknown" : avs.avs_version}></Td>
-              <Td content={getLatestVersion(avs.avs_type, avs.chain)}></Td>
+              <Td content={avs.avs_version === "0.0.0" ? "---" : avs.avs_version} className="px-1"></Td>
+              <Td content={getLatestVersion(avs.avs_type, avs.chain)} className="px-1"></Td>
               <Td>
                 <HealthStatus
                   isChecked={avs.errors.length === 0}

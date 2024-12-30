@@ -429,7 +429,12 @@ export const MachinesTab: React.FC = () => {
                     to={`/machines/${avs.machine_id}`}
                   />
                   </Td>
-                  <Td><OptionsButton options={getOptions(avs)} /></Td>
+                  <Td>
+                  <OptionsButton 
+      options={getOptions(avs)}  
+      inHeader={true} 
+    />
+                 </Td>
                   </Tr>
            ))}
          </Table>

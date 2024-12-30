@@ -25,6 +25,7 @@ interface SelectOption {
 
 export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
   const [selectedChain, setSelectedChain] = useState<SelectOption | null>(null);
+  const [selectedName, setSelectedName] = useState<SelectOption | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<SelectOption | null>(null);
   const [operatorName, setOperatorName] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -63,7 +64,11 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
         if (operatorEntry) {
           setSelectedAddress({
             value: operatorEntry.public_key,
-            label: operatorEntry.public_key
+            label: `${operatorEntry.public_key} | ${operatorEntry.name}`
+          });
+          setSelectedName({
+            value: operatorEntry.name,
+            label: `${operatorEntry.name} | ${operatorEntry.public_key}`
           });
           setOperatorName(operatorEntry.name);
         }
@@ -88,11 +93,40 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
         entry => entry.public_key === option.value
       );
       if (operatorEntry) {
+        // If it's an existing address, set its corresponding name
+        setSelectedName({
+          value: operatorEntry.name,
+          label: `${operatorEntry.name} | ${operatorEntry.public_key}`
+        });
+        setOperatorName(operatorEntry.name);
+      }
+      // If it's a new address, keep the existing name (don't reset anything)
+    } else {
+      // Only clear everything if explicitly clearing the address
+      setSelectedName(null);
+      setOperatorName("");
+    }
+  };
+
+  // When an existing name is selected, auto-populate the address
+  const handleNameChange = (option: SelectOption | null) => {
+    setSelectedName(option);
+    if (option) {
+      const operatorEntry = operatorData.find(
+        entry => entry.name === option.value
+      );
+      if (operatorEntry) {
+        setSelectedAddress({
+          value: operatorEntry.public_key,
+          label: `${operatorEntry.public_key} | ${operatorEntry.name}`
+        });
         setOperatorName(operatorEntry.name);
       } else {
-        setOperatorName(""); // Clear name if new address
+        setSelectedAddress(null);
+        setOperatorName(option.value);
       }
     } else {
+      setSelectedAddress(null);
       setOperatorName("");
     }
   };
@@ -159,10 +193,16 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
       '&:hover': {
         backgroundColor: '#4B5563',
       },
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
     }),
     singleValue: (baseStyles: any) => ({
       ...baseStyles,
       color: '#667085',
+      whiteSpace: 'nowrap',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
     }),
     input: (baseStyles: any) => ({
       ...baseStyles,
@@ -178,7 +218,7 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
   const isValid = selectedChain && selectedAddress &&
     (operatorName || operatorData.some(entry => entry.public_key === selectedAddress.value));
 
-    return (
+  return (
     <div className="fixed left-0 top-0 w-screen h-screen flex justify-center items-center bg-black/[0.8]">
       <div className="flex flex-col bg-widgetBg w-[730px] rounded-xl p-8 gap-10">
         <div className="flex items-center">
@@ -203,13 +243,24 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
 
             <div className="flex flex-col gap-1.5">
               <div className="text-md leading-5 font-lg text-ivygrey">Operator Name</div>
-              <input
-                type="text"
-                value={operatorName}
-                onChange={(e) => setOperatorName(e.target.value)}
-                className="bg-transparent border border-gray-600 rounded-lg p-2 text-gray-400 placeholder-[#667085]"
-                placeholder="Enter operator name..."
-                disabled={isSubmitting || (selectedAddress?.value ? operatorData.some(entry => entry.public_key === selectedAddress.value) : false)}
+              <CreatableSelect<SelectOption>
+                value={selectedName}
+                onChange={handleNameChange}
+                options={operatorData.map(entry => ({
+                  value: entry.name,
+                  label: `${entry.name} | ${entry.public_key}`
+                }))}
+                styles={selectStyles}
+                isDisabled={isSubmitting}
+                isClearable
+                placeholder="Select or enter an operator name..."
+                onCreateOption={(inputValue) => {
+                  setSelectedName({
+                    value: inputValue,
+                    label: inputValue
+                  });
+                  setOperatorName(inputValue);
+                }}
               />
             </div>
 
@@ -222,27 +273,7 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
                   value: entry.public_key,
                   label: `${entry.public_key} | ${entry.name}`
                 }))}
-                styles={{
-                  ...selectStyles,
-                  option: (baseStyles: any, state: any) => ({
-                    ...baseStyles,
-                    backgroundColor: state.isSelected ? '#374151' : 'transparent',
-                    color: '#667085',
-                    '&:hover': {
-                      backgroundColor: '#4B5563',
-                    },
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }),
-                  singleValue: (baseStyles: any) => ({
-                    ...baseStyles,
-                    color: '#667085',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }),
-                }}
+                styles={selectStyles}
                 isDisabled={isSubmitting}
                 isClearable
                 placeholder="Select or enter an operator address..."

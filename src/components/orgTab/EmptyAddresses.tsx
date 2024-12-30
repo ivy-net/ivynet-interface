@@ -15,7 +15,7 @@ export const EmptyAddresses: React.FC<EmptyAddressesProps> = () => {
         <span className="justify-center text-base font-medium text-ivywhite">Add an operator address </span>
         <span className="justify-center text-sidebarColor">on the Nodes Overview tab in order to view your metrics on a per address basis</span>
       </div>
-      <Link to="/machines">
+      <Link to="/nodes">
         <button className="py-2.5 px-4 bg-accent/[0.10] border border-accent text-accent rounded-lg text-base font-semibold">Nodes Overview</button>
       </Link>
       <div className="w-[552px]">

@@ -174,7 +174,7 @@ export const Machine: React.FC<MachineProps> = () => {
 
   return (
 <div className="space-y-6">
-      <Topbar goBackTo="/machines" />
+      <Topbar goBackTo="/nodes" />
       <div className="flex">
         <MachineWidget
           name={machineName}

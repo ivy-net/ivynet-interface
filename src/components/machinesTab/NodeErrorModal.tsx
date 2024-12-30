@@ -9,7 +9,7 @@ const ERROR_DEFINITIONS = {
   },
   'CrashedNode': {
     title:'CrashedNode',
-    description: 'The node is not running, but communication is still happening with the Ivynet Client.',
+    description: 'Latest node communication was greater than 15 minutes ago. Either the AVS or the Ivynet client itself has crashed',
     severity: 'critical',
     action: 'Check node logs and restart the service if necessary.'
   },

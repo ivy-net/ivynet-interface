@@ -166,7 +166,7 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
 
       await apiFetch(urlObj.toString(), "PUT");
       toast.success(getMessage("MachineEditedMessage"), { theme: "dark" });
-      navigate("/machines", { state: { refetch: true } });
+      navigate("/nodes", { state: { refetch: true } });
     } catch (err) {
       toast.error("Failed to update machine", { theme: "dark" });
     } finally {
@@ -223,7 +223,7 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
       <div className="flex flex-col bg-widgetBg w-[730px] rounded-xl p-8 gap-10">
         <div className="flex items-center">
           <h2>Add Address Details</h2>
-          <Link to="/machines" relative="path" className="ml-auto">
+          <Link to="/nodes" relative="path" className="ml-auto">
             <img src={closeIcon} alt="close icon" />
           </Link>
         </div>
@@ -282,7 +282,7 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
           </div>
         </div>
         <div className="flex gap-4 ml-auto">
-          <Link to="/machines" relative="path">
+          <Link to="/nodes" relative="path">
             <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textPrimary">
               Cancel
             </div>

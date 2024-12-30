@@ -277,7 +277,7 @@ export const MachinesTab: React.FC = () => {
         return { label: option.label, link: `/machines/${avs.machine_id || ""}` };
       }
       if (option.label === "Edit Address") {
-        return { label: option.label, link: `/machines/edit/${avs.avs_name}/${avs.machine_id || ""}` };
+        return { label: option.label, link: `/nodes/edit/${avs.avs_name}/${avs.machine_id || ""}` };
       }
       if (option.label === "Remove AVS") {
         return {

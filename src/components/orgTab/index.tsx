@@ -111,15 +111,15 @@ const OrgTab: React.FC<OrgTabProps> = () => {
         <>
           <SectionTitle title="Global Stats" className="text-textPrimary" />
           <div className="grid grid-cols-4 gap-4">
-            <WidgetItem title="AVS Nodes" description={`${avs?.length ?? 0}`} to="/machines" />
+            <WidgetItem title="AVS Nodes" description={`${avs?.length ?? 0}`} to="/nodes" />
             <WidgetItem title="Machines" description={`${new Set(avs?.map((a: AVS) => a.machine_id)).size ?? 0}`} />
             <WidgetItem title="Addresses" description={`${uniqueOperators.length}`} connected={true} />
-            <WidgetItem title="Active Set" description={`${avs?.filter((item: AVS) => item.active_set === true).length ?? 0}`} to="/machines?filter=active" connected={true} />
+            <WidgetItem title="Active Set" description={`${avs?.filter((item: AVS) => item.active_set === true).length ?? 0}`} to="/nodes?filter=active" connected={true} />
           </div>
 
           <div className="flex items-center justify-between">
             <SectionTitle title="Per Operator Address" className="text-textPrimary" />
-            <Link to="/machines/edit/keys">
+            <Link to="/nodes/edit/keys">
               <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary">
                 Add Address
               </div>

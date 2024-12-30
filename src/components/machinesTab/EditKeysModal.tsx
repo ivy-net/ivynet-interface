@@ -234,7 +234,7 @@ export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
 
       await apiFetch(urlObj.toString(), "PUT");
       toast.success(getMessage("MachineEditedMessage"), { theme: "dark" });
-      navigate("/machines", { state: { refetch: true } });
+      navigate("/nodes", { state: { refetch: true } });
     } catch (err: any) {
       const errorMessage = err.response?.data?.error || 'Failed to update machine';
       toast.error(errorMessage, { theme: "dark" });

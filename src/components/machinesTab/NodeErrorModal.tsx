@@ -28,7 +28,7 @@ const ERROR_DEFINITIONS = {
   'NeedsUpdate': {
     title: 'NeedsUpdate',
     description: 'The node needs an update.',
-    severity: 'high',
+    severity: 'critical',
     action: 'Check update_status in API for specific update requirements.'
   },
   'NoChainInfo': {

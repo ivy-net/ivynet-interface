@@ -1,2 +1,6 @@
 /node_modules
 /build
+# Environment files
+.env
+.env.production
+.env.qa

@@ -277,7 +277,7 @@ export const MachinesTab: React.FC = () => {
         return { label: option.label, link: `/machines/${avs.machine_id || ""}` };
       }
       if (option.label === "Edit Address") {
-        return { label: option.label, link: `/machines/edit/${avs.avs_name}/${avs.machine_id || ""}` };
+        return { label: option.label, link: `/nodes/edit/${avs.avs_name}/${avs.machine_id || ""}` };
       }
       if (option.label === "Remove AVS") {
         return {
@@ -371,11 +371,11 @@ export const MachinesTab: React.FC = () => {
                   //sortKey="avs_version"
                   currentSort={sortConfig}
                   onSort={setSortConfig}
-                  tooltip="Can show blank if AVS doesn't ship with docker container."
+                  tooltip="Currently N/A if AVS lacks docker container or requires local build. Semantic versioning isn't universal."
                 ></Th>
                 <Th content="Latest" //sortKey="latest_version"
                 currentSort={sortConfig} onSort={setSortConfig}
-                tooltip="Add chain for latest version."
+                tooltip="Add chain for latest version. Semantic versioning isn't universal."
                 ></Th>
                 <Th content="Health" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}
                 ></Th>
@@ -384,7 +384,7 @@ export const MachinesTab: React.FC = () => {
                 sortKey="performance_score"
                 currentSort={sortConfig}
                 onSort={setSortConfig}
-                tooltip="Can show 0 if AVS doesn't have performance score metric."
+                tooltip="Currently N/A if AVS doesn't have metrics."
                 className="text-center"
               ></Th>
                 <Th
@@ -394,7 +394,7 @@ export const MachinesTab: React.FC = () => {
                   onSort={setSortConfig}
                   tooltip="Add chain and operator public address to see AVS Active Set status."
                 ></Th>
-                <Th content="Last Connected" sortKey="updated_at" currentSort={sortConfig} onSort={setSortConfig}></Th>
+                <Th content="Last Update" sortKey="updated_at" currentSort={sortConfig} onSort={setSortConfig}></Th>
                 <Th content="Machine" sortKey="machine_id" currentSort={sortConfig} onSort={setSortConfig}  ></Th>
                 <Th   content=""></Th>
               </Tr>
@@ -410,12 +410,13 @@ export const MachinesTab: React.FC = () => {
                   />
                   </Td>
                   {/*<Td content={formatAddress(avs.operator_address) || ""}></Td>*/}
-                  <Td content={avs.avs_version === "0.0.0" ? "unknown" : avs.avs_version}></Td>
-                  <Td content={getLatestVersion(avs.avs_type, avs.chain)}></Td>
+                  <Td content={avs.avs_version === "0.0.0" ? "---" : avs.avs_version} className="px-1"></Td>
+                  <Td content={getLatestVersion(avs.avs_type, avs.chain)} className="px-1" ></Td>
                   <Td>
                     <HealthStatus
                       isChecked={avs.errors.length === 0}
                       errors={avs.errors}
+                      avsName={avs.avs_name}
                     />
                   </Td>
                   <Td score={avs.performance_score} className="text-center"></Td>
@@ -428,7 +429,12 @@ export const MachinesTab: React.FC = () => {
                     to={`/machines/${avs.machine_id}`}
                   />
                   </Td>
-                  <Td><OptionsButton options={getOptions(avs)} /></Td>
+                  <Td>
+                  <OptionsButton 
+      options={getOptions(avs)}  
+      inHeader={true} 
+    />
+                 </Td>
                   </Tr>
            ))}
          </Table>

@@ -31,7 +31,7 @@ export const DeleteMachineModal: React.FC<DeleteMachineModalProps> = () => {
       <div className="flex flex-col bg-widgetBg w-[730px] rounded-xl p-8 gap-10">
         <div className="flex items-center">
           <h2>Remove AVS</h2>
-          <Link to="/machines" relative="path" className="ml-auto">
+          <Link to="/nodes" relative="path" className="ml-auto">
             <img src={closeIcon} alt="close icon" />
           </Link>
         </div>
@@ -46,10 +46,10 @@ export const DeleteMachineModal: React.FC<DeleteMachineModalProps> = () => {
           </div>
         </div>
         <div className="flex gap-4 ml-auto">
-          <Link to="/machines" relative="path">
+          <Link to="/nodes" relative="path">
             <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textPrimary">Cancel</div>
           </Link>
-          <Link to="/machines" state={{ refetch: true }} relative="path" onClick={() => deleteMachine(machineId || "", avsName || "")}>
+          <Link to="/nodes" state={{ refetch: true }} relative="path" onClick={() => deleteMachine(machineId || "", avsName || "")}>
             <div className="px-4 py-2 rounded-lg hover:bg-red-600 bg-red-800 text-white">Delete</div>
           </Link>
         </div>

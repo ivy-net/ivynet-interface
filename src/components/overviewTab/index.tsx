@@ -1,6 +1,6 @@
 import React from "react";
 import { Topbar } from "../Topbar";
-import { MachinesWidget } from "../shared/machinesWidget";
+//import { MachinesWidget } from "../shared/machinesWidget";
 import { SectionTitle } from "../shared/sectionTitle";
 
 interface OverviewTabProps {

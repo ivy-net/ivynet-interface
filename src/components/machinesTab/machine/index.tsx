@@ -251,13 +251,13 @@ export const Machine: React.FC<MachineProps> = () => {
               content="Version"
               currentSort={sortConfig}
               onSort={setSortConfig}
-              tooltip="Currently N/A if AVS lacks docker container or requires local build. Semantic versioning isn't universal."
+              tooltip="Currently N/A if AVS lacks docker container or requires local build. Not all AVS use semantic versioning."
             ></Th>
             <Th
               content="Latest"
               currentSort={sortConfig}
               onSort={setSortConfig}
-              tooltip="Add chain for latest version. Semantic versioning isn't universal."
+              tooltip="Add chain for latest version. Not all AVS use semantic versioning."
             ></Th>
             <Th content="Health" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}></Th>
             <Th

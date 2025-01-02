@@ -149,24 +149,24 @@ export const Machine: React.FC<MachineProps> = () => {
 
     let timeAgo;
     if (diffMinutes < 1) {
-      timeAgo = '< 1 Minute Ago';
+      timeAgo = '< 1 Mn Ago';
     } else if (diffMinutes < 60) {
-      timeAgo = `${diffMinutes} ${diffMinutes === 1 ? 'Minute' : 'Minutes'} Ago`;
+      timeAgo = `${diffMinutes} ${diffMinutes === 1 ? 'Mn' : 'Mn'} Ago`;
     } else if (diffHours < 24) {
-      timeAgo = `${diffHours} ${diffHours === 1 ? 'Hour' : 'Hours'} Ago`;
+      timeAgo = `${diffHours} ${diffHours === 1 ? 'Hr' : 'Hrs'} Ago`;
     } else {
       timeAgo = `${diffDays} ${diffDays === 1 ? 'Day' : 'Days'} Ago`;
     }
 
     let textColorClass = 'text-positive';
     if (diffMinutes >= 60) {
-      textColorClass = 'text-red-500';
+      textColorClass = 'text-textwarning';
     } else if (diffMinutes >= 15) {
       textColorClass = 'text-ivygrey';
     }
 
     return (
-      <span className={`text-sm ${textColorClass}`}>
+      <span className={`text-sm ${textColorClass} text-left w-full`}>
         {timeAgo}
       </span>
     );
@@ -273,9 +273,8 @@ export const Machine: React.FC<MachineProps> = () => {
               sortKey="active_set"
               currentSort={sortConfig}
               onSort={setSortConfig}
-              tooltip="Add chain and operator public address to see AVS Active Set status."
             ></Th>
-            <Th content="Last Update" sortKey="updated_at" currentSort={sortConfig} onSort={setSortConfig}></Th>
+            <Th content="Updated" sortKey="updated_at" currentSort={sortConfig} onSort={setSortConfig}></Th>
             <Th content="Machine" sortKey="machine_id" currentSort={sortConfig} onSort={setSortConfig}></Th>
             <Th content=""></Th>
           </Tr>

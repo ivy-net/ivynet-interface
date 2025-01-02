@@ -14,6 +14,7 @@ interface MachineWidgetProps {
   maxNameLength?: number;
   showCopy?: boolean;
   isHeader?: boolean;
+  hideIcon?: boolean;
 }
 
 export const MachineWidget: React.FC<MachineWidgetProps> = ({
@@ -23,7 +24,8 @@ export const MachineWidget: React.FC<MachineWidgetProps> = ({
   to = "",
   maxNameLength = 12,
   showCopy = false,
-  isHeader = false
+  isHeader = false,
+  hideIcon= false,
 }) => {
   const [copied, setCopied] = useState(false);
 
@@ -48,6 +50,7 @@ export const MachineWidget: React.FC<MachineWidgetProps> = ({
 
   const content = (
     <div className={`flex items-center gap-3 px-1.5 rounded-lg w-fit ${hoverClasses}`}>
+       {!hideIcon && (
       <div className={`relative p-2 ${isHeader ? 'h-10 w-10' : 'h-8 w-8'} bg-sidebarIconHighlightColor/[0.15] rounded-full`}>
         <img src={machineIcon} alt="machine icon" className="w-full h-full" />
         {isConnected !== undefined && (
@@ -56,6 +59,7 @@ export const MachineWidget: React.FC<MachineWidgetProps> = ({
           </div>
         )}
       </div>
+      )}
       <div className="flex flex-col py-1">
         <div className={`flex items-center gap-1 ${hoverClasses}`}>
           <span className={`text-textPrimary font-light ${isHeader ? 'text-lg' : 'text-sm'}`}>

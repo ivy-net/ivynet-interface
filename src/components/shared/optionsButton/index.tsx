@@ -68,7 +68,7 @@ export const OptionsButton: React.FC<OptionsButtonProps> = ({ className = "", op
   };
 
   return (
-    <div className="relative" ref={menuRef}>
+    <div className={`relative ${className}`} ref={menuRef}>  
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -81,10 +81,10 @@ export const OptionsButton: React.FC<OptionsButtonProps> = ({ className = "", op
 
       {isOpen && (
         <div 
-          className={`absolute right-0 bg-sidebarHoverBg border border-textGrey rounded-lg shadow-lg z-[100] ${
-            !inHeader ? 'bottom-[calc(100%+4px)]' : 'top-[calc(100%+4px)]'
-          }`}
-          style={{ minWidth: '180px' }}
+        className={`absolute -right-12 bg-sidebarHoverBg border border-textGrey rounded-lg shadow-lg z-[100] ${
+          'bottom-[calc(100%+4px)]' // Always show above
+        }`}
+          style={{ width: '135px' }} // Changed from minWidth to width
         >
           <div className="p-2 flex flex-col">
             {options.map((option, index) => renderMenuItem(option, index))}

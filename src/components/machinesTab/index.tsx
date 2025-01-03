@@ -77,7 +77,7 @@ export const MachinesTab: React.FC = () => {
   const getTimeStatus = (timestamp: string | null | undefined): JSX.Element => {
     if (!timestamp) {
       return (
-        <span className="text-textWarning">
+        <span className=" text-textWarning">
           Not Available
         </span>
       );
@@ -106,11 +106,11 @@ export const MachinesTab: React.FC = () => {
     // Create human-readable time difference
     let timeAgo;
     if (diffMinutes < 1) {
-      timeAgo = '< 1 Minute Ago';
+      timeAgo = '< 1 Mn Ago';
     } else if (diffMinutes < 60) {
-      timeAgo = `${diffMinutes} ${diffMinutes === 1 ? 'Minute' : 'Minutes'} Ago`;
+      timeAgo = `${diffMinutes} ${diffMinutes === 1 ? 'Mn' : 'Mn'} Ago`;
     } else if (diffHours < 24) {
-      timeAgo = `${diffHours} ${diffHours === 1 ? 'Hour' : 'Hours'} Ago`;
+      timeAgo = `${diffHours} ${diffHours === 1 ? 'Hr' : 'Hrs'} Ago`;
     } else {
       timeAgo = `${diffDays} ${diffDays === 1 ? 'Day' : 'Days'} Ago`;
     }
@@ -124,7 +124,7 @@ export const MachinesTab: React.FC = () => {
     }
 
     return (
-      <div className={`text-sm ${textColorClass} text-center`}>
+      <div className={`text-sm ${textColorClass} text-left`}>
         {timeAgo}
       </div>
     );
@@ -371,11 +371,11 @@ export const MachinesTab: React.FC = () => {
                   //sortKey="avs_version"
                   currentSort={sortConfig}
                   onSort={setSortConfig}
-                  tooltip="Currently N/A if AVS lacks docker container or requires local build. Semantic versioning isn't universal."
+                  tooltip="Currently N/A if AVS lacks docker container or requires local build. Not all AVS use semantic versioning."
                 ></Th>
                 <Th content="Latest" //sortKey="latest_version"
                 currentSort={sortConfig} onSort={setSortConfig}
-                tooltip="Add chain for latest version. Semantic versioning isn't universal."
+                tooltip="Add chain for latest version. Not all AVS use semantic versioning."
                 ></Th>
                 <Th content="Health" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}
                 ></Th>
@@ -392,15 +392,15 @@ export const MachinesTab: React.FC = () => {
                   sortKey="active_set"
                   currentSort={sortConfig}
                   onSort={setSortConfig}
-                  tooltip="Add chain and operator public address to see AVS Active Set status."
+                  //tooltip="Add chain and operator public address to see AVS Active Set status."
                 ></Th>
-                <Th content="Last Update" sortKey="updated_at" currentSort={sortConfig} onSort={setSortConfig}></Th>
+                <Th content="Updated" sortKey="updated_at" currentSort={sortConfig} onSort={setSortConfig}></Th>
                 <Th content="Machine" sortKey="machine_id" currentSort={sortConfig} onSort={setSortConfig}  ></Th>
-                <Th   content=""></Th>
+                <Th content=""></Th>
               </Tr>
-              {filteredAvs.map((avs) => (
-                <Tr key={`${avs.machine_id}-${avs.avs_name}`}>
-                  <Td><AvsWidget name={avs.avs_name} /></Td>
+              {(filteredAvs).map((avs, index) => (
+  <Tr key={`${avs.machine_id}-${avs.avs_name}-${index}`}>
+    <Td><AvsWidget name={avs.avs_name} /></Td>
                   <Td content={avs.avs_type}></Td>
                   <Td>
                   <ChainCell
@@ -427,12 +427,14 @@ export const MachinesTab: React.FC = () => {
                     address={avs.machine_id}
                     name={getMachineName(avs.machine_id, avs.machineName)}
                     to={`/machines/${avs.machine_id}`}
+                    hideIcon={true}
                   />
                   </Td>
                   <Td>
                   <OptionsButton 
       options={getOptions(avs)}  
       inHeader={true} 
+      className="mr-14" 
     />
                  </Td>
                   </Tr>

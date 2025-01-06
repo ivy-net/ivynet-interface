@@ -105,12 +105,14 @@ export const Machine: React.FC<MachineProps> = () => {
   }, []);
 
   const getLatestVersion = useCallback((nodeType: string | null, chain: string | null): string => {
-    if (!versionsData?.data || !nodeType || !chain) return "";
-
+    if (!versionsData?.data || !nodeType) return "";
+    // Default to mainnet if no chain is specified
+    const effectiveChain = chain || "mainnet";
+    
     const versionInfo = versionsData.data.find(
-      (v: VersionInfo) => v.node_type === nodeType && v.chain === chain
+      (v: VersionInfo) => v.node_type === nodeType && v.chain === effectiveChain
     );
-
+  
     return versionInfo?.latest_version || "";
   }, [versionsData]);
 

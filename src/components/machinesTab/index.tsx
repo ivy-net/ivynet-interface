@@ -291,8 +291,10 @@ export const MachinesTab: React.FC = () => {
   };
 
   const getLatestVersion = useCallback((nodeType: string | null, chain: string | null): string => {
-    if (!versionsData?.data || !nodeType || !chain) return "";
-    return versionsData.data.find(v => v.node_type === nodeType && v.chain === chain)?.latest_version || "";
+    if (!versionsData?.data || !nodeType) return "";
+    // Default to mainnet if no chain is specified
+    const effectiveChain = chain || "mainnet";
+    return versionsData.data.find(v => v.node_type === nodeType && v.chain === effectiveChain)?.latest_version || "";
   }, [versionsData]);
 
 

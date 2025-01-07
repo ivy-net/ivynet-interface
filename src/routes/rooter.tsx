@@ -74,6 +74,10 @@ export const router = createBrowserRouter([
             element: <HelpModal />
           },
           {
+            path: ":avsName",
+            element: <AvsModal />,
+          },
+          {
             path: "code",
             children: [
               {

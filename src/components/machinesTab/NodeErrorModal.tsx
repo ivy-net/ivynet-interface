@@ -48,13 +48,14 @@ const ERROR_DEFINITIONS = {
     description: 'Node is running but the AVS is not registered in the active set.',
     severity: 'high',
     action: 'Register the AVS in the active set if intended.'
-  },
-  'NoMetrics': {
-    title: 'NoMetrics',
-    description: 'AVS not producing metrics or metrics port not exposed.',
-    severity: 'high',
-    action: 'See Metrics Setup in documentation for potential solution.'
   }
+  ,
+//  'NoMetrics': {
+//    title: 'NoMetrics',
+//    description: 'AVS not producing metrics or metrics port not exposed.',
+//    severity: 'high',
+//    action: 'See Metrics Setup in documentation for potential solution.'
+//  }
 } as const;
 
 type ErrorKey = keyof typeof ERROR_DEFINITIONS;

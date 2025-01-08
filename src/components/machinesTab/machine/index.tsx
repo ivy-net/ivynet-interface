@@ -20,6 +20,8 @@ import { SearchBar } from "../../shared/searchBar";
 import { sortData } from '../../../utils/SortData';
 import ChainCell from "../ChainCell";
 import { RescanModal } from '../Rescan';
+import { NodeTypeCell } from "../NodeTypeCell";
+
 
 interface VersionInfo {
   node_type: string;
@@ -43,7 +45,7 @@ export const Machine: React.FC<MachineProps> = () => {
   const { address } = useParams();
   const fetcher = (url: string) => apiFetch(url, "GET");
 
-  const { data: machineResponse } = useSWR<AxiosResponse<MachineDetails[]>>(
+  const { data: machineResponse, mutate: mutateMachine } = useSWR<AxiosResponse<MachineDetails[]>>(
     'machine',
     fetcher,
     {
@@ -284,7 +286,14 @@ export const Machine: React.FC<MachineProps> = () => {
           {filteredAndSortedAvsList.map((avs: AVS) => (
             <Tr key={`${avs.machine_id}-${avs.avs_name}`}>
               <Td><AvsWidget name={avs.avs_name} /></Td>
-              <Td content={avs.avs_type}></Td>
+              <Td>
+                <NodeTypeCell 
+                  nodeType={avs.avs_type} 
+                  avsName={avs.avs_name} 
+                  machineId={avs.machine_id || ""} 
+                  mutateMachines={() => mutateMachine()}
+                />
+              </Td>
               <Td>
                 <ChainCell
                   chain={avs.chain}

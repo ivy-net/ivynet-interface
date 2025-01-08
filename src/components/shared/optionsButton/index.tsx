@@ -12,7 +12,7 @@ interface Option {
 interface OptionsButtonProps {
   className?: string;
   options: Option[];
-  inHeader?: boolean;  
+  inHeader?: boolean;
 }
 
 export const OptionsButton: React.FC<OptionsButtonProps> = ({ className = "", options, inHeader = false }) => {
@@ -68,7 +68,7 @@ export const OptionsButton: React.FC<OptionsButtonProps> = ({ className = "", op
   };
 
   return (
-    <div className={`relative ${className}`} ref={menuRef}>  
+    <div className={`relative ${className}`} ref={menuRef}>
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -80,7 +80,7 @@ export const OptionsButton: React.FC<OptionsButtonProps> = ({ className = "", op
       </button>
 
       {isOpen && (
-        <div 
+        <div
         className={`absolute -right-12 bg-sidebarHoverBg border border-textGrey rounded-lg shadow-lg z-[100] ${
           'bottom-[calc(100%+4px)]' // Always show above
         }`}

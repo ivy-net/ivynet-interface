@@ -14,5 +14,3 @@ export const MainContent: React.FC<MainContentProps> = ({ children }) => {
     </div>
   );
 }
-
-

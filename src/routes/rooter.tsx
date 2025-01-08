@@ -55,14 +55,14 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "",
-        loader: () => redirect("/machines"),
+        loader: () => redirect("/nodes"),
            },
       // {
       //   path: "overview",
       //   element: <OverviewTab />
       // },
       {
-        path: "machines",
+        path: "nodes",
         element: <MachinesTab />,
         children: [
           {
@@ -161,6 +161,10 @@ export const router = createBrowserRouter([
             element: <HelpTab />
           },
         ]
+      },
+      {
+        path: "adduser",
+        element: <AddUserModal />
       },
       // {
       //   path: "rewards",

@@ -47,7 +47,7 @@ export const MachinesWidget: React.FC<MachinesWidgetProps> = ({ data, details, a
       <WidgetItem
         title="AVS Nodes"
         description={`${runningNodes}`}
-        to="/machines?filter=running"
+        to="/nodes?filter=running"
       />
       <WidgetItem
         title="Machines"
@@ -62,7 +62,7 @@ export const MachinesWidget: React.FC<MachinesWidgetProps> = ({ data, details, a
       <WidgetItem
         title="Unhealthy"
         description={`${unhealthyCount}`}
-        to="/machines?filter=unhealthy"
+        to="/nodes?filter=unhealthy"
         connected={false}
       />
     </div>

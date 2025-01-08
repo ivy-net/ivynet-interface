@@ -3,32 +3,18 @@
 @tailwind utilities;
 
 @layer base {
-
   /* h1 {
     @apply text-2xl;
   } */
-
   h2 {
-    @apply text-2xl;
-    @apply leading-7;
-    @apply font-semibold;
-    @apply text-textPrimary;
+    @apply text-2xl leading-7 font-semibold text-textPrimary;
   }
-
   h3 {
-    @apply text-xl;
-    @apply leading-6;
-    @apply font-semibold;
-    @apply text-textSecondary;
+    @apply text-xl leading-6 font-semibold text-textSecondary;
   }
-
   h4 {
-    @apply text-base;
-    @apply leading-6;
-    @apply font-semibold;
-    @apply text-sidebarColor;
+    @apply text-base leading-6 font-semibold text-sidebarColor;
   }
-
 }
 
 body {

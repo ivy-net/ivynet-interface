@@ -5,9 +5,8 @@ interface TrProps {
 };
 
 export const Tr: React.FC<TrProps> = ({ children }) => {
-
   return (
-    <tr>
+    <tr className="relative"> {/* Added relative positioning */}
       {children}
     </tr>
   );

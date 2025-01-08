@@ -77,7 +77,7 @@ export const MachinesTab: React.FC = () => {
   const getTimeStatus = (timestamp: string | null | undefined): JSX.Element => {
     if (!timestamp) {
       return (
-        <span className="text-textWarning">
+        <span className=" text-textWarning">
           Not Available
         </span>
       );
@@ -106,11 +106,11 @@ export const MachinesTab: React.FC = () => {
     // Create human-readable time difference
     let timeAgo;
     if (diffMinutes < 1) {
-      timeAgo = '< 1 Minute Ago';
+      timeAgo = '< 1 Mn Ago';
     } else if (diffMinutes < 60) {
-      timeAgo = `${diffMinutes} ${diffMinutes === 1 ? 'Minute' : 'Minutes'} Ago`;
+      timeAgo = `${diffMinutes} ${diffMinutes === 1 ? 'Mn' : 'Mn'} Ago`;
     } else if (diffHours < 24) {
-      timeAgo = `${diffHours} ${diffHours === 1 ? 'Hour' : 'Hours'} Ago`;
+      timeAgo = `${diffHours} ${diffHours === 1 ? 'Hr' : 'Hrs'} Ago`;
     } else {
       timeAgo = `${diffDays} ${diffDays === 1 ? 'Day' : 'Days'} Ago`;
     }
@@ -124,7 +124,7 @@ export const MachinesTab: React.FC = () => {
     }
 
     return (
-      <div className={`text-sm ${textColorClass} text-center`}>
+      <div className={`text-sm ${textColorClass} text-left`}>
         {timeAgo}
       </div>
     );
@@ -277,7 +277,7 @@ export const MachinesTab: React.FC = () => {
         return { label: option.label, link: `/machines/${avs.machine_id || ""}` };
       }
       if (option.label === "Edit Address") {
-        return { label: option.label, link: `/machines/edit/${avs.avs_name}/${avs.machine_id || ""}` };
+        return { label: option.label, link: `/nodes/edit/${avs.avs_name}/${avs.machine_id || ""}` };
       }
       if (option.label === "Remove AVS") {
         return {
@@ -291,8 +291,10 @@ export const MachinesTab: React.FC = () => {
   };
 
   const getLatestVersion = useCallback((nodeType: string | null, chain: string | null): string => {
-    if (!versionsData?.data || !nodeType || !chain) return "";
-    return versionsData.data.find(v => v.node_type === nodeType && v.chain === chain)?.latest_version || "";
+    if (!versionsData?.data || !nodeType) return "";
+    // Default to mainnet if no chain is specified
+    const effectiveChain = chain || "mainnet";
+    return versionsData.data.find(v => v.node_type === nodeType && v.chain === effectiveChain)?.latest_version || "";
   }, [versionsData]);
 
 
@@ -371,11 +373,11 @@ export const MachinesTab: React.FC = () => {
                   //sortKey="avs_version"
                   currentSort={sortConfig}
                   onSort={setSortConfig}
-                  tooltip="Can show blank if AVS doesn't ship with docker container."
+                  tooltip="Currently N/A if AVS lacks docker container or requires local build. Not all AVS use semantic versioning."
                 ></Th>
                 <Th content="Latest" //sortKey="latest_version"
                 currentSort={sortConfig} onSort={setSortConfig}
-                tooltip="Add chain for latest version."
+                tooltip="Add chain for latest version. Not all AVS use semantic versioning."
                 ></Th>
                 <Th content="Health" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}
                 ></Th>
@@ -384,7 +386,7 @@ export const MachinesTab: React.FC = () => {
                 sortKey="performance_score"
                 currentSort={sortConfig}
                 onSort={setSortConfig}
-                tooltip="Can show 0 if AVS doesn't have performance score metric."
+                tooltip="Currently N/A if AVS doesn't have metrics."
                 className="text-center"
               ></Th>
                 <Th
@@ -392,15 +394,15 @@ export const MachinesTab: React.FC = () => {
                   sortKey="active_set"
                   currentSort={sortConfig}
                   onSort={setSortConfig}
-                  tooltip="Add chain and operator public address to see AVS Active Set status."
+                  //tooltip="Add chain and operator public address to see AVS Active Set status."
                 ></Th>
-                <Th content="Last Connected" sortKey="updated_at" currentSort={sortConfig} onSort={setSortConfig}></Th>
+                <Th content="Updated" sortKey="updated_at" currentSort={sortConfig} onSort={setSortConfig}></Th>
                 <Th content="Machine" sortKey="machine_id" currentSort={sortConfig} onSort={setSortConfig}  ></Th>
-                <Th   content=""></Th>
+                <Th content=""></Th>
               </Tr>
-              {filteredAvs.map((avs) => (
-                <Tr key={`${avs.machine_id}-${avs.avs_name}`}>
-                  <Td><AvsWidget name={avs.avs_name} /></Td>
+              {(filteredAvs).map((avs, index) => (
+  <Tr key={`${avs.machine_id}-${avs.avs_name}-${index}`}>
+    <Td><AvsWidget name={avs.avs_name} /></Td>
                   <Td content={avs.avs_type}></Td>
                   <Td>
                   <ChainCell
@@ -410,12 +412,13 @@ export const MachinesTab: React.FC = () => {
                   />
                   </Td>
                   {/*<Td content={formatAddress(avs.operator_address) || ""}></Td>*/}
-                  <Td content={avs.avs_version === "0.0.0" ? "unknown" : avs.avs_version}></Td>
-                  <Td content={getLatestVersion(avs.avs_type, avs.chain)}></Td>
+                  <Td content={avs.avs_version === "0.0.0" ? "---" : avs.avs_version} className="px-1"></Td>
+                  <Td content={getLatestVersion(avs.avs_type, avs.chain)} className="px-1" ></Td>
                   <Td>
                     <HealthStatus
                       isChecked={avs.errors.length === 0}
                       errors={avs.errors}
+                      avsName={avs.avs_name}
                     />
                   </Td>
                   <Td score={avs.performance_score} className="text-center"></Td>
@@ -426,9 +429,16 @@ export const MachinesTab: React.FC = () => {
                     address={avs.machine_id}
                     name={getMachineName(avs.machine_id, avs.machineName)}
                     to={`/machines/${avs.machine_id}`}
+                    hideIcon={true}
                   />
                   </Td>
-                  <Td><OptionsButton options={getOptions(avs)} /></Td>
+                  <Td>
+                  <OptionsButton 
+      options={getOptions(avs)}  
+      inHeader={true} 
+      className="mr-14" 
+    />
+                 </Td>
                   </Tr>
            ))}
          </Table>

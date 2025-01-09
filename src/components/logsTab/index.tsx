@@ -219,9 +219,9 @@ export const LogsTab: React.FC = () => {
       <Topbar title="Logs Overview" />
       
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-textPrimary">
+      <h2 className="text-xl font-semibold text-textPrimary">
           {selectedAvs 
-            ? `${selectedAvs} Metrics on ${getSelectedAvsChain()} as of ${formatTimestamp(logs[0]?.created_at || '')}`
+            ? `${selectedAvs} Metrics on ${getSelectedAvsChain()} as of ${formatTimestamp(Math.max(...logs.map(log => new Date(log.created_at).getTime())).toString())}`
             : 'AVS Logs Snapshot'
           }
         </h2>

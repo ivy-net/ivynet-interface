@@ -287,10 +287,10 @@ export const Machine: React.FC<MachineProps> = () => {
             <Tr key={`${avs.machine_id}-${avs.avs_name}`}>
               <Td><AvsWidget name={avs.avs_name} /></Td>
               <Td>
-                <NodeTypeCell 
-                  nodeType={avs.avs_type} 
-                  avsName={avs.avs_name} 
-                  machineId={avs.machine_id || ""} 
+                <NodeTypeCell
+                  nodeType={avs.avs_type}
+                  avsName={avs.avs_name}
+                  machineId={avs.machine_id || ""}
                   mutateMachines={() => mutateMachine()}
                 />
               </Td>

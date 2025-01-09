@@ -31,7 +31,7 @@ const formatTimestamp = (timestamp: string): string => {
         return `${isoString.split('T')[0]} ${isoString.split('T')[1].slice(0, 8)} UTC`;
       }
     }
-    
+
     // Try parsing as ISO string if not a timestamp
     const date = new Date(timestamp);
     if (!isNaN(date.getTime())) {
@@ -113,28 +113,28 @@ export const LogsTab: React.FC = () => {
 
   const consolidateLogsByTimestamp = (logs: LogEntry[]): LogEntry[] => {
     const consolidated: { [key: string]: LogEntry } = {};
-    
+
     logs.forEach(log => {
       const timestamp = log.created_at;
       const cleanedLog = cleanLogText(log.log);
-      
+
       if (consolidated[timestamp]) {
         consolidated[timestamp].log = `${consolidated[timestamp].log}\n\n${cleanedLog}`;
       } else {
         consolidated[timestamp] = { ...log, log: cleanedLog };
       }
     });
-    
+
     return Object.values(consolidated);
   };
 
   const filteredAndSortedLogs = useMemo(() => {
     // Filter out null, empty, or undefined logs
-    let filtered = logs.filter(log => 
-      log && 
-      log.log && 
-      log.log.trim() !== '' && 
-      log.log_level && 
+    let filtered = logs.filter(log =>
+      log &&
+      log.log &&
+      log.log.trim() !== '' &&
+      log.log_level &&
       log.created_at
     );
 
@@ -148,7 +148,7 @@ export const LogsTab: React.FC = () => {
 
     // Apply search term
     if (searchTerm) {
-      filtered = filtered.filter(log => 
+      filtered = filtered.filter(log =>
         log.log.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
@@ -158,7 +158,7 @@ export const LogsTab: React.FC = () => {
       filtered = [...filtered].sort((a, b) => {
         const aValue = a[sortConfig.key as keyof LogEntry];
         const bValue = b[sortConfig.key as keyof LogEntry];
-        
+
         if (aValue < bValue) {
           return sortConfig.direction === 'asc' ? -1 : 1;
         }
@@ -192,10 +192,10 @@ export const LogsTab: React.FC = () => {
 
   const fetchLogs = async (avsName: string) => {
     try {
-      const machineId = machinesData?.data.find(m => 
+      const machineId = machinesData?.data.find(m =>
         m.avs_list.some((a: AVSInfo) => a.avs_name === avsName)
       )?.machine_id;
-      
+
       if (!machineId) {
         throw new Error('Machine ID not found');
       }
@@ -221,10 +221,10 @@ export const LogsTab: React.FC = () => {
   return (
     <>
       <Topbar title="Logs Overview" />
-      
+
       <div className="flex justify-between items-center mb-6">
       <h2 className="text-xl font-semibold text-textPrimary">
-          {selectedAvs 
+          {selectedAvs
             ? `${selectedAvs} Metrics on ${getSelectedAvsChain()} as of ${formatTimestamp(Math.max(...logs.map(log => new Date(log.created_at).getTime())).toString())}`
             : 'AVS Logs Snapshot'
           }
@@ -339,17 +339,17 @@ export const LogsTab: React.FC = () => {
           </Tr>
           {filteredAndSortedLogs.map((log, index) => (
             <Tr key={`${log.created_at}-${index}`}>
-              <Td 
-                content={formatTimestamp(log.created_at)} 
-                className="text-xl whitespace-nowrap align-top" 
+              <Td
+                content={formatTimestamp(log.created_at)}
+                className="text-xl whitespace-nowrap align-top"
               />
-              <Td 
-                content={log.log_level} 
-                className="text-xl whitespace-nowrap ml-8 align-top" 
+              <Td
+                content={log.log_level}
+                className="text-xl whitespace-nowrap ml-8 align-top"
               />
-              <Td 
-                content={log.log} 
-                className="text-xl pl-4 whitespace-pre-line" 
+              <Td
+                content={log.log}
+                className="text-xl pl-4 whitespace-pre-line"
               />
             </Tr>
           ))}

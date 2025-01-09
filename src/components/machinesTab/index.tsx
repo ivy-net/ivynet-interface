@@ -403,18 +403,18 @@ export const MachinesTab: React.FC = () => {
               </Tr>
               {(filteredAvs).map((avs, index) => (
   <Tr key={`${avs.machine_id}-${avs.avs_name}-${index}`}>
-    <Td><AvsWidget name={avs.avs_name} 
-    //    to={`/nodes/${avs.avs_name}`} 
+    <Td><AvsWidget name={avs.avs_name}
+    //    to={`/nodes/${avs.avs_name}`}
 
     /></Td>
                   <Td>
-                  <NodeTypeCell 
+                  <NodeTypeCell
                     nodeType={avs.avs_type}
                     avsName={avs.avs_name}
                     machineId={avs.machine_id}
                     mutateMachines={mutateMachines}
                   />
-                </Td>                  
+                </Td>
                   <Td>
                   <ChainCell
                   chain={avs.chain}
@@ -424,7 +424,7 @@ export const MachinesTab: React.FC = () => {
                   </Td>
                   {/*<Td content={formatAddress(avs.operator_address) || ""}></Td>*/}
                   <Td content={avs.avs_version === "0.0.0" ? "---" : avs.avs_version} className="px-1"></Td>
-                  <Td content={avs.avs_version === "Othentic" ? "local" : getLatestVersion(avs.avs_type, avs.chain)} className="px-1" ></Td>                  
+                  <Td content={avs.avs_version === "Othentic" ? "local" : getLatestVersion(avs.avs_type, avs.chain)} className="px-1" ></Td>
                   <Td>
                     <HealthStatus
                       isChecked={avs.errors.length === 0}

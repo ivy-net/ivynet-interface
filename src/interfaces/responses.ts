@@ -80,9 +80,9 @@ export interface ConsolidatedMachine {
 
 
 export interface LogEntry {
-  created_at: string;  
-  log_level: string;   
-  log: string;         
+  created_at: string;
+  log_level: string;
+  log: string;
 }
 
 

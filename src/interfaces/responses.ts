@@ -1,4 +1,3 @@
-
 import { DiskStatus } from "./data"
 
 export type NodeType = string | { [key: string]: string };
@@ -26,6 +25,15 @@ export interface SystemMetrics {
     free: number;
     status: string;
   };
+}
+
+export interface Metric {
+  machine_id: string;
+  avs_name: string | null;
+  name: string;
+  value: number;
+  attributes: Record<string, any> | null;
+  created_at: string;
 }
 
 export interface AVSInfo extends AVS {

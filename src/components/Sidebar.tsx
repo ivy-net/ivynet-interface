@@ -1,5 +1,5 @@
-import React from 'react'; 
-import { Link } from 'react-router-dom';  
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { SidebarItem } from "./SidebarItem";
 import { ReactComponent as Machines } from "../images/machines.svg"
 import { ReactComponent as AVS } from "../images/avs-tab.svg"
@@ -27,7 +27,7 @@ export const Sidebar: React.FC<SidebarProps> = () => {
         {/* <SidebarItem title="Rewards" Logo={Rewards} /> */}
         <div className="mt-auto">
         {/*  <SidebarItem title="Organization" Logo={Settings} />*/}
-       <SidebarItem title="Invite" Logo={AVS} to="/adduser" /> 
+       <SidebarItem title="Invite" Logo={AVS} to="/adduser" />
           <SidebarItem title="Help" Logo={Help} to="./help" />
         </div>
       </div>

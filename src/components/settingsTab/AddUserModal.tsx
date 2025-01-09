@@ -21,7 +21,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = () => {
     { value: 'User' as ValidRole, label: 'User' },
     { value: 'Reader' as ValidRole, label: 'Reader' },
   ];
-  
+
   const [selectedOption, setSelectedOption] = useState<{ value: ValidRole; label: string; } | null>(null);
 
   const handleSubmit = async () => {
@@ -35,7 +35,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = () => {
       // Add debug logs
       console.log('Selected option:', selectedOption);
       console.log('Selected role value:', selectedOption.value);
-      
+
       const requestData = {
         email,
         role: selectedOption.value
@@ -45,7 +45,7 @@ export const AddUserModal: React.FC<AddUserModalProps> = () => {
       console.log('Role type:', typeof requestData.role);
 
       await apiFetch("organization/invite", "POST", requestData);
-      
+
       toast.success("Team member invited successfully", { theme: "dark" });
       navigate("..");
     } catch (error) {
@@ -68,10 +68,10 @@ export const AddUserModal: React.FC<AddUserModalProps> = () => {
           <div className="flex flex-col gap-5">
             <div className="flex flex-col gap-1.5">
               <div className="text-sm leading-5 font-medium text-ivygrey">E-Mail</div>
-              <input 
+              <input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="bg-transparent border border-textGrey py-2.5 px-3 rounded-lg outline-none focus:border-white text-ivygrey2 text-base font-normal" 
+                className="bg-transparent border border-textGrey py-2.5 px-3 rounded-lg outline-none focus:border-white text-ivygrey2 text-base font-normal"
               />
             </div>
             <div className="flex flex-col gap-1.5">

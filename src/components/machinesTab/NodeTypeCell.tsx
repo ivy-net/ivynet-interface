@@ -5,18 +5,39 @@ import { ChevronDown } from 'lucide-react';
 
 // Fallback node types list in case the API call fails
 const FALLBACK_NODE_TYPES = [
-  'AethosHolesky', 'AlignedLayer', 'AltlayerMach', 'ArpaNetworkNodeClient',
-  'Automata', 'AvaProtocol', 'Brevis', 'ChainbaseNetworkV1', 'ChainbaseNetworkV2',
-  'CyberMach', 'DodoChainMach', 'EigenDA', 'EOracle', 'GMNetworkMach', 'GoPlusAVS',
-  'Hyperlane', 'K3LabsAvs', 'K3LabsAvsHolesky', 'LagrangeStateCommittee',
-  'LagrangeZkWorkerHolesky', 'LagrangeZkWorkerMainnet', 'Omni', 'OpenLayerHolesky',
-  'OpenLayerMainnet', 'Predicate', 'PrimevMevCommit', 'SkateChainBase',
-  'SkateChainMantle', 'UnifiAVS', 'UngateInfiniRouteBase', 'UngateInfiniRoutePolygon',
-  'Unknown', 'WitnessChain', 'XterioMach'
+  "AvaProtocol",
+  "EigenDA",
+  "LagrangeStateCommittee",
+  "LagrangeZkWorkerHolesky",
+  "LagrangeZkWorkerMainnet",
+  "K3LabsAvs",
+  "K3LabsAvsHolesky",
+  "EOracle",
+  "Predicate",
+  "Hyperlane",
+  "Brevis",
+  "WitnessChain",
+  "Omni",
+  "Automata",
+  "OpenLayerMainnet",
+  "OpenLayerHolesky",
+  "AethosHolesky",
+  "ArpaNetworkNodeClient",
+  "UnifiAVS",
+  "SkateChainBase",
+  "SkateChainMantle",
+  "ChainbaseNetworkV1",
+  "ChainbaseNetwork",
+  "GoPlusAVS",
+  "UngateInfiniRouteBase",
+  "UngateInfiniRoutePolygon",
+  "PrimevMevCommit",
+  "AlignedLayer",
+  "Unknown"
 ].sort((a: string, b: string) => a.localeCompare(b));
 
 type NodeType = string | { [key: string]: string };
-type CategoryName = 'Altlayer' | 'Mach';
+type CategoryName = 'Altlayer' | 'AltlayerMach'; 
 type SpecialCategories = Record<CategoryName, string[]>;
 
 interface NodeTypeCellProps {
@@ -45,12 +66,15 @@ const formatNodeType = (nodeType: NodeType | null): string => {
       .replace('GmNetworkMach', 'GMNetwork');
     return `${type}: ${displayValue}`;
   }
+  if (type === 'MachType') {
+    return `Mach: ${value}`; 
+  }
   return `${type}: ${value}`;
 };
 
 const isExpandableType = (nodeType: NodeType | null): boolean => {
   if (!nodeType || typeof nodeType === 'string') return false;
-  return Object.keys(nodeType)[0] === 'Altlayer' || Object.keys(nodeType)[0] === 'Mach';
+  return Object.keys(nodeType)[0] === 'Altlayer' || Object.keys(nodeType)[0] === 'MachType';
 };
 
 const NodeTypeModal: React.FC<NodeTypeModalProps> = ({
@@ -68,22 +92,24 @@ const NodeTypeModal: React.FC<NodeTypeModalProps> = ({
 
   const specialCategories: SpecialCategories = {
     Altlayer: ['AltlayerMach', 'GmNetworkMach', 'Unknown'],
-    Mach: ['Xterio', 'DodoChain', 'Cyber', 'Unknown']
+    AltlayerMach: ['Xterio', 'DodoChain', 'Cyber', 'Unknown'] 
+};
+
+useEffect(() => {
+  const fetchNodeTypes = async () => {
+    try {
+      const response = await apiFetch('info/nodetypes', 'GET');
+      const types = response.data;
+      // Added type annotations to fix TypeScript errors
+      const stringTypes = types.filter((t: NodeType) => typeof t === 'string') as string[];
+      setNodeTypes(stringTypes.sort((a: string, b: string) => a.localeCompare(b)));
+    } catch (error) {
+      console.warn('Failed to fetch node types, using fallback list');
+    }
   };
 
-  useEffect(() => {
-    const fetchNodeTypes = async () => {
-      try {
-        const response = await apiFetch('info/nodetypes', 'GET');
-        const types = response.data;
-        setNodeTypes(types.sort((a: string, b: string) => a.localeCompare(b)));
-      } catch (error) {
-        console.warn('Failed to fetch node types, using fallback list');
-      }
-    };
-
-    fetchNodeTypes();
-  }, []);
+  fetchNodeTypes();
+}, []);
 
   if (!isOpen) return null;
 
@@ -93,28 +119,36 @@ const NodeTypeModal: React.FC<NodeTypeModalProps> = ({
     }
   };
 
-  const handleSelectType = async (type: string | { [key: string]: string }) => {
+  const handleSelectType = async (type: string) => {
     if (!type) return;
     
     setIsUpdating(true);
     try {
-      const endpoint = `machine/${machineId}/node_type`;
-      const nodeTypeValue = typeof type === 'string' ? type : JSON.stringify(type);
-      const queryParams = `avs_name=${encodeURIComponent(avsName)}&node_type=${encodeURIComponent(nodeTypeValue)}`;
-      const url = `${endpoint}?${queryParams}`;
-      
-      await apiFetch(url, 'PUT');
-      await mutateMachines();
-      toast.success(`Successfully updated node type for ${avsName}`, { theme: "dark" });
-      onClose();
+        const endpoint = `machine/${machineId}/node_type`;
+        
+        // Format the nodeTypeValue based on whether we're in a category
+        // and handle the special AltlayerMach case
+        const nodeTypeValue = selectedCategory === 'Altlayer' && type === 'AltlayerMach'
+            ? `Altlayer(${type})`  // This creates Altlayer(AltlayerMach)
+            : selectedCategory 
+                ? `${selectedCategory}(${type})` // This handles other category cases
+                : type;  // This handles non-category cases
+            
+        const queryParams = `avs_name=${encodeURIComponent(avsName)}&node_type=${encodeURIComponent(nodeTypeValue)}`;
+        const url = `${endpoint}?${queryParams}`;
+        
+        await apiFetch(url, 'PUT');
+        await mutateMachines();
+        toast.success(`Successfully updated node type for ${avsName}`, { theme: "dark" });
+        onClose();
     } catch (error: any) {
-      console.error('Error details:', error);
-      const errorData = error?.response?.data || 'Unknown error';
-      toast.error(`Failed to update node type: ${errorData}`, { theme: "dark" });
+        console.error('Error details:', error);
+        const errorData = error?.response?.data || 'Unknown error';
+        toast.error(`Failed to update node type: ${errorData}`, { theme: "dark" });
     } finally {
-      setIsUpdating(false);
+        setIsUpdating(false);
     }
-  };
+};
 
   const getFilteredTypes = () => {
     if (selectedCategory) {
@@ -134,16 +168,25 @@ const NodeTypeModal: React.FC<NodeTypeModalProps> = ({
   };
 
   const handleSelect = (type: string) => {
-    if (type in specialCategories) {
+    // Special case: if we're inside Altlayer category, treat everything as a value
+    // not as a potential subcategory, even if it exists in specialCategories
+    if (selectedCategory === 'Altlayer') {
+        setSelectedSubType(type);
+        handleSelectType(type);
+        return;
+    }
+    
+    // Regular category selection logic for non-Altlayer cases
+    if (type in specialCategories && !selectedCategory) {
         setSelectedCategory(type as CategoryName);
         setSelectedSubType(null);
     } else if (selectedCategory) {
         setSelectedSubType(type);
-        handleSelectType({ [selectedCategory]: type });
+        handleSelectType(type);
     } else {
         handleSelectType(type);
     }
-  };
+};
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={handleBackdropClick}>
@@ -196,6 +239,7 @@ const NodeTypeModal: React.FC<NodeTypeModalProps> = ({
           </div>
 
           <div className="space-y-1">
+            {/* In the button mapping inside the NodeTypeModal */}
             {getFilteredTypes().map((type) => (
               <button
                 key={type}
@@ -208,7 +252,8 @@ const NodeTypeModal: React.FC<NodeTypeModalProps> = ({
                 }`}
               >
                 <span>{type}</span>
-                {(type in specialCategories) && (
+                {/* Only show arrow if it's a category AND we're not in Altlayer category view */}
+                {(type in specialCategories) && !selectedCategory && (
                   <ChevronDown className="w-4 h-4 transform -rotate-90" />
                 )}
               </button>
@@ -227,7 +272,6 @@ export const NodeTypeCell: React.FC<NodeTypeCellProps> = ({
   mutateMachines
 }) => {
   const [showModal, setShowModal] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
 
   if (!nodeType || (typeof nodeType === 'string' && nodeType.toLowerCase() === 'unknown')) {
     return (
@@ -255,15 +299,10 @@ export const NodeTypeCell: React.FC<NodeTypeCellProps> = ({
   return (
     <>
       <button
-        onClick={() => isExpandableType(nodeType) ? setIsExpanded(!isExpanded) : setShowModal(true)}
-        className="text-left px-3 py-2 rounded-lg hover:bg-widgetHoverBg text-textSecondary flex items-center gap-2"
+        onClick={() => setShowModal(true)}  // Always open modal on click now
+        className="text-left px-3 py-2 rounded-lg hover:bg-widgetHoverBg text-textSecondary"
       >
         <span>{formatNodeType(nodeType)}</span>
-        {isExpandableType(nodeType) && (
-          <ChevronDown 
-            className={`w-4 h-4 transition-transform ${isExpanded ? 'transform rotate-180' : ''}`}
-          />
-        )}
       </button>
 
       <NodeTypeModal

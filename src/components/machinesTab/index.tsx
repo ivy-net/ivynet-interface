@@ -424,7 +424,7 @@ export const MachinesTab: React.FC = () => {
                   </Td>
                   {/*<Td content={formatAddress(avs.operator_address) || ""}></Td>*/}
                   <Td content={avs.avs_version === "0.0.0" ? "---" : avs.avs_version} className="px-1"></Td>
-                  <Td content={getLatestVersion(avs.avs_type, avs.chain)} className="px-1" ></Td>
+                  <Td content={avs.avs_version === "Othentic" ? "local" : getLatestVersion(avs.avs_type, avs.chain)} className="px-1" ></Td>                  
                   <Td>
                     <HealthStatus
                       isChecked={avs.errors.length === 0}

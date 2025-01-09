@@ -27,14 +27,16 @@ const formatTimestamp = (timestamp: string): string => {
       const milliseconds = timestampNum.toString().length === 10 ? timestampNum * 1000 : timestampNum;
       const date = new Date(milliseconds);
       if (!isNaN(date.getTime())) {
-        return date.toISOString().split('T')[1].slice(0, 8) + ' UTC';
+        const isoString = date.toISOString();
+        return `${isoString.split('T')[0]} ${isoString.split('T')[1].slice(0, 8)} UTC`;
       }
     }
     
     // Try parsing as ISO string if not a timestamp
     const date = new Date(timestamp);
     if (!isNaN(date.getTime())) {
-      return date.toISOString().split('T')[1].slice(0, 8) + ' UTC';
+      const isoString = date.toISOString();
+      return `${isoString.split('T')[0]} ${isoString.split('T')[1].slice(0, 8)} UTC`;
     }
     return 'Invalid Date';
   } catch (error) {
@@ -98,13 +100,15 @@ export const LogsTab: React.FC = () => {
   };
 
  /* eslint-disable no-control-regex */
-  const cleanLogText = (log: string): string => {
-    return log
-      .replace(/\x1B\[\d+m/g, '')  // Remove color codes
-      .replace(/\x1B\[(?:\d+[A-Za-z]|\d+;\d+[A-Za-z])/g, '')  // Remove ANSI escape sequences
-      .replace(/^[A-Z][a-z]{2}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\.\d{3}\s+/g, '') // Remove timestamp like "Jan 6 14:25:08.305"
-      .trim();
-  };
+ const cleanLogText = (log: string): string => {
+  return log
+    .replace(/\x1B\[\d+m/g, '')  // Remove color codes
+    .replace(/\x1B\[(?:\d+[A-Za-z]|\d+;\d+[A-Za-z])/g, '')  // Remove ANSI escape sequences
+    .replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z\s+/g, '') // Remove ISO timestamp like "2025-01-07T11:38:41Z"
+    .replace(/^[A-Z][a-z]{2}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\.\d{3}\s+/g, '') // Remove timestamp like "Jan 6 14:25:08.305"
+    .replace(/^\d{4}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2}\s+/g, '') // Remove timestamp like "2025/01/07 12:15:00"
+    .trim();
+};
   /* eslint-enable no-control-regex */
 
   const consolidateLogsByTimestamp = (logs: LogEntry[]): LogEntry[] => {

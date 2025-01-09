@@ -1,6 +1,9 @@
 
 import { DiskStatus } from "./data"
 
+export type NodeType = string | { [key: string]: string };
+
+
 export interface VersionInfo {
   node_type: string;
   chain: string;
@@ -32,11 +35,20 @@ export interface AVSInfo extends AVS {
 }
 
 
+export interface Metric {
+  machine_id: string;
+  avs_name: string | null;
+  name: string;
+  value: number;
+  attributes: Record<string, any> | null;
+  created_at: string;
+}
+
 
 export interface AVSInfoFull {
   machine_id: string;
   avs_name: string;
-  avs_type: string;
+  avs_type: NodeType;
   avs_version: string;
   chain: string;
   version_hash: string;
@@ -67,6 +79,11 @@ export interface ConsolidatedMachine {
 
 
 
+export interface LogEntry {
+  created_at: string;  
+  log_level: string;   
+  log: string;         
+}
 
 
 export interface MachinesStatus {

@@ -94,7 +94,7 @@ export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
             const operatorEntry = operatorData.find(
               entry => entry.public_key === avsData.operator_address
             );
-            
+
             if (operatorEntry) {
               setSelectedAddress({
                 value: avsData.operator_address,

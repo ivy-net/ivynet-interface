@@ -21,7 +21,7 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = () => {
     } catch (err: any) {
       toast.error(getMessage(err), { theme: "dark" });
       console.log(err)
-    } 
+    }
   }
 
   const buttonClasses = validateEmail(email) ? "border-accent text-accent" : "text-accent/60 border-accent/60 cursor-not-allowed"

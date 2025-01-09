@@ -444,10 +444,10 @@ export const MachinesTab: React.FC = () => {
                   />
                   </Td>
                   <Td>
-                  <OptionsButton 
-      options={getOptions(avs)}  
-      inHeader={true} 
-      className="mr-14" 
+                  <OptionsButton
+      options={getOptions(avs)}
+      inHeader={true}
+      className="mr-14"
     />
                  </Td>
                   </Tr>

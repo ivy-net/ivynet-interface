@@ -53,6 +53,7 @@ export const LogsTab: React.FC = () => {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [selectedLogLevels, setSelectedLogLevels] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [sortConfig, setSortConfig] = useState<{ key: string | null; direction: 'asc' | 'desc' | 'none' }>({
     key: null,
     direction: 'none'
@@ -99,16 +100,47 @@ export const LogsTab: React.FC = () => {
     }));
   };
 
- /* eslint-disable no-control-regex */
- const cleanLogText = (log: string): string => {
-  return log
-    .replace(/\x1B\[\d+m/g, '')  // Remove color codes
-    .replace(/\x1B\[(?:\d+[A-Za-z]|\d+;\d+[A-Za-z])/g, '')  // Remove ANSI escape sequences
-    .replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z\s+/g, '') // Remove ISO timestamp like "2025-01-07T11:38:41Z"
-    .replace(/^[A-Z][a-z]{2}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\.\d{3}\s+/g, '') // Remove timestamp like "Jan 6 14:25:08.305"
-    .replace(/^\d{4}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2}\s+/g, '') // Remove timestamp like "2025/01/07 12:15:00"
-    .trim();
-};
+  const handleDownloadCSV = () => {
+    // Create CSV content
+    const headers = ['Timestamp', 'Type', 'Log'];
+    const rows = filteredAndSortedLogs.map(log => [
+      formatTimestamp(log.created_at),
+      log.log_level,
+      log.log.replace(/[\n\r]+/g, ' ') // Replace newlines with spaces for CSV
+    ]);
+
+    // Combine headers and rows
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell =>
+        // Escape quotes and wrap in quotes if contains comma
+        `"${String(cell).replace(/"/g, '""')}"`
+      ).join(','))
+    ].join('\n');
+
+    // Create and trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${selectedAvs}_logs_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  /* eslint-disable no-control-regex */
+  const cleanLogText = (log: string): string => {
+    return log
+      .replace(/\x1B\[\d+m/g, '')  // Remove color codes
+      .replace(/\x1B\[(?:\d+[A-Za-z]|\d+;\d+[A-Za-z])/g, '')  // Remove ANSI escape sequences
+      .replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z\s+/g, '') // Remove ISO timestamp
+      .replace(/^<1>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z\s+/g, '') // Remove timestamps with <1> prefix
+      .replace(/^[A-Z][a-z]{2}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\.\d{3}\s+/g, '') // Remove timestamp like "Jan 6 14:25:08.305"
+      .replace(/^\d{4}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2}\s+/g, '') // Remove timestamp like "2025/01/07 12:15:00"
+      .trim();
+  };
   /* eslint-enable no-control-regex */
 
   const consolidateLogsByTimestamp = (logs: LogEntry[]): LogEntry[] => {
@@ -191,6 +223,7 @@ export const LogsTab: React.FC = () => {
   };
 
   const fetchLogs = async (avsName: string) => {
+    setIsLoading(true);
     try {
       const machineId = machinesData?.data.find(m =>
         m.avs_list.some((a: AVSInfo) => a.avs_name === avsName)
@@ -208,6 +241,8 @@ export const LogsTab: React.FC = () => {
       const errorMsg = error.message || 'Error fetching logs';
       toast.error(errorMsg, { theme: "dark", toastId: errorMsg });
       setLogs([]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -218,12 +253,13 @@ export const LogsTab: React.FC = () => {
     return selectedAvsInfo?.chain || 'Unknown';
   };
 
+
   return (
     <>
       <Topbar title="Logs Overview" />
 
       <div className="flex justify-between items-center mb-6">
-      <h2 className="text-xl font-semibold text-textPrimary">
+        <h2 className="text-xl font-semibold text-textPrimary">
           {selectedAvs
             ? `${selectedAvs} Metrics on ${getSelectedAvsChain()} as of ${formatTimestamp(Math.max(...logs.map(log => new Date(log.created_at).getTime())).toString())}`
             : 'AVS Logs Snapshot'
@@ -245,11 +281,19 @@ export const LogsTab: React.FC = () => {
               Switch AVS
             </button>
           )}
+          {selectedAvs && (
+            <button
+              onClick={handleDownloadCSV}
+              className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
+            >
+              Download
+            </button>
+          )}
           <button
             onClick={() => setShowFilterModal(true)}
             className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
           >
-            Filter Logs
+            Filter Type
           </button>
           <button
             onClick={handleRefresh}
@@ -295,7 +339,7 @@ export const LogsTab: React.FC = () => {
         </div>
       )}
 
-      {!selectedAvs ? (
+{!selectedAvs ? (
         <div className="flex flex-col items-center justify-center min-h-[400px] max-w-md mx-auto bg-widgetBg rounded-lg p-8">
           <h2 className="text-2xl font-semibold text-textPrimary mb-6">Select an AVS to view logs</h2>
           <div className="w-full grid gap-2">
@@ -313,46 +357,60 @@ export const LogsTab: React.FC = () => {
             ))}
           </div>
         </div>
+      ) : isLoading ? (
+        <div className="flex flex-col items-center justify-center min-h-[400px] bg-widgetBg rounded-lg p-8">
+          <h2 className="text-xl font-semibold text-textPrimary mb-4">Loading logs...</h2>
+        </div>
       ) : filteredAndSortedLogs.length === 0 ? (
         <div className="flex flex-col items-center justify-center min-h-[400px] bg-widgetBg rounded-lg p-8">
           <h2 className="text-xl font-semibold text-textPrimary mb-4">No logs available for {selectedAvs}</h2>
           <p className="text-textSecondary">Try refreshing or adjusting your filters</p>
         </div>
       ) : (
-        <Table>
-          <Tr>
-            <Th
-              content="Created At"
-              sortKey="created_at"
-              currentSort={sortConfig}
-              onSort={() => handleSort('created_at')}
-              className="text-base w-[200px] whitespace-nowrap"
-            />
-            <Th
-              content="Type"
-              sortKey="log_level"
-              currentSort={sortConfig}
-              onSort={() => handleSort('log_level')}
-              className="text-base w-[100px] whitespace-nowrap ml-8"
-            />
-            <Th content="Log" className="text-base pl-4" />
-          </Tr>
-          {filteredAndSortedLogs.map((log, index) => (
-            <Tr key={`${log.created_at}-${index}`}>
-              <Td
-                content={formatTimestamp(log.created_at)}
-                className="text-xl whitespace-nowrap align-top"
-              />
-              <Td
-                content={log.log_level}
-                className="text-xl whitespace-nowrap ml-8 align-top"
-              />
-              <Td
-                content={log.log}
-                className="text-xl pl-4 whitespace-pre-line"
-              />
-            </Tr>
-          ))}
+<Table>
+        <Tr>
+          <Th
+            content="Created At"
+            sortKey="created_at"
+            currentSort={sortConfig}
+            onSort={() => handleSort('created_at')}
+            className="text-base w-[200px] whitespace-nowrap text-left"
+          />
+          <Th
+            content="Type"
+            sortKey="log_level"
+            currentSort={sortConfig}
+            onSort={() => handleSort('log_level')}
+            className="text-base w-[100px] whitespace-nowrap ml-8 text-left"
+          />
+          <Th
+            content="Log"
+            className="text-base pl-4 text-left"
+          />
+        </Tr>
+        {filteredAndSortedLogs.map((log, index) => (
+  <Tr key={`${log.created_at}-${index}`}>
+    <Td
+      content={formatTimestamp(log.created_at)}
+      className="text-xl whitespace-nowrap align-top pt-6"
+    />
+    <Td
+      className="text-sm whitespace-nowrap ml-16 align-top pt-7" // Changed pt-6 to pt-7 to compensate for smaller text
+    >
+      <div className={`pt-1 ${  // Added pt-1 to fine-tune alignment
+        log.log_level === 'ERROR' ? 'text-textWarning' :
+        log.log_level === 'WARNING' ? 'text-textWarningyellow' :
+        ['INFO', 'DEBUG'].includes(log.log_level) ? 'text-positive' : ''
+      }`}>
+        {log.log_level}
+      </div>
+    </Td>
+    <Td
+      content={log.log}
+      className="text-xl pl-4 whitespace-pre-line align-top pt-6"
+    />
+  </Tr>
+))}
         </Table>
       )}
       <Outlet />

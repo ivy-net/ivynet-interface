@@ -13,9 +13,9 @@ const ChainCell: React.FC<ChainCellProps> = ({ chain, avsName, machineId }) => {
 
   if (!chainLabel) {
     return (
-      <div className="w-24 flex justify-center">
+      <div className="w-24 flex justify-start">
         <Link to={`/nodes/edit/${avsName}/${machineId}`}>
-          <div className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary text-md">
+          <div className="px-3 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary text-md">
             Add
           </div>
         </Link>

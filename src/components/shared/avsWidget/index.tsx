@@ -20,11 +20,11 @@ export const AvsWidget: React.FC<AvsWidgetProps> = ({ name, description = "", to
           <div className="p-2.5 h-[40px] w-[40px] bg-sidebarIconHighlightColor/[0.15] rounded-full relative">
             <img src={avsIcon} alt="avs icon" />
           </div>
-          <div className="flex flex-col py-1.5 px-3">
+          <div className="flex flex-col py-1.5 px-2">
             <div className="text-textPrimary text-base font-light">{name}</div>
             <div className="text-sidebarColor text-sm leading-4">{description}</div>
           </div>
-          {to && <img src={arrowUpRight} alt="chevron right" />}
+          {to && <img src={arrowUpRight} alt="chevron right" className="-ml-1.5" />}
         </div>
       </div>
 //    </ConditionalLink>

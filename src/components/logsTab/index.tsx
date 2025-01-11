@@ -18,30 +18,82 @@ interface LogEntry {
 
 const fetcher = (url: string) => apiFetch(url, "GET");
 
-const formatTimestamp = (timestamp: string): string => {
+const formatTimestamp = (timestamp: string) => {
   try {
     // Handle Unix timestamp in milliseconds or seconds
     const timestampNum = parseInt(timestamp);
+    let updateTimeUTC;
+
     if (!isNaN(timestampNum)) {
       // If timestamp is in seconds, convert to milliseconds
       const milliseconds = timestampNum.toString().length === 10 ? timestampNum * 1000 : timestampNum;
-      const date = new Date(milliseconds);
-      if (!isNaN(date.getTime())) {
-        const isoString = date.toISOString();
-        return `${isoString.split('T')[0]} ${isoString.split('T')[1].slice(0, 8)} UTC`;
-      }
+      updateTimeUTC = new Date(milliseconds);
+    } else {
+      // Try parsing as ISO string if not a timestamp
+      updateTimeUTC = new Date(timestamp + 'Z');
     }
 
-    // Try parsing as ISO string if not a timestamp
-    const date = new Date(timestamp);
-    if (!isNaN(date.getTime())) {
-      const isoString = date.toISOString();
-      return `${isoString.split('T')[0]} ${isoString.split('T')[1].slice(0, 8)} UTC`;
+    if (isNaN(updateTimeUTC.getTime())) {
+      throw new Error('Invalid date');
     }
-    return 'Invalid Date';
+
+    // Get current UTC time
+    const nowUTC = new Date();
+    const nowUTCMs = Date.UTC(
+      nowUTC.getUTCFullYear(),
+      nowUTC.getUTCMonth(),
+      nowUTC.getUTCDate(),
+      nowUTC.getUTCHours(),
+      nowUTC.getUTCMinutes(),
+      nowUTC.getUTCSeconds()
+    );
+
+    // Calculate the time difference in milliseconds
+    const diffMs = nowUTCMs - updateTimeUTC.getTime();
+
+    // Convert time differences to various units
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    // Create human-readable time difference
+    let timeAgo;
+    if (diffMinutes < 1) {
+      timeAgo = '< 1 Mn Ago';
+    } else if (diffMinutes < 60) {
+      timeAgo = `${diffMinutes} ${diffMinutes === 1 ? 'Mn' : 'Mn'} Ago`;
+    } else if (diffHours < 24) {
+      timeAgo = `${diffHours} ${diffHours === 1 ? 'Hr' : 'Hrs'} Ago`;
+    } else {
+      timeAgo = `${diffDays} ${diffDays === 1 ? 'Day' : 'Days'} Ago`;
+    }
+
+    // Determine text color class based on time difference
+    let textColorClass = 'text-positive';
+    if (diffMinutes >= 60) {
+      textColorClass = 'text-textWarning';
+    } else if (diffMinutes >= 15) {
+      textColorClass = 'text-ivygrey';
+    }
+
+    // Format exact UTC time
+    const exactTime = updateTimeUTC
+      .toISOString()
+      .split('.')[0]
+      .replace('T', ' ') + ' UTC';
+
+    return {
+      timeAgo,
+      textColorClass,
+      exactTime
+    };
   } catch (error) {
     console.error('Timestamp error:', error);
-    return 'N/A';
+    return {
+      timeAgo: 'N/A',
+      textColorClass: 'text-textWarning',
+      exactTime: 'N/A'
+    };
   }
 };
 
@@ -100,12 +152,11 @@ export const LogsTab: React.FC = () => {
   };
 
   const handleDownloadCSV = () => {
-    // Create CSV content
     const headers = ['Timestamp', 'Type', 'Log'];
     const rows = filteredAndSortedLogs.map(log => [
-      formatTimestamp(log.created_at),
+      formatTimestamp(log.created_at).exactTime,  // Update here
       log.log_level,
-      log.log.replace(/[\n\r]+/g, ' ') // Replace newlines with spaces for CSV
+      log.log.replace(/[\n\r]+/g, ' ')
     ]);
 
     // Combine headers and rows
@@ -254,44 +305,87 @@ export const LogsTab: React.FC = () => {
     <>
       <Topbar title="Logs Overview" />
 
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-textPrimary">
-          {selectedAvs
-            ? `${selectedAvs} logs on ${getSelectedAvsChain()} as of ${formatTimestamp(Math.max(...logs.map(log => new Date(log.created_at).getTime())).toString())}`
-            : 'AVS Logs Snapshot'
-          }
-        </h2>
-        <div className="flex gap-4">
-          <input
-            type="text"
-            placeholder="Search logs..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="px-4 py-2 rounded-lg bg-black bg-opacity-30 text-textPrimary"
-          />
-          {selectedAvs && (
-            <button
-              onClick={() => setSelectedAvs(null)}
-              className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
-            >
-              Switch AVS
-            </button>
-          )}
-          {selectedAvs && (
-            <button
-              onClick={handleDownloadCSV}
-              className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
-            >
-              Download
-            </button>
-          )}
-          <button
-            onClick={() => setShowFilterModal(true)}
-            className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
-          >
-            Filter Type
-          </button>
-        </div>
+      <div className="mb-6">
+        {selectedAvs ? (
+          <>
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-textPrimary">
+                {`${selectedAvs} Logs`}
+              </h2>
+              <div className="flex gap-4">
+                <input
+                  type="text"
+                  placeholder="Search logs..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="px-4 py-2 rounded-lg bg-black bg-opacity-30 text-textPrimary"
+                />
+                <button
+                  onClick={() => setSelectedAvs(null)}
+                  className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
+                >
+                  Switch
+                </button>
+                <button
+                  onClick={handleDownloadCSV}
+                  className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
+                >
+                  Download
+                </button>
+                <button
+                  onClick={() => setShowFilterModal(true)}
+                  className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
+                >
+                  Filter Type
+                </button>
+              </div>
+            </div>
+
+            <div className="flex gap-6 mt-2">
+              <div className="flex flex-col">
+                <div className="text-sidebarColor text-base font-medium">Chain</div>
+                <div className="text-sidebarColor text-base font-medium">Last Updated</div>
+              </div>
+              <div className="flex flex-col">
+                <div className="text-textPrimary text-base font-medium">{getSelectedAvsChain()}</div>
+                <div className="text-textPrimary text-base font-medium">
+                {logs.length > 0 && (
+                    <>
+                      <span className={formatTimestamp(logs[logs.length - 1].created_at).textColorClass}>
+                        {formatTimestamp(logs[logs.length - 1].created_at).timeAgo}
+                      </span>
+                      {' '}
+                      <span className="text-textPrimary">
+                        ({formatTimestamp(logs[logs.length - 1].created_at).exactTime})
+                      </span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold text-textPrimary">
+              AVS Logs Snapshot
+            </h2>
+            <div className="flex gap-4">
+              <input
+                type="text"
+                placeholder="Search logs..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="px-4 py-2 rounded-lg bg-black bg-opacity-30 text-textPrimary"
+              />
+              <button
+                onClick={() => setShowFilterModal(true)}
+                className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
+              >
+                Filter Type
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {showFilterModal && (
@@ -413,20 +507,20 @@ export const LogsTab: React.FC = () => {
         {filteredAndSortedLogs.map((log, index) => (
   <Tr key={`${log.created_at}-${index}`}>
     <Td
-      content={formatTimestamp(log.created_at)}
+      content={formatTimestamp(log.created_at).exactTime}
       className="text-xl whitespace-nowrap align-top pt-6"
     />
     <Td
       className="text-sm whitespace-nowrap ml-16 align-top pt-7"
     >
-    <div className={`pt-1 ${
-            log.log_level === 'ERROR' ? 'text-textWarning' :
-            log.log_level === 'WARNING' ? 'text-textWarningyellow' :
-            log.log_level === 'DEBUG' ? 'text-blue' :
-            log.log_level === 'INFO' ? 'text-positive' : ''
-          }`}>
-      {log.log_level}
-    </div>
+      <div className={`pt-1 ${
+        log.log_level === 'ERROR' ? 'text-textWarning' :
+        log.log_level === 'WARNING' ? 'text-textWarningyellow' :
+        log.log_level === 'DEBUG' ? 'text-blue' :
+        log.log_level === 'INFO' ? 'text-positive' : ''
+      }`}>
+        {log.log_level}
+      </div>
     </Td>
     <Td
       content={log.log}

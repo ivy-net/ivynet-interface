@@ -3,9 +3,33 @@ import { apiFetch } from '../../utils';
 import { toast } from 'react-toastify';
 import { ChevronDown } from 'lucide-react';
 
+export const formatNodeType = (nodeType: NodeType | null): string => {
+  if (!nodeType) return '';
+  if (typeof nodeType === 'string') {
+    return nodeType.replace('UngateInfiniRoute', 'UngateInfini');
+  }
+
+  const [type, value] = Object.entries(nodeType)[0];
+  if (type === 'Altlayer') {
+    const displayValue = value
+      .replace('AltlayerMach', 'Mach')
+      .replace('GmNetworkMach', 'GMNetwork');
+    return `${type}: ${displayValue}`;
+  }
+  if (type === 'MachType') {
+    return `Mach: ${value}`;
+  }
+  if (type === 'UngateInfiniRoute') {
+    return `UngateInfini: ${value}`;
+  }
+  return `${type}: ${value}`;
+};
+
 // Module-level cache for node types
 let cachedNodeTypes: string[] | null = null;
 let nodeTypesFetchPromise: Promise<string[]> | null = null;
+
+
 
 // Fallback node types list in case the API call fails
 const FALLBACK_NODE_TYPES = [
@@ -40,8 +64,10 @@ const FALLBACK_NODE_TYPES = [
   "Unknown"
 ].sort((a: string, b: string) => a.localeCompare(b));
 
+
 type NodeType = string | { [key: string]: string };
-type CategoryName = 'Altlayer' | 'AltlayerMach';
+type CategoryName = 'Altlayer' | 'AltlayerMach' | 'SkateChain' | 'UngateInfiniRoute';
+
 type SpecialCategories = Record<CategoryName, string[]>;
 
 interface NodeTypeCellProps {
@@ -90,27 +116,11 @@ const fetchNodeTypes = async (): Promise<string[]> => {
   return nodeTypesFetchPromise;
 };
 
-const formatNodeType = (nodeType: NodeType | null): string => {
-  if (!nodeType) return '';
-  if (typeof nodeType === 'string') return nodeType;
-
-  const [type, value] = Object.entries(nodeType)[0];
-  if (type === 'Altlayer') {
-    const displayValue = value
-      .replace('AltlayerMach', 'Mach')
-      .replace('GmNetworkMach', 'GMNetwork');
-    return `${type}: ${displayValue}`;
-  }
-  if (type === 'MachType') {
-    return `Mach: ${value}`;
-  }
-  return `${type}: ${value}`;
-};
-
 const isExpandableType = (nodeType: NodeType | null): boolean => {
   if (!nodeType || typeof nodeType === 'string') return false;
-  return Object.keys(nodeType)[0] === 'Altlayer' || Object.keys(nodeType)[0] === 'MachType';
-};
+  const type = Object.keys(nodeType)[0];
+  return type === 'Altlayer' || type === 'MachType' || type === 'SkateChain' || type === 'UngateInfiniRoute';
+  };
 
 const NodeTypeModal: React.FC<NodeTypeModalProps> = ({
   isOpen,
@@ -127,7 +137,9 @@ const NodeTypeModal: React.FC<NodeTypeModalProps> = ({
 
   const specialCategories: SpecialCategories = {
     Altlayer: ['AltlayerMach', 'GmNetworkMach', 'Unknown'],
-    AltlayerMach: ['Xterio', 'DodoChain', 'Cyber', 'Unknown']
+    AltlayerMach: ['Xterio', 'DodoChain', 'Cyber', 'Unknown'],
+    SkateChain: ['Base', 'Mantle', 'UnknownL2'],
+    UngateInfiniRoute: ['Base', 'Polygon', 'UnknownL2']
   };
 
   // Load node types only once when modal opens

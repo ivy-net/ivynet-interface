@@ -34,6 +34,13 @@ interface VersionInfo {
 
 interface MachineProps {}
 
+const truncateVersion = (version: string): string => {
+  if (!version) return version;
+  if (version.length <= 8) return version;
+  return `${version.slice(0, 8)}`;
+};
+
+
 export const Machine: React.FC<MachineProps> = () => {
   const [showAddAvsModal, setShowAddAvsModal] = useState(false);
   const [showRescanModal, setShowRescanModal] = useState(false);
@@ -164,7 +171,7 @@ export const Machine: React.FC<MachineProps> = () => {
 
     let textColorClass = 'text-positive';
     if (diffMinutes >= 60) {
-      textColorClass = 'text-textwarning';
+      textColorClass = 'text-textWarning';
     } else if (diffMinutes >= 15) {
       textColorClass = 'text-ivygrey';
     }
@@ -301,8 +308,8 @@ export const Machine: React.FC<MachineProps> = () => {
                   machineId={avs.machine_id || ""}
                 />
               </Td>
-              <Td content={avs.avs_version === "0.0.0" ? "---" : avs.avs_version} className="px-1"></Td>
-              <Td content={getLatestVersion(avs.avs_type, avs.chain)} className="px-1"></Td>
+              <Td content={avs.avs_version === "0.0.0" ? "---" : truncateVersion(avs.avs_version)} className="px-1"></Td>
+              <Td content={avs.avs_version === "Othentic" ? "local" : truncateVersion(getLatestVersion(avs.avs_type, avs.chain))} className="px-1" ></Td>
               <Td>
                 <HealthStatus
                   isChecked={avs.errors.length === 0}

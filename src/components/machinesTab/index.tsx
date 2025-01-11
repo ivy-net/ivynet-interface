@@ -22,13 +22,19 @@ import { EmptyMachines } from "./EmptyMachines";
 import { toast } from 'react-toastify';
 import ChainCell from "./ChainCell";
 import { RescanModal } from './Rescan';
-import { NodeTypeCell } from './NodeTypeCell';
+import { NodeTypeCell, formatNodeType } from './NodeTypeCell';
 
 const fetcher = (url: string) => apiFetch(url, "GET");
 
 const getMachineName = (machineId: string | undefined, machineName?: string): string => {
   if (!machineId) return 'Unknown Machine';
   return machineName || 'Unknown Machine';
+};
+
+const truncateVersion = (version: string): string => {
+  if (!version) return version;
+  if (version.length <= 8) return version;
+  return `${version.slice(0, 8)}`;
 };
 
 export const MachinesTab: React.FC = () => {
@@ -208,10 +214,25 @@ export const MachinesTab: React.FC = () => {
     }
 
     if (searchTerm) {
-      filtered = filtered.filter(avs =>
-        avs.avs_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        avs.avs_type.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      filtered = filtered.filter(avs => {
+        // Handle the node type formatting inline
+        const avsTypeString = typeof avs.avs_type === 'object'
+          ? (() => {
+              if (!avs.avs_type) return '';
+              const [type, value] = Object.entries(avs.avs_type)[0];
+              if (type === 'Altlayer') {
+                return `${type}: ${value}`;
+              }
+              if (type === 'MachType') {
+                return `Mach: ${value}`;
+              }
+              return `${type}: ${value}`;
+            })()
+          : (avs.avs_type || '');
+
+        return (avs.avs_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+               avsTypeString.toLowerCase().includes(searchTerm.toLowerCase());
+      });
     }
 
     return sortConfig.key ? sortData(filtered, sortConfig) : filtered;
@@ -431,8 +452,8 @@ export const MachinesTab: React.FC = () => {
                   />
                   </Td>
                   {/*<Td content={formatAddress(avs.operator_address) || ""}></Td>*/}
-                  <Td content={avs.avs_version === "0.0.0" ? "---" : avs.avs_version} className="px-1"></Td>
-                  <Td content={avs.avs_version === "Othentic" ? "local" : getLatestVersion(avs.avs_type, avs.chain)} className="px-1" ></Td>
+                  <Td content={avs.avs_version === "0.0.0" ? "---" : truncateVersion(avs.avs_version)} className="px-1"></Td>
+                  <Td content={avs.avs_version === "Othentic" ? "local" : truncateVersion(getLatestVersion(avs.avs_type, avs.chain))} className="px-1" ></Td>
                   <Td>
                     <HealthStatus
                       isChecked={avs.errors.length === 0}

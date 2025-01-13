@@ -28,6 +28,7 @@
           ivygrey3: "#475467",
           ivypurple: "#6941C6",
           positive: "#65C97A",
+          blue: "#00A3CC",
           tagBg: "#262626",
           tagColor: "#CECEDA",
         },

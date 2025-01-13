@@ -25,6 +25,7 @@ import { EditMachineModal } from '../components/machinesTab/EditMachineModal';
 import { PasswordSet } from '../components/passwordset/index';
 import { PasswordReset } from '../components/passwordreset/index';
 import { LogsTab } from '../components/logsTab';
+import { AddMetricsModal } from '../components/avsTab/AddMetrics';
 
 
 const authLoader: LoaderFunction = ({ request }) => {
@@ -155,6 +156,10 @@ export const router = createBrowserRouter([
           {
             path: "help",
             element: <HelpModal />
+          },
+          {
+            path: "add",
+            element: <AddMetricsModal />
           },
         ]
       },

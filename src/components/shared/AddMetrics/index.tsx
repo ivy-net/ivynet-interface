@@ -72,7 +72,7 @@ export const AddMetricsUpdate: React.FC<AddMetricsProps> = ({
           </div>
           <div className="flex gap-2 text-sidebarColor items-center">
             <div className="border rounded-full text-[10px] font-bold border-sidebarColor w-[20px] h-[20px] flex justify-center items-center">2</div>
-            <div className="font-medium">But the AVS simply may not enable metrics</div>
+            <div className="font-medium">But the AVS simply may not have a metrics endpoint</div>
           </div>
         </div>
       </div>

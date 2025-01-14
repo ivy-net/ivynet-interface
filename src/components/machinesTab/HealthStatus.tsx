@@ -15,7 +15,9 @@ const HealthStatus: React.FC<HealthStatusProps> = ({
 }) => {
   const [showErrorModal, setShowErrorModal] = useState(false);
 
-  const hasErrors = !isChecked && errors.length > 0;
+  const filteredErrors = errors.filter(error => error !== "NoMetrics");
+
+  const hasErrors = !isChecked && filteredErrors.length > 0;
 
   return (
     <>

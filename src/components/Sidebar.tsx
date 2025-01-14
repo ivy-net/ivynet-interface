@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { SidebarItem } from "./SidebarItem";
 import { ReactComponent as Machines } from "../images/machines.svg"
 import { ReactComponent as AVS } from "../images/avs-tab.svg"
-//import { ReactComponent as Settings } from "../images/settings.svg"
+import { ReactComponent as Settings } from "../images/settings.svg"
 import { ReactComponent as Help } from "../images/help.svg"
 import { ReactComponent as Org } from "../images/org.svg"
 //import { AddUserModal } from "./settingsTab/AddUserModal";
@@ -22,7 +22,8 @@ export const Sidebar: React.FC<SidebarProps> = () => {
         {/* <SidebarItem title="Overview" Logo={Machines} /> */}
         <SidebarItem title="Nodes" Logo={Machines} to="nodes" />
         {/* <SidebarItem title="Overview" Logo={OverviewTab} /> */}
-        {/* <SidebarItem title="AVS" Logo={AVS} to="avs" /> */}
+        <SidebarItem title="Logs" Logo={Settings} to="logs" />
+        <SidebarItem title="Metrics" Logo={AVS} to="metrics" />
         <SidebarItem title="Addresses" Logo={Org} to="overview" />
         {/* <SidebarItem title="Rewards" Logo={Rewards} /> */}
         <div className="mt-auto">

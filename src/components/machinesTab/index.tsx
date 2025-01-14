@@ -22,6 +22,7 @@ import { EmptyMachines } from "./EmptyMachines";
 import { toast } from 'react-toastify';
 import ChainCell from "./ChainCell";
 import { RescanModal } from './Rescan';
+import { NodeTypeCell } from './NodeTypeCell';
 
 const fetcher = (url: string) => apiFetch(url, "GET");
 
@@ -52,8 +53,9 @@ export const MachinesTab: React.FC = () => {
       revalidateOnMount: true,
       revalidateOnReconnect: false,
       refreshInterval: 0,
-      errorRetryCount: 3, // Changed from retryCount to errorRetryCount
+      errorRetryCount: 3,
       shouldRetryOnError: false,
+      dedupingInterval: 5000,
       onError: () => {
         if (!localStorage.getItem('machine-fetch-error')) {
           toast.error('Error loading machines data. Please refresh the page to try again.', {
@@ -67,11 +69,18 @@ export const MachinesTab: React.FC = () => {
     }
   );
 
-  // Versions data
-  const { data: versionsData } = useSWR<AxiosResponse<VersionInfo[]>>(
-    'info/avs/version',
-    fetcher
-  );
+
+    const { data: versionsData } = useSWR<AxiosResponse<VersionInfo[]>>(
+      'info/avs/version',
+      fetcher,
+      {
+        revalidateOnFocus: true,
+        revalidateOnMount: true,
+        revalidateOnReconnect: false,
+        dedupingInterval: 300000,
+        refreshInterval: 0,
+      }
+    );
 
 
   const getTimeStatus = (timestamp: string | null | undefined): JSX.Element => {
@@ -402,8 +411,18 @@ export const MachinesTab: React.FC = () => {
               </Tr>
               {(filteredAvs).map((avs, index) => (
   <Tr key={`${avs.machine_id}-${avs.avs_name}-${index}`}>
-    <Td><AvsWidget name={avs.avs_name} /></Td>
-                  <Td content={avs.avs_type}></Td>
+    <Td><AvsWidget name={avs.avs_name}
+    //    to={`/nodes/${avs.avs_name}`}
+
+    /></Td>
+                  <Td>
+                  <NodeTypeCell
+                    nodeType={avs.avs_type}
+                    avsName={avs.avs_name}
+                    machineId={avs.machine_id}
+                    mutateMachines={mutateMachines}
+                  />
+                </Td>
                   <Td>
                   <ChainCell
                   chain={avs.chain}
@@ -413,7 +432,7 @@ export const MachinesTab: React.FC = () => {
                   </Td>
                   {/*<Td content={formatAddress(avs.operator_address) || ""}></Td>*/}
                   <Td content={avs.avs_version === "0.0.0" ? "---" : avs.avs_version} className="px-1"></Td>
-                  <Td content={getLatestVersion(avs.avs_type, avs.chain)} className="px-1" ></Td>
+                  <Td content={avs.avs_version === "Othentic" ? "local" : getLatestVersion(avs.avs_type, avs.chain)} className="px-1" ></Td>
                   <Td>
                     <HealthStatus
                       isChecked={avs.errors.length === 0}

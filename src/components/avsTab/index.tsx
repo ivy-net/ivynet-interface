@@ -206,7 +206,7 @@ export const AvsTab: React.FC = () => {
         throw new Error('Machine ID not found');
       }
 
-      const response = await apiFetch(`machine/${machineId}/metrics?avs_name=${avsName}`, 'GET');
+      const response = await apiFetch(`machine/${machineId}/metrics/all?avs_name=${avsName}`, 'GET');
       if (response.data) {
         setMetrics(response.data);
       }

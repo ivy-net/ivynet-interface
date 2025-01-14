@@ -17,7 +17,7 @@ export const AddMetricsModal: React.FC<AddMetricsProps> = ({
   const code = `https://docs.ivynet.dev/docs/client/AVSstartup`;
 
   const handleClose = () => {
-    navigate('/metrics/all');  // This will navigate back to the metrics page
+    navigate('/metrics');  // This will navigate back to the metrics page
     if (onClose) {
       onClose();
     }

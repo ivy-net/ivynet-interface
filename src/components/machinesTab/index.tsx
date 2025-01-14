@@ -53,8 +53,9 @@ export const MachinesTab: React.FC = () => {
       revalidateOnMount: true,
       revalidateOnReconnect: false,
       refreshInterval: 0,
-      errorRetryCount: 3, // Changed from retryCount to errorRetryCount
+      errorRetryCount: 3,
       shouldRetryOnError: false,
+      dedupingInterval: 5000,
       onError: () => {
         if (!localStorage.getItem('machine-fetch-error')) {
           toast.error('Error loading machines data. Please refresh the page to try again.', {
@@ -68,11 +69,18 @@ export const MachinesTab: React.FC = () => {
     }
   );
 
-  // Versions data
-  const { data: versionsData } = useSWR<AxiosResponse<VersionInfo[]>>(
-    'info/avs/version',
-    fetcher
-  );
+
+    const { data: versionsData } = useSWR<AxiosResponse<VersionInfo[]>>(
+      'info/avs/version',
+      fetcher,
+      {
+        revalidateOnFocus: true,
+        revalidateOnMount: true,
+        revalidateOnReconnect: false,
+        dedupingInterval: 300000,
+        refreshInterval: 0,
+      }
+    );
 
 
   const getTimeStatus = (timestamp: string | null | undefined): JSX.Element => {

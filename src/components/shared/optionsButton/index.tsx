@@ -15,7 +15,7 @@ interface OptionsButtonProps {
   inHeader?: boolean;
 }
 
-export const OptionsButton: React.FC<OptionsButtonProps> = ({ className = "", options, inHeader = false }) => {
+export const OptionsButton: React.FC<OptionsButtonProps> = ({ className = "", options,}) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 

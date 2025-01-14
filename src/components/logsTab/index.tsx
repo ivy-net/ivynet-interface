@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { Topbar } from '../Topbar';
 import { Table } from '../shared/table';
 import { Td } from '../shared/table/Td';
@@ -48,8 +48,7 @@ const formatTimestamp = (timestamp: string): string => {
 export const LogsTab: React.FC = () => {
   const [selectedAvs, setSelectedAvs] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [refreshCount, setRefreshCount] = useState(0);
-  const [lastRefreshTime, setLastRefreshTime] = useState(Date.now());
+  const [avsSearchTerm, setAvsSearchTerm] = useState("");
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [selectedLogLevels, setSelectedLogLevels] = useState<string[]>([]);
@@ -59,7 +58,7 @@ export const LogsTab: React.FC = () => {
     direction: 'none'
   });
 
-  const { data: machinesData, mutate: mutateMachines } = useSWR<{ data: any[] }>(
+  const { data: machinesData } = useSWR<{ data: any[] }>(
     'machine',
     fetcher,
     {
@@ -133,36 +132,50 @@ export const LogsTab: React.FC = () => {
   /* eslint-disable no-control-regex */
   const cleanLogText = (log: string): string => {
     return log
-      .replace(/\x1B\[\d+m/g, '')  // Remove color codes
-      .replace(/\x1B\[(?:\d+[A-Za-z]|\d+;\d+[A-Za-z])/g, '')  // Remove ANSI escape sequences
-      .replace(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z\s+/g, '') // Remove ISO timestamp
-      .replace(/^<1>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z\s+/g, '') // Remove timestamps with <1> prefix
-      .replace(/^[A-Z][a-z]{2}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\.\d{3}\s+/g, '') // Remove timestamp like "Jan 6 14:25:08.305"
-      .replace(/^\d{4}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2}\s+/g, '') // Remove timestamp like "2025/01/07 12:15:00"
+      // Remove ANSI color codes and escape sequences
+      .replace(/\x1B\[\d+m/g, '')
+      .replace(/\x1B\[(?:\d+[A-Za-z]|\d+;\d+[A-Za-z])/g, '')
+      .replace(/\[2m|\[0m/g, '')  // Remove specific color codes like [2m and [0m
+
+      // Remove various timestamp formats
+      .replace(/^<\d+>[\d-]+T[\d:.]+Z\s+/g, '')  // Remove <1>2025-01-06T14:24:21.010Z format
+      .replace(/^[\d-]+T[\d:.]+Z\s+/g, '')  // Remove ISO timestamp
+      .replace(/^(?:[A-Z][a-z]{2}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\.\d{3}\s+)/g, '')  // Remove Jan 10 00:10:48.046 format
+      .replace(/^\d{4}\/\d{2}\/\d{2}\s+\d{2}:\d{2}:\d{2}\s+/g, '')  // Remove 2025/01/07 12:15:00 format
+
+      // Clean up any leftover spaces and trim
+      .replace(/\s+/g, ' ')
       .trim();
   };
   /* eslint-enable no-control-regex */
 
-  const consolidateLogsByTimestamp = (logs: LogEntry[]): LogEntry[] => {
-    const consolidated: { [key: string]: LogEntry } = {};
+//  const consolidateLogsByTimestamp = (logs: LogEntry[]): LogEntry[] => {
+//    const consolidated: { [key: string]: LogEntry } = {};
 
-    logs.forEach(log => {
-      const timestamp = log.created_at;
-      const cleanedLog = cleanLogText(log.log);
+ //   logs.forEach(log => {
+ //     const timestamp = log.created_at;
+ //     const cleanedLog = cleanLogText(log.log);
 
-      if (consolidated[timestamp]) {
-        consolidated[timestamp].log = `${consolidated[timestamp].log}\n\n${cleanedLog}`;
-      } else {
-        consolidated[timestamp] = { ...log, log: cleanedLog };
-      }
-    });
+ //     if (consolidated[timestamp]) {
+ //       consolidated[timestamp].log = `${consolidated[timestamp].log}\n\n${cleanedLog}`;
+ //     } else {
+ //       consolidated[timestamp] = { ...log, log: cleanedLog };
+ //     }
+ //   });
 
-    return Object.values(consolidated);
-  };
+    //return Object.values(consolidated);
+ // };
+
+  const cleanedLogs = useMemo(() => {
+    return logs.map(log => ({
+      ...log,
+      log: log.log ? cleanLogText(log.log) : ''
+    }));
+  }, [logs]);
 
   const filteredAndSortedLogs = useMemo(() => {
     // Filter out null, empty, or undefined logs
-    let filtered = logs.filter(log =>
+    let filtered = cleanedLogs.filter(log =>
       log &&
       log.log &&
       log.log.trim() !== '' &&
@@ -170,8 +183,9 @@ export const LogsTab: React.FC = () => {
       log.created_at
     );
 
+
     // Consolidate logs with same timestamp
-    filtered = consolidateLogsByTimestamp(filtered);
+  //  filtered = consolidateLogsByTimestamp(filtered);
 
     // Apply log level filters
     if (selectedLogLevels.length > 0) {
@@ -203,24 +217,6 @@ export const LogsTab: React.FC = () => {
 
     return filtered;
   }, [logs, selectedLogLevels, searchTerm, sortConfig]);
-
-  const handleRefresh = async () => {
-    const now = Date.now();
-    if (now - lastRefreshTime < 60000) {
-      if (refreshCount >= 3) {
-        toast.warning('Refresh limit reached. Please wait.', { theme: "dark" });
-        return;
-      }
-      setRefreshCount(prev => prev + 1);
-    } else {
-      setRefreshCount(1);
-      setLastRefreshTime(now);
-    }
-
-    if (selectedAvs) {
-      await fetchLogs(selectedAvs);
-    }
-  };
 
   const fetchLogs = async (avsName: string) => {
     setIsLoading(true);
@@ -261,7 +257,7 @@ export const LogsTab: React.FC = () => {
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold text-textPrimary">
           {selectedAvs
-            ? `${selectedAvs} Metrics on ${getSelectedAvsChain()} as of ${formatTimestamp(Math.max(...logs.map(log => new Date(log.created_at).getTime())).toString())}`
+            ? `${selectedAvs} logs on ${getSelectedAvsChain()} as of ${formatTimestamp(Math.max(...logs.map(log => new Date(log.created_at).getTime())).toString())}`
             : 'AVS Logs Snapshot'
           }
         </h2>
@@ -295,66 +291,92 @@ export const LogsTab: React.FC = () => {
           >
             Filter Type
           </button>
-          <button
-            onClick={handleRefresh}
-            className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
-          >
-            Refresh
-          </button>
         </div>
       </div>
 
       {showFilterModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-widgetBg rounded-lg p-8 max-w-md w-full">
-            <h2 className="text-2xl font-semibold text-textPrimary mb-6">Filter by Log Type</h2>
-            <div className="w-full grid gap-2">
-              {uniqueLogLevels.map(level => (
-                <button
-                  key={level}
-                  onClick={() => {
-                    setSelectedLogLevels(current =>
-                      current.includes(level)
-                        ? current.filter(l => l !== level)
-                        : [...current, level]
-                    );
-                  }}
-                  className={`w-full p-3 text-left rounded-lg text-textSecondary border border-textGrey/20 ${
-                    selectedLogLevels.includes(level) ? 'bg-bgButton' : 'hover:bg-widgetHoverBg'
-                  }`}
-                >
-                  {level}
-                </button>
-              ))}
-            </div>
-            <div className="mt-6 flex justify-end">
+        <div className="bg-widgetBg rounded-lg p-8 max-w-md w-full relative">
+          <button
+            onClick={() => setShowFilterModal(false)}
+            className="absolute top-4 right-4 text-textGrey hover:text-textPrimary"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          </button>
+          <h2 className="text-2xl font-semibold text-textPrimary mb-6">Filter by Log Type</h2>
+          <div className="w-full grid gap-2">
+            {uniqueLogLevels.map(level => (
               <button
-                onClick={() => setShowFilterModal(false)}
-                className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
+                key={level}
+                onClick={() => {
+                  setSelectedLogLevels(current =>
+                    current.includes(level)
+                      ? current.filter(l => l !== level)
+                      : [...current, level]
+                  );
+                }}
+                className={`w-full p-3 text-left rounded-lg text-textSecondary border border-textGrey/20 ${
+                  selectedLogLevels.includes(level) ? 'bg-bgButton' : 'hover:bg-widgetHoverBg'
+                }`}
               >
-                Filter
+                {level}
               </button>
-            </div>
+            ))}
+          </div>
+          <div className="mt-6 flex justify-end">
+            <button
+              onClick={() => setShowFilterModal(false)}
+              className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary"
+            >
+              Filter
+            </button>
           </div>
         </div>
+</div>
       )}
 
 {!selectedAvs ? (
         <div className="flex flex-col items-center justify-center min-h-[400px] max-w-md mx-auto bg-widgetBg rounded-lg p-8">
           <h2 className="text-2xl font-semibold text-textPrimary mb-6">Select an AVS to view logs</h2>
+          <div className="relative w-full mb-4">
+            <input
+              type="text"
+              placeholder="Search AVS..."
+              value={avsSearchTerm}
+              onChange={(e) => setAvsSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-black bg-opacity-30 rounded-lg text-textPrimary border border-textGrey/20 focus:ring-1 focus:ring-textGrey"
+            />
+            <svg
+              className="absolute left-3 top-2.5 w-5 h-5 text-textGrey"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
           <div className="w-full grid gap-2">
-            {availableAvs.map(avs => (
-              <button
-                key={avs}
-                onClick={() => {
-                  setSelectedAvs(avs);
-                  fetchLogs(avs);
-                }}
-                className="w-full p-3 text-left hover:bg-widgetHoverBg rounded-lg text-textSecondary border border-textGrey/20"
-              >
-                {avs}
-              </button>
-            ))}
+            {availableAvs
+              .filter(avs => avs.toLowerCase().includes(avsSearchTerm.toLowerCase()))
+              .map(avs => (
+                <button
+                  key={avs}
+                  onClick={() => {
+                    setSelectedAvs(avs);
+                    fetchLogs(avs);
+                  }}
+                  className="w-full p-3 text-left hover:bg-widgetHoverBg rounded-lg text-textSecondary border border-textGrey/20"
+                >
+                  {avs}
+                </button>
+              ))}
           </div>
         </div>
       ) : isLoading ? (
@@ -395,15 +417,16 @@ export const LogsTab: React.FC = () => {
       className="text-xl whitespace-nowrap align-top pt-6"
     />
     <Td
-      className="text-sm whitespace-nowrap ml-16 align-top pt-7" // Changed pt-6 to pt-7 to compensate for smaller text
+      className="text-sm whitespace-nowrap ml-16 align-top pt-7"
     >
-      <div className={`pt-1 ${  // Added pt-1 to fine-tune alignment
-        log.log_level === 'ERROR' ? 'text-textWarning' :
-        log.log_level === 'WARNING' ? 'text-textWarningyellow' :
-        ['INFO', 'DEBUG'].includes(log.log_level) ? 'text-positive' : ''
-      }`}>
-        {log.log_level}
-      </div>
+    <div className={`pt-1 ${
+            log.log_level === 'ERROR' ? 'text-textWarning' :
+            log.log_level === 'WARNING' ? 'text-textWarningyellow' :
+            log.log_level === 'DEBUG' ? 'text-blue' :
+            log.log_level === 'INFO' ? 'text-positive' : ''
+          }`}>
+      {log.log_level}
+    </div>
     </Td>
     <Td
       content={log.log}

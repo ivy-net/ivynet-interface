@@ -3,6 +3,10 @@ import { apiFetch } from '../../utils';
 import { toast } from 'react-toastify';
 import { ChevronDown } from 'lucide-react';
 
+// Module-level cache for node types
+let cachedNodeTypes: string[] | null = null;
+let nodeTypesFetchPromise: Promise<string[]> | null = null;
+
 // Fallback node types list in case the API call fails
 const FALLBACK_NODE_TYPES = [
   "AvaProtocol",
@@ -55,6 +59,37 @@ interface NodeTypeModalProps {
   mutateMachines: () => Promise<any>;
 }
 
+// Centralized fetch function with caching
+const fetchNodeTypes = async (): Promise<string[]> => {
+  // Return cached result if available
+  if (cachedNodeTypes) return cachedNodeTypes;
+
+  // If there's an ongoing fetch, return its promise
+  if (nodeTypesFetchPromise) return nodeTypesFetchPromise;
+
+  // Create new fetch promise
+  nodeTypesFetchPromise = (async () => {
+    try {
+      const response = await apiFetch('info/nodetypes', 'GET');
+      const types = response.data;
+      const stringTypes = types
+        .filter((t: NodeType) => typeof t === 'string')
+        .sort((a: string, b: string) => a.localeCompare(b));
+
+      cachedNodeTypes = stringTypes;
+      return stringTypes;
+    } catch (error) {
+      console.warn('Failed to fetch node types, using fallback list');
+      cachedNodeTypes = FALLBACK_NODE_TYPES;
+      return FALLBACK_NODE_TYPES;
+    } finally {
+      nodeTypesFetchPromise = null;
+    }
+  })();
+
+  return nodeTypesFetchPromise;
+};
+
 const formatNodeType = (nodeType: NodeType | null): string => {
   if (!nodeType) return '';
   if (typeof nodeType === 'string') return nodeType;
@@ -88,28 +123,19 @@ const NodeTypeModal: React.FC<NodeTypeModalProps> = ({
   const [isUpdating, setIsUpdating] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryName | null>(null);
   const [selectedSubType, setSelectedSubType] = useState<string | null>(null);
-  const [nodeTypes, setNodeTypes] = useState<string[]>(FALLBACK_NODE_TYPES);
+  const [nodeTypes, setNodeTypes] = useState<string[]>(cachedNodeTypes || FALLBACK_NODE_TYPES);
 
   const specialCategories: SpecialCategories = {
     Altlayer: ['AltlayerMach', 'GmNetworkMach', 'Unknown'],
     AltlayerMach: ['Xterio', 'DodoChain', 'Cyber', 'Unknown']
-};
-
-useEffect(() => {
-  const fetchNodeTypes = async () => {
-    try {
-      const response = await apiFetch('info/nodetypes', 'GET');
-      const types = response.data;
-      // Added type annotations to fix TypeScript errors
-      const stringTypes = types.filter((t: NodeType) => typeof t === 'string') as string[];
-      setNodeTypes(stringTypes.sort((a: string, b: string) => a.localeCompare(b)));
-    } catch (error) {
-      console.warn('Failed to fetch node types, using fallback list');
-    }
   };
 
-  fetchNodeTypes();
-}, []);
+  // Load node types only once when modal opens
+  useEffect(() => {
+    if (isOpen && !cachedNodeTypes) {
+      fetchNodeTypes().then(setNodeTypes);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -120,48 +146,46 @@ useEffect(() => {
   };
 
   const handleSelectType = async (type: string) => {
-    if (!type) return;
+    if (!type || isUpdating) return;
 
     setIsUpdating(true);
     try {
-        const endpoint = `machine/${machineId}/node_type`;
+      const endpoint = `machine/${machineId}/node_type`;
 
-        // Format the nodeTypeValue based on whether we're in a category
-        // and handle the special AltlayerMach case
-        const nodeTypeValue = selectedCategory === 'Altlayer' && type === 'AltlayerMach'
-            ? `Altlayer(${type})`  // This creates Altlayer(AltlayerMach)
-            : selectedCategory
-                ? `${selectedCategory}(${type})` // This handles other category cases
-                : type;  // This handles non-category cases
+      const nodeTypeValue = selectedCategory === 'Altlayer' && type === 'AltlayerMach'
+        ? `Altlayer(${type})`
+        : selectedCategory
+          ? `${selectedCategory}(${type})`
+          : type;
 
-        const queryParams = `avs_name=${encodeURIComponent(avsName)}&node_type=${encodeURIComponent(nodeTypeValue)}`;
-        const url = `${endpoint}?${queryParams}`;
+      const queryParams = `avs_name=${encodeURIComponent(avsName)}&node_type=${encodeURIComponent(nodeTypeValue)}`;
+      const url = `${endpoint}?${queryParams}`;
 
-        await apiFetch(url, 'PUT');
-        await mutateMachines();
-        toast.success(`Successfully updated node type for ${avsName}`, { theme: "dark" });
-        onClose();
+      await apiFetch(url, 'PUT');
+      await mutateMachines();
+      toast.success(`Successfully updated node type for ${avsName}`, { theme: "dark" });
+      onClose();
     } catch (error: any) {
-        console.error('Error details:', error);
-        const errorData = error?.response?.data || 'Unknown error';
-        toast.error(`Failed to update node type: ${errorData}`, { theme: "dark" });
+      console.error('Error details:', error);
+      const errorData = error?.response?.data || 'Unknown error';
+      toast.error(`Failed to update node type: ${errorData}`, { theme: "dark" });
     } finally {
-        setIsUpdating(false);
+      setIsUpdating(false);
     }
-};
+  };
 
   const getFilteredTypes = () => {
     if (selectedCategory) {
-        return specialCategories[selectedCategory].filter((type: string) =>
-            type.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+      return specialCategories[selectedCategory].filter((type: string) =>
+        type.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
 
     const baseTypes = nodeTypes.filter((type: string) =>
-        type.toLowerCase().includes(searchTerm.toLowerCase())
+      type.toLowerCase().includes(searchTerm.toLowerCase())
     );
     const categories = (Object.keys(specialCategories) as CategoryName[]).filter(cat =>
-        cat.toLowerCase().includes(searchTerm.toLowerCase())
+      cat.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return [...categories, ...baseTypes];
@@ -171,22 +195,22 @@ useEffect(() => {
     // Special case: if we're inside Altlayer category, treat everything as a value
     // not as a potential subcategory, even if it exists in specialCategories
     if (selectedCategory === 'Altlayer') {
-        setSelectedSubType(type);
-        handleSelectType(type);
-        return;
+      setSelectedSubType(type);
+      handleSelectType(type);
+      return;
     }
 
     // Regular category selection logic for non-Altlayer cases
     if (type in specialCategories && !selectedCategory) {
-        setSelectedCategory(type as CategoryName);
-        setSelectedSubType(null);
+      setSelectedCategory(type as CategoryName);
+      setSelectedSubType(null);
     } else if (selectedCategory) {
-        setSelectedSubType(type);
-        handleSelectType(type);
+      setSelectedSubType(type);
+      handleSelectType(type);
     } else {
-        handleSelectType(type);
+      handleSelectType(type);
     }
-};
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={handleBackdropClick}>
@@ -239,7 +263,6 @@ useEffect(() => {
           </div>
 
           <div className="space-y-1">
-            {/* In the button mapping inside the NodeTypeModal */}
             {getFilteredTypes().map((type) => (
               <button
                 key={type}
@@ -252,7 +275,6 @@ useEffect(() => {
                 }`}
               >
                 <span>{type}</span>
-                {/* Only show arrow if it's a category AND we're not in Altlayer category view */}
                 {(type in specialCategories) && !selectedCategory && (
                   <ChevronDown className="w-4 h-4 transform -rotate-90" />
                 )}
@@ -272,6 +294,13 @@ export const NodeTypeCell: React.FC<NodeTypeCellProps> = ({
   mutateMachines
 }) => {
   const [showModal, setShowModal] = useState(false);
+
+  // Pre-fetch node types when component mounts
+  useEffect(() => {
+    if (!cachedNodeTypes) {
+      fetchNodeTypes();
+    }
+  }, []);
 
   if (!nodeType || (typeof nodeType === 'string' && nodeType.toLowerCase() === 'unknown')) {
     return (
@@ -299,7 +328,7 @@ export const NodeTypeCell: React.FC<NodeTypeCellProps> = ({
   return (
     <>
       <button
-        onClick={() => setShowModal(true)}  // Always open modal on click now
+        onClick={() => setShowModal(true)}
         className="text-left px-3 py-2 rounded-lg hover:bg-widgetHoverBg text-textSecondary"
       >
         <span>{formatNodeType(nodeType)}</span>

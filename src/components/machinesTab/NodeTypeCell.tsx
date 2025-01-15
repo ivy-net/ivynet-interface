@@ -33,11 +33,10 @@ let nodeTypesFetchPromise: Promise<string[]> | null = null;
 
 // Fallback node types list in case the API call fails
 const FALLBACK_NODE_TYPES = [
-  "AvaProtocol",
+"AvaProtocol",
   "EigenDA",
   "LagrangeStateCommittee",
-  "LagrangeZkWorkerHolesky",
-  "LagrangeZkWorkerMainnet",
+  "LagrangeZkWorker",
   "K3LabsAvs",
   "K3LabsAvsHolesky",
   "EOracle",
@@ -52,16 +51,14 @@ const FALLBACK_NODE_TYPES = [
   "AethosHolesky",
   "ArpaNetworkNodeClient",
   "UnifiAVS",
-  "SkateChainBase",
-  "SkateChainMantle",
-  "ChainbaseNetworkV1",
   "ChainbaseNetwork",
   "GoPlusAVS",
-  "UngateInfiniRouteBase",
-  "UngateInfiniRoutePolygon",
   "PrimevMevCommit",
   "AlignedLayer",
-  "Unknown"
+  "DittoNetwork",
+  "Gasp",
+  "Nuffle",
+  "Unknown",
 ].sort((a: string, b: string) => a.localeCompare(b));
 
 
@@ -97,7 +94,7 @@ const fetchNodeTypes = async (): Promise<string[]> => {
   nodeTypesFetchPromise = (async () => {
     try {
       const response = await apiFetch('info/nodetypes', 'GET');
-      const types = response.data;
+      const types = response.data; // axios response is wrapped in .data
       const stringTypes = types
         .filter((t: NodeType) => typeof t === 'string')
         .sort((a: string, b: string) => a.localeCompare(b));
@@ -105,7 +102,7 @@ const fetchNodeTypes = async (): Promise<string[]> => {
       cachedNodeTypes = stringTypes;
       return stringTypes;
     } catch (error) {
-      console.warn('Failed to fetch node types, using fallback list');
+      console.error('Failed to fetch node types:', error);
       cachedNodeTypes = FALLBACK_NODE_TYPES;
       return FALLBACK_NODE_TYPES;
     } finally {

@@ -106,8 +106,8 @@ export const LogsTab: React.FC = () => {
   const [selectedLogLevels, setSelectedLogLevels] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [sortConfig, setSortConfig] = useState<{ key: string | null; direction: 'asc' | 'desc' | 'none' }>({
-    key: null,
-    direction: 'none'
+    key: 'created_at',
+    direction: 'desc'
   });
 
   const { data: machinesData } = useSWR<{ data: any[] }>(
@@ -486,7 +486,7 @@ export const LogsTab: React.FC = () => {
 <Table>
         <Tr>
           <Th
-            content="Created At"
+            content="Timestamp"
             sortKey="created_at"
             currentSort={sortConfig}
             onSort={() => handleSort('created_at')}

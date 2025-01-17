@@ -67,8 +67,10 @@ export const Th: React.FC<ThProps> = ({
   };
 
   return (
-    <th
-      className={`${className} text-left align-middle h-11 ${sortKey ? 'cursor-pointer hover:text-white' : ''}`}
+<th
+      className={`${className} text-left align-middle h-11 ${
+        sortKey ? 'cursor-pointer hover:text-white' : ''
+      } sticky top-0`}
       onClick={handleSort}
     >
       {content && (

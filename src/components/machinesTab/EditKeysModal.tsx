@@ -37,6 +37,7 @@ export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
   const [operatorName, setOperatorName] = useState<string>("");
   const [operatorData, setOperatorData] = useState<OperatorData[]>([]);
   const [avsOptions, setAvsOptions] = useState<AvsOption[]>([]);
+  const [addressOptions, setAddressOptions] = useState<SelectOption[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
@@ -96,15 +97,18 @@ export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
             );
 
             if (operatorEntry) {
-              setSelectedAddress({
-                value: avsData.operator_address,
-                label: `${avsData.operator_address} | ${operatorEntry.name}`
-              });
               setSelectedName({
                 value: operatorEntry.name,
-                label: `${operatorEntry.name} | ${avsData.operator_address}`
+                label: operatorEntry.name
               });
               setOperatorName(operatorEntry.name);
+              // Update address options based on the selected name
+              updateAddressOptions(operatorEntry.name);
+              // Set the selected address
+              setSelectedAddress({
+                value: avsData.operator_address,
+                label: avsData.operator_address
+              });
             } else {
               setSelectedAddress({
                 value: avsData.operator_address,
@@ -121,56 +125,32 @@ export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
     }
   }, [selectedAvs, operatorData]);
 
+  const updateAddressOptions = (name: string) => {
+    const addresses = operatorData
+      .filter(entry => entry.name === name)
+      .map(entry => ({
+        value: entry.public_key,
+        label: entry.public_key
+      }));
+    setAddressOptions(addresses);
+  };
+
   const handleNameChange = (option: SelectOption | null) => {
     setSelectedName(option);
+    setSelectedAddress(null); // Clear the selected address when name changes
+
     if (option) {
-      const operatorEntry = operatorData.find(
-        entry => entry.name === option.value
-      );
-      if (operatorEntry) {
-        setSelectedAddress({
-          value: operatorEntry.public_key,
-          label: `${operatorEntry.public_key} | ${operatorEntry.name}`
-        });
-        setOperatorName(operatorEntry.name);
-      } else {
-        setSelectedAddress(null);
-        setOperatorName(option.value);
-      }
+      setOperatorName(option.value);
+      // Update address options based on the selected name
+      updateAddressOptions(option.value);
     } else {
-      setSelectedAddress(null);
       setOperatorName("");
+      setAddressOptions([]); // Clear address options when no name is selected
     }
   };
 
   const handleAddressChange = (option: SelectOption | null) => {
     setSelectedAddress(option);
-    if (option) {
-      const operatorEntry = operatorData.find(
-        entry => entry.public_key === option.value
-      );
-      if (operatorEntry) {
-        setSelectedName({
-          value: operatorEntry.name,
-          label: `${operatorEntry.name} | ${operatorEntry.public_key}`
-        });
-        setOperatorName(operatorEntry.name);
-        setSelectedAddress({
-          value: option.value,
-          label: `${option.value} | ${operatorEntry.name}`
-        });
-      } else {
-        // For new addresses, keep the existing name
-        setSelectedAddress({
-          value: option.value,
-          label: option.value + (operatorName ? ` | ${operatorName}` : '')
-        });
-      }
-    } else {
-      setOperatorName("");
-      setSelectedName(null);
-      setSelectedAddress(null);
-    }
   };
 
   const validateAddress = (address: string): boolean => {
@@ -330,10 +310,16 @@ export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
             <CreatableSelect<SelectOption>
               value={selectedName}
               onChange={handleNameChange}
-              options={operatorData.map(entry => ({
-                value: entry.name,
-                label: `${entry.name} | ${entry.public_key}`
-              }))}
+              options={operatorData
+                .reduce((unique: SelectOption[], current) => {
+                  if (!unique.some(item => item.value === current.name)) {
+                    unique.push({
+                      value: current.name,
+                      label: current.name
+                    });
+                  }
+                  return unique;
+                }, [])}
               styles={selectStyles}
               isDisabled={isSubmitting}
               isClearable
@@ -344,23 +330,27 @@ export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
                   label: inputValue
                 });
                 setOperatorName(inputValue);
+                setAddressOptions([]); // Clear address options for new names
               }}
             />
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <div className="text-sm leading-5 font-medium text-ivygrey">Operator Address</div>
+            <div className="text-sm leading-5 font-medium text-ivygrey">
+              Operator Address {selectedName && addressOptions.length > 0 && `(${addressOptions.length} available)`}
+            </div>
             <CreatableSelect<SelectOption>
               value={selectedAddress}
               onChange={handleAddressChange}
-              options={operatorData.map(entry => ({
-                value: entry.public_key,
-                label: `${entry.public_key} | ${entry.name}`
-              }))}
+              options={addressOptions}
               styles={selectStyles}
               isDisabled={isSubmitting}
               isClearable
-              placeholder="Select or enter an operator address..."
+              placeholder={selectedName
+                ? addressOptions.length > 0
+                  ? "Select an address for this operator..."
+                  : "Enter a new address for this operator..."
+                : "Please select an operator name first..."}
             />
           </div>
         </div>

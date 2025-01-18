@@ -113,17 +113,41 @@ export const Machine: React.FC<MachineProps> = () => {
     setShowRescanModal(false);
   }, []);
 
-  const getLatestVersion = useCallback((nodeType: string | null, chain: string | null): string => {
+  const getLatestVersion = useCallback((nodeType: any, chain: string | null): string => {
     if (!versionsData?.data || !nodeType) return "";
-    // Default to mainnet if no chain is specified
+
     const effectiveChain = chain || "mainnet";
 
-    const versionInfo = versionsData.data.find(
-      (v: VersionInfo) => v.node_type === nodeType && v.chain === effectiveChain
+    // If nodeType is an object (like {Altlayer: "X"} or {MachType: "Y"} etc)
+    if (typeof nodeType === 'object') {
+        const foundVersion = versionsData.data.find(v => {
+            // If version's node_type is also an object
+            if (typeof v.node_type === 'object') {
+                const versionEntries = Object.entries(v.node_type)[0];
+                const nodeTypeEntries = Object.entries(nodeType)[0];
+
+                // Match if the main type or sub type matches and chains match
+                const typesMatch =
+                    versionEntries[0] === nodeTypeEntries[0] ||  // Same main type
+                    versionEntries[1] === nodeTypeEntries[1] ||  // Same sub type
+                    (versionEntries[0].includes(nodeTypeEntries[0]) || nodeTypeEntries[0].includes(versionEntries[0])) // Type includes the other
+
+                return typesMatch && v.chain === effectiveChain;
+            }
+            return false;
+        });
+
+        return foundVersion?.latest_version || "";
+    }
+
+    // For regular string node types
+    const foundVersion = versionsData.data.find(v =>
+        v.node_type === nodeType && v.chain === effectiveChain
     );
 
-    return versionInfo?.latest_version || "";
-  }, [versionsData]);
+    return foundVersion?.latest_version || "";
+}, [versionsData]);
+
 
   const cores = machine?.system_metrics.cores?.toString() || "0";
   const cpuUsage = (machine?.system_metrics.cpu_usage || 0).toFixed(2).toString() + "%";
@@ -308,12 +332,21 @@ export const Machine: React.FC<MachineProps> = () => {
                   machineId={avs.machine_id || ""}
                 />
               </Td>
-              <Td content={avs.avs_version === "0.0.0" ? "---" : truncateVersion(avs.avs_version)} className="px-1"></Td>
-              <Td content={avs.avs_version === "Othentic" ? "local" : truncateVersion(getLatestVersion(avs.avs_type, avs.chain))} className="px-1" ></Td>
+
+<Td content={
+    avs.avs_version === "0.0.0" ? "---" :
+    (avs.avs_version === "latest" &&
+     getLatestVersion(avs.avs_type, avs.chain) === "latest" &&
+     avs.errors?.includes('NeedsUpdate')) ? "outdated" :
+    truncateVersion(avs.avs_version)
+} className="px-1"></Td>
+<Td content={avs.avs_version === "Othentic" ? "local" : truncateVersion(getLatestVersion(avs.avs_type, avs.chain))} className="px-1" ></Td>
+
               <Td>
                 <HealthStatus
-                  isChecked={avs.errors.length === 0}
-                  errors={avs.errors}
+                      isChecked={avs.errors.length === 0}
+                      errors={avs.errors}
+                      avsName={avs.avs_name}
                 />
               </Td>
               <Td score={avs.performance_score} className="text-center"></Td>

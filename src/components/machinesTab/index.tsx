@@ -87,6 +87,9 @@ export const MachinesTab: React.FC = () => {
         refreshInterval: 0,
       }
     );
+    console.log('versionsData:', versionsData?.data);
+
+    console.log('versionsData:', versionsData?.data);
 
 
   const getTimeStatus = (timestamp: string | null | undefined): JSX.Element => {
@@ -96,6 +99,7 @@ export const MachinesTab: React.FC = () => {
           Not Available
         </span>
       );
+
     }
 
     // Parse the timestamp and force UTC
@@ -189,7 +193,6 @@ export const MachinesTab: React.FC = () => {
   }, [machinesData]);
 
 
-  // Apply filters
   const filteredAvs = useMemo(() => {
     let filtered = allAvs;
 
@@ -208,7 +211,16 @@ export const MachinesTab: React.FC = () => {
           filtered = filtered.filter(avs => avs.active_set === true);
           break;
         case "unhealthy":
-          filtered = filtered.filter(avs => avs.errors && avs.errors.length > 0);
+          filtered = filtered.filter(avs => {
+            // If there are no errors, it's healthy
+            if (!avs.errors || avs.errors.length === 0) return false;
+
+            // Get errors excluding NoMetrics
+            const significantErrors = avs.errors.filter(error => error !== "NoMetrics");
+
+            // Only include if there are errors other than just NoMetrics
+            return significantErrors.length > 0;
+          });
           break;
       }
     }
@@ -320,12 +332,40 @@ export const MachinesTab: React.FC = () => {
     });
   };
 
-  const getLatestVersion = useCallback((nodeType: string | null, chain: string | null): string => {
+  const getLatestVersion = useCallback((nodeType: any, chain: string | null): string => {
     if (!versionsData?.data || !nodeType) return "";
-    // Default to mainnet if no chain is specified
+
     const effectiveChain = chain || "mainnet";
-    return versionsData.data.find(v => v.node_type === nodeType && v.chain === effectiveChain)?.latest_version || "";
-  }, [versionsData]);
+
+    // If nodeType is an object (like {Altlayer: "X"} or {MachType: "Y"} etc)
+    if (typeof nodeType === 'object') {
+        const foundVersion = versionsData.data.find(v => {
+            // If version's node_type is also an object
+            if (typeof v.node_type === 'object') {
+                const versionEntries = Object.entries(v.node_type)[0];
+                const nodeTypeEntries = Object.entries(nodeType)[0];
+
+                // Match if the main type or sub type matches and chains match
+                const typesMatch =
+                    versionEntries[0] === nodeTypeEntries[0] ||  // Same main type
+                    versionEntries[1] === nodeTypeEntries[1] ||  // Same sub type
+                    (versionEntries[0].includes(nodeTypeEntries[0]) || nodeTypeEntries[0].includes(versionEntries[0])) // Type includes the other
+
+                return typesMatch && v.chain === effectiveChain;
+            }
+            return false;
+        });
+
+        return foundVersion?.latest_version || "";
+    }
+
+    // For regular string node types
+    const foundVersion = versionsData.data.find(v =>
+        v.node_type === nodeType && v.chain === effectiveChain
+    );
+
+    return foundVersion?.latest_version || "";
+}, [versionsData]);
 
 
   useEffect(() => {
@@ -411,14 +451,14 @@ export const MachinesTab: React.FC = () => {
                 ></Th>
                 <Th content="Health" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}
                 ></Th>
-                <Th
+         {/*       <Th
                 content="Score"
                 sortKey="performance_score"
                 currentSort={sortConfig}
                 onSort={setSortConfig}
                 tooltip="Currently N/A if AVS doesn't have metrics."
                 className="text-center"
-              ></Th>
+              ></Th> */}
                 <Th
                   content="Active Set"
                   sortKey="active_set"
@@ -452,8 +492,15 @@ export const MachinesTab: React.FC = () => {
                   />
                   </Td>
                   {/*<Td content={formatAddress(avs.operator_address) || ""}></Td>*/}
-                  <Td content={avs.avs_version === "0.0.0" ? "---" : truncateVersion(avs.avs_version)} className="px-1"></Td>
-                  <Td content={avs.avs_version === "Othentic" ? "local" : truncateVersion(getLatestVersion(avs.avs_type, avs.chain))} className="px-1" ></Td>
+                  <Td content={
+    avs.avs_version === "0.0.0" ? "---" :
+    (avs.avs_version === "latest" &&
+     getLatestVersion(avs.avs_type, avs.chain) === "latest" &&
+     avs.errors?.includes('NeedsUpdate')) ? "outdated" :
+    truncateVersion(avs.avs_version)
+} className="px-1"></Td>
+<Td content={avs.avs_version === "Othentic" ? "local" : truncateVersion(getLatestVersion(avs.avs_type, avs.chain))} className="px-1" ></Td>
+
                   <Td>
                     <HealthStatus
                       isChecked={avs.errors.length === 0}
@@ -461,7 +508,7 @@ export const MachinesTab: React.FC = () => {
                       avsName={avs.avs_name}
                     />
                   </Td>
-                  <Td score={avs.performance_score} className="text-center"></Td>
+             {/*       <Td score={avs.performance_score} className="text-center"></Td> */}
                   <Td isChecked={avs.active_set}></Td>
                   <Td className="w-42">{getTimeStatus(avs.updated_at)}</Td>
                   <Td>

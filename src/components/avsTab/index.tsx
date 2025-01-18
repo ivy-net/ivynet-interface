@@ -12,6 +12,12 @@ import { ConsolidatedMachine, Metric } from '../../interfaces/responses';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
 
+interface AvsListItem {
+  avs_name: string;
+  machine_name: string;
+  machine_id: string;
+}
+
 
 const formatMetricValue = (metric: Metric): string => {
   if (!metric || metric.value === null || metric.value === undefined) {
@@ -287,12 +293,15 @@ const filteredMachineMetrics = useMemo(() => {
   };
 
   const availableAvs = useMemo(() => {
-    if (!machinesData?.data) return [] as string[];
-    const uniqueAvs = machinesData.data
-      .flatMap(machine => machine.avs_list.map(avs => avs.avs_name))
-      .filter((value, index, self) => value && self.indexOf(value) === index)
-      .sort();
-    return uniqueAvs as string[];
+    if (!machinesData?.data) return [] as AvsListItem[];
+
+    return machinesData.data.flatMap(machine =>
+      machine.avs_list.map(avs => ({
+        avs_name: avs.avs_name,
+        machine_name: machine.name,
+        machine_id: machine.machine_id
+      }))
+    ).sort((a, b) => a.avs_name.localeCompare(b.avs_name));
   }, [machinesData]);
 
   const getSelectedAvsChain = () => {
@@ -628,20 +637,25 @@ const filteredMachineMetrics = useMemo(() => {
             </svg>
           </div>
           <div className="w-full grid gap-2">
-            {availableAvs
-              .filter(avs => avs.toLowerCase().includes(avsSearchTerm.toLowerCase()))
-              .map(avs => (
-                <button
-                  key={avs}
-                  onClick={() => {
-                    setSelectedAvs(avs);
-                    fetchMetrics(avs);
-                  }}
-                  className="w-full p-3 text-left hover:bg-widgetHoverBg rounded-lg text-textSecondary border border-textGrey/20"
-                >
-                  {avs}
-                </button>
-              ))}
+          {availableAvs
+  .filter((avs: AvsListItem) =>
+    avs.avs_name.toLowerCase().includes(avsSearchTerm.toLowerCase())
+  )
+  .map((avs: AvsListItem) => (
+    <button
+      key={`${avs.machine_id}-${avs.avs_name}`}
+      onClick={() => {
+        setSelectedAvs(avs.avs_name);
+        fetchMetrics(avs.avs_name);
+      }}
+      className="w-full p-3 text-left hover:bg-widgetHoverBg rounded-lg text-textSecondary border border-textGrey/20"
+    >
+      <div className="flex flex-col">
+        <span className="text-lg font-medium">{avs.avs_name}</span>
+        <span className="text-md text-textGrey">{avs.machine_name}</span>
+      </div>
+    </button>
+  ))}
           </div>
         </div>
       ) : (

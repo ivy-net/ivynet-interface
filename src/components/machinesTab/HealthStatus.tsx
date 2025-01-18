@@ -15,19 +15,24 @@ const HealthStatus: React.FC<HealthStatusProps> = ({
 }) => {
   const [showErrorModal, setShowErrorModal] = useState(false);
 
+  // Filter out NoMetrics from errors
   const filteredErrors = errors.filter(error => error !== "NoMetrics");
 
-  const hasErrors = !isChecked && filteredErrors.length > 0;
+  // Show green checkmark if there are no errors after filtering out NoMetrics
+  const effectivelyHealthy = filteredErrors.length === 0;
+
+  // Only show error modal and make button clickable if there are actual errors
+  const hasClickableErrors = filteredErrors.length > 0;
 
   return (
     <>
       <div className="flex items-center justify-center">
         <button
-          className={`p-2 rounded-lg transition-colors ${hasErrors ? 'hover:bg-red-500/10' : ''}`}
-          onClick={() => hasErrors && setShowErrorModal(true)}
-          disabled={!hasErrors}
+          className={`p-2 rounded-lg transition-colors ${hasClickableErrors ? 'hover:bg-red-500/10' : ''}`}
+          onClick={() => hasClickableErrors && setShowErrorModal(true)}
+          disabled={!hasClickableErrors}
         >
-          <CheckedIcon isChecked={isChecked} />
+          <CheckedIcon isChecked={effectivelyHealthy} />
         </button>
       </div>
 

@@ -492,15 +492,8 @@ export const MachinesTab: React.FC = () => {
                   />
                   </Td>
                   {/*<Td content={formatAddress(avs.operator_address) || ""}></Td>*/}
-                  <Td content={
-    avs.avs_version === "0.0.0" ? "---" :
-    (avs.avs_version === "latest" &&
-     getLatestVersion(avs.avs_type, avs.chain) === "latest" &&
-     avs.errors?.includes('NeedsUpdate')) ? "outdated" :
-    truncateVersion(avs.avs_version)
-} className="px-1"></Td>
-<Td content={avs.avs_version === "Othentic" ? "local" : truncateVersion(getLatestVersion(avs.avs_type, avs.chain))} className="px-1" ></Td>
-
+                  <Td content={ avs.avs_version === "0.0.0" ? "---" : avs.avs_version === "Local" ? "Local" : (avs.avs_version === "latest" && getLatestVersion(avs.avs_type, avs.chain) === "latest" && avs.errors?.includes('NeedsUpdate')) ? "outdated" : truncateVersion(avs.avs_version) } className="px-1"></Td>
+                  <Td content={avs.avs_version === "Othentic" || avs.avs_version === "Local" ? "Local" : truncateVersion(getLatestVersion(avs.avs_type, avs.chain))} className="px-1" ></Td>
                   <Td>
                     <HealthStatus
                       isChecked={avs.errors.length === 0}

@@ -295,14 +295,14 @@ export const Machine: React.FC<MachineProps> = () => {
               tooltip="Add chain for latest version. Not all AVS use semantic versioning."
             ></Th>
             <Th content="Health" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}></Th>
-            <Th
+       {/*          <Th
               content="Score"
               sortKey="performance_score"
               currentSort={sortConfig}
               onSort={setSortConfig}
               tooltip="Currently N/A if AVS doesn't have metrics."
               className="text-center"
-            ></Th>
+            ></Th>  */}
             <Th
               content="Active Set"
               sortKey="active_set"
@@ -333,15 +333,8 @@ export const Machine: React.FC<MachineProps> = () => {
                 />
               </Td>
 
-<Td content={
-    avs.avs_version === "0.0.0" ? "---" :
-    (avs.avs_version === "latest" &&
-     getLatestVersion(avs.avs_type, avs.chain) === "latest" &&
-     avs.errors?.includes('NeedsUpdate')) ? "outdated" :
-    truncateVersion(avs.avs_version)
-} className="px-1"></Td>
-<Td content={avs.avs_version === "Othentic" ? "local" : truncateVersion(getLatestVersion(avs.avs_type, avs.chain))} className="px-1" ></Td>
-
+              <Td content={ avs.avs_version === "0.0.0" ? "---" : avs.avs_version === "Local" ? "Local" : (avs.avs_version === "latest" && getLatestVersion(avs.avs_type, avs.chain) === "latest" && avs.errors?.includes('NeedsUpdate')) ? "outdated" : truncateVersion(avs.avs_version) } className="px-1"></Td>
+              <Td content={avs.avs_version === "Othentic" || avs.avs_version === "Local" ? "Local" : truncateVersion(getLatestVersion(avs.avs_type, avs.chain))} className="px-1" ></Td>
               <Td>
                 <HealthStatus
                       isChecked={avs.errors.length === 0}
@@ -349,8 +342,8 @@ export const Machine: React.FC<MachineProps> = () => {
                       avsName={avs.avs_name}
                 />
               </Td>
-              <Td score={avs.performance_score} className="text-center"></Td>
-              <Td isChecked={avs.active_set}></Td>
+             {/*       <Td score={avs.performance_score} className="text-center"></Td> */}
+             <Td isChecked={avs.active_set}></Td>
               <Td className="flex items-center justify-center">
                 {getTimeStatus(avs.updated_at)}
               </Td>

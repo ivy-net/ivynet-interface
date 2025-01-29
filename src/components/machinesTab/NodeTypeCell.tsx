@@ -33,32 +33,39 @@ let nodeTypesFetchPromise: Promise<string[]> | null = null;
 
 // Fallback node types list in case the API call fails
 const FALLBACK_NODE_TYPES = [
-  "AvaProtocol",
-    "EigenDA",
-    "LagrangeStateCommittee",
-    "LagrangeZkWorker",
-    "K3LabsAvs",
-    "K3LabsAvsHolesky",
-    "EOracle",
-    "Predicate",
-    "Hyperlane",
-    "Brevis",
-    "WitnessChain",
-    "Omni",
-    "Automata",
-    "OpenLayerMainnet",
-    "OpenLayerHolesky",
-    "AethosHolesky",
-    "ArpaNetworkNodeClient",
-    "UnifiAVS",
-    "ChainbaseNetwork",
-    "GoPlusAVS",
-    "PrimevMevCommit",
-    "AlignedLayer",
-    "DittoNetwork",
-    "Gasp",
-    "Nuffle",
-    "Unknown",
+"AvaProtocol",
+  "EigenDA",
+  "LagrangeStateCommittee",
+  "LagrangeZkWorker",
+  "K3LabsAvs",
+  "K3LabsAvsHolesky",
+  "EOracle",
+  "Predicate",
+  "Hyperlane",
+  "Brevis",
+  "WitnessChain",
+  "Omni",
+  "Automata",
+  "OpenLayerMainnet",
+  "OpenLayerHolesky",
+  "AethosHolesky",
+  "ArpaNetworkNodeClient",
+  "UnifiAVS",
+  "ChainbaseNetwork",
+  "GoPlusAVS",
+  "PrimevMevCommit",
+  "AlignedLayer",
+  "DittoNetwork",
+  "Gasp",
+  "Nuffle",
+  "Blockless",
+  "Primus",
+  "AtlasNetwork",
+  "Zellular",
+  "Bolt",
+  "Redstone",
+  "MishtiNetwork",
+  "Unknown",
   ].sort((a: string, b: string) => a.localeCompare(b));
 
 type NodeType = string | { [key: string]: string };
@@ -129,7 +136,7 @@ const NodeTypeModal: React.FC<NodeTypeModalProps> = ({
   const [isUpdating, setIsUpdating] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryName | null>(null);
   const [selectedSubType, setSelectedSubType] = useState<string | null>(null);
-  const [nodeTypes, setNodeTypes] = useState<string[]>(cachedNodeTypes || FALLBACK_NODE_TYPES);
+  const [nodeTypes, setNodeTypes] = useState<string[]>(FALLBACK_NODE_TYPES);
 
   const specialCategories: SpecialCategories = {
     Altlayer: ['AltlayerMach', 'GmNetworkMach', 'Unknown'],
@@ -140,8 +147,18 @@ const NodeTypeModal: React.FC<NodeTypeModalProps> = ({
 
   // Load node types only once when modal opens
   useEffect(() => {
-    if (isOpen && !cachedNodeTypes) {
-      fetchNodeTypes().then(setNodeTypes);
+    if (isOpen) {
+      apiFetch('info/nodetypes', 'GET')
+        .then(response => {
+          const types = response.data
+            .filter((t: NodeType) => typeof t === 'string')
+            .sort((a: string, b: string) => a.localeCompare(b));
+          setNodeTypes(types);
+        })
+        .catch(error => {
+          console.error('Failed to fetch node types:', error);
+          setNodeTypes(FALLBACK_NODE_TYPES);
+        });
     }
   }, [isOpen]);
 

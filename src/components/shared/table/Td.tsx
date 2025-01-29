@@ -39,20 +39,22 @@ const [showDropdown, setShowDropdown] = useState(false);
 
   return (
    <td className={`${className} h-[72px]`}>
-     {content && (
-       <ConditionalLink to={to}>
-         <div className={`flex w-fit gap-1 rounded-lg p-2 ${hoverClasses}`}>
-           <div className="text-sm text-white">{content}</div>
-           {to && <img src={arrowUpRight} alt="chevron right" />}
-         </div>
-       </ConditionalLink>
-     )}
+      {content && (
+        <ConditionalLink to={to}>
+          <div className={`flex w-full gap-1 rounded-lg p-2 ${hoverClasses}`}>
+            <div className="text-sm text-white">{content}</div>
+            {to && <img src={arrowUpRight} alt="chevron right" />}
+          </div>
+        </ConditionalLink>
+      )}
      {hasConnectedIcon && <div className="flex justify-center"><ConnectedIcon isConnected={isConnected} /></div>}
           {hasCheckedIcon && <div className="flex justify-center"><CheckedIcon isChecked={isChecked} /></div>}
           {hasDiskStatus && <div className="flex justify-center"><DiskSpaceStatus status={diskStatus} /></div>}
-     {score !== undefined && score !== 0 && (
-       <div className="text-sm text-white">{score}</div>
-     )}
+      {score !== undefined && (
+        <div className="text-sm text-white">
+          {score === 0 || score === null ? "---" : score}
+        </div>
+      )}
      {onChainSelect && (
        <div className="relative">
          <button

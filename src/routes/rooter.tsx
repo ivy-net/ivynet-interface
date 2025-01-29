@@ -24,6 +24,9 @@ import { DeleteMachineModal } from '../components/machinesTab/DeleteMachineModal
 import { EditMachineModal } from '../components/machinesTab/EditMachineModal';
 import { PasswordSet } from '../components/passwordset/index';
 import { PasswordReset } from '../components/passwordreset/index';
+import { LogsTab } from '../components/logsTab';
+import { AddMetricsModal } from '../components/avsTab/AddMetrics';
+
 
 const authLoader: LoaderFunction = ({ request }) => {
   // Skip auth check for public routes
@@ -55,14 +58,14 @@ export const router = createBrowserRouter([
     children: [
       {
         path: "",
-        loader: () => redirect("/machines"),
+        loader: () => redirect("/nodes"),
            },
       // {
       //   path: "overview",
       //   element: <OverviewTab />
       // },
       {
-        path: "machines",
+        path: "nodes",
         element: <MachinesTab />,
         children: [
           {
@@ -72,6 +75,10 @@ export const router = createBrowserRouter([
           {
             path: "help",
             element: <HelpModal />
+          },
+          {
+            path: ":avsName",
+            element: <AvsModal />,
           },
           {
             path: "code",
@@ -136,7 +143,7 @@ export const router = createBrowserRouter([
         element: <Machine />
       },
       {
-        path: "avs",
+        path: "metrics",
         element: <AvsTab />,
         children: [
           {
@@ -150,6 +157,18 @@ export const router = createBrowserRouter([
             path: "help",
             element: <HelpModal />
           },
+          {
+            path: "add",
+            element: <AddMetricsModal />
+          },
+        ]
+      },
+      {
+        path: "logs",
+        element: <LogsTab />,
+        children: [
+          {
+          },
         ]
       },
       {
@@ -161,6 +180,10 @@ export const router = createBrowserRouter([
             element: <HelpTab />
           },
         ]
+      },
+      {
+        path: "adduser",
+        element: <AddUserModal />
       },
       // {
       //   path: "rewards",

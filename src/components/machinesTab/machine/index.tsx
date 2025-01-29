@@ -20,6 +20,8 @@ import { SearchBar } from "../../shared/searchBar";
 import { sortData } from '../../../utils/SortData';
 import ChainCell from "../ChainCell";
 import { RescanModal } from '../Rescan';
+import { NodeTypeCell } from "../NodeTypeCell";
+
 
 interface VersionInfo {
   node_type: string;
@@ -32,6 +34,13 @@ interface VersionInfo {
 
 interface MachineProps {}
 
+const truncateVersion = (version: string): string => {
+  if (!version) return version;
+  if (version.length <= 8) return version;
+  return `${version.slice(0, 8)}`;
+};
+
+
 export const Machine: React.FC<MachineProps> = () => {
   const [showAddAvsModal, setShowAddAvsModal] = useState(false);
   const [showRescanModal, setShowRescanModal] = useState(false);
@@ -43,7 +52,7 @@ export const Machine: React.FC<MachineProps> = () => {
   const { address } = useParams();
   const fetcher = (url: string) => apiFetch(url, "GET");
 
-  const { data: machineResponse } = useSWR<AxiosResponse<MachineDetails[]>>(
+  const { data: machineResponse, mutate: mutateMachine } = useSWR<AxiosResponse<MachineDetails[]>>(
     'machine',
     fetcher,
     {
@@ -105,10 +114,12 @@ export const Machine: React.FC<MachineProps> = () => {
   }, []);
 
   const getLatestVersion = useCallback((nodeType: string | null, chain: string | null): string => {
-    if (!versionsData?.data || !nodeType || !chain) return "";
+    if (!versionsData?.data || !nodeType) return "";
+    // Default to mainnet if no chain is specified
+    const effectiveChain = chain || "mainnet";
 
     const versionInfo = versionsData.data.find(
-      (v: VersionInfo) => v.node_type === nodeType && v.chain === chain
+      (v: VersionInfo) => v.node_type === nodeType && v.chain === effectiveChain
     );
 
     return versionInfo?.latest_version || "";
@@ -149,24 +160,24 @@ export const Machine: React.FC<MachineProps> = () => {
 
     let timeAgo;
     if (diffMinutes < 1) {
-      timeAgo = '< 1 Minute Ago';
+      timeAgo = '< 1 Mn Ago';
     } else if (diffMinutes < 60) {
-      timeAgo = `${diffMinutes} ${diffMinutes === 1 ? 'Minute' : 'Minutes'} Ago`;
+      timeAgo = `${diffMinutes} ${diffMinutes === 1 ? 'Mn' : 'Mn'} Ago`;
     } else if (diffHours < 24) {
-      timeAgo = `${diffHours} ${diffHours === 1 ? 'Hour' : 'Hours'} Ago`;
+      timeAgo = `${diffHours} ${diffHours === 1 ? 'Hr' : 'Hrs'} Ago`;
     } else {
       timeAgo = `${diffDays} ${diffDays === 1 ? 'Day' : 'Days'} Ago`;
     }
 
     let textColorClass = 'text-positive';
     if (diffMinutes >= 60) {
-      textColorClass = 'text-red-500';
+      textColorClass = 'text-textWarning';
     } else if (diffMinutes >= 15) {
       textColorClass = 'text-ivygrey';
     }
 
     return (
-      <span className={`text-sm ${textColorClass}`}>
+      <span className={`text-sm ${textColorClass} text-left w-full`}>
         {timeAgo}
       </span>
     );
@@ -174,7 +185,7 @@ export const Machine: React.FC<MachineProps> = () => {
 
   return (
 <div className="space-y-6">
-      <Topbar goBackTo="/machines" />
+      <Topbar goBackTo="/nodes" />
       <div className="flex">
         <MachineWidget
           name={machineName}
@@ -251,13 +262,13 @@ export const Machine: React.FC<MachineProps> = () => {
               content="Version"
               currentSort={sortConfig}
               onSort={setSortConfig}
-              tooltip="Can show blank if AVS doesn't ship with docker container."
+              tooltip="Currently N/A if AVS lacks docker container or requires local build. Not all AVS use semantic versioning."
             ></Th>
             <Th
               content="Latest"
               currentSort={sortConfig}
               onSort={setSortConfig}
-              tooltip="Add chain for latest version."
+              tooltip="Add chain for latest version. Not all AVS use semantic versioning."
             ></Th>
             <Th content="Health" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}></Th>
             <Th
@@ -265,7 +276,7 @@ export const Machine: React.FC<MachineProps> = () => {
               sortKey="performance_score"
               currentSort={sortConfig}
               onSort={setSortConfig}
-              tooltip="Can show 0 if AVS doesn't have performance score metric."
+              tooltip="Currently N/A if AVS doesn't have metrics."
               className="text-center"
             ></Th>
             <Th
@@ -273,17 +284,23 @@ export const Machine: React.FC<MachineProps> = () => {
               sortKey="active_set"
               currentSort={sortConfig}
               onSort={setSortConfig}
-              tooltip="Add chain and operator public address to see AVS Active Set status."
             ></Th>
-            <Th content="Last Connected" sortKey="updated_at" currentSort={sortConfig} onSort={setSortConfig}></Th>
+            <Th content="Updated" sortKey="updated_at" currentSort={sortConfig} onSort={setSortConfig}></Th>
             <Th content="Machine" sortKey="machine_id" currentSort={sortConfig} onSort={setSortConfig}></Th>
             <Th content=""></Th>
           </Tr>
 
-          {filteredAndSortedAvsList.map((avs: AVS, index: number) => (
+          {filteredAndSortedAvsList.map((avs: AVS) => (
             <Tr key={`${avs.machine_id}-${avs.avs_name}`}>
               <Td><AvsWidget name={avs.avs_name} /></Td>
-              <Td content={avs.avs_type}></Td>
+              <Td>
+                <NodeTypeCell
+                  nodeType={avs.avs_type}
+                  avsName={avs.avs_name}
+                  machineId={avs.machine_id || ""}
+                  mutateMachines={() => mutateMachine()}
+                />
+              </Td>
               <Td>
                 <ChainCell
                   chain={avs.chain}
@@ -291,8 +308,8 @@ export const Machine: React.FC<MachineProps> = () => {
                   machineId={avs.machine_id || ""}
                 />
               </Td>
-              <Td content={avs.avs_version === "0.0.0" ? "unknown" : avs.avs_version}></Td>
-              <Td content={getLatestVersion(avs.avs_type, avs.chain)}></Td>
+              <Td content={avs.avs_version === "0.0.0" ? "---" : truncateVersion(avs.avs_version)} className="px-1"></Td>
+              <Td content={avs.avs_version === "Othentic" ? "local" : truncateVersion(getLatestVersion(avs.avs_type, avs.chain))} className="px-1" ></Td>
               <Td>
                 <HealthStatus
                   isChecked={avs.errors.length === 0}

@@ -23,8 +23,15 @@ import { toast } from 'react-toastify';
 import ChainCell from "./ChainCell";
 import { RescanModal } from './Rescan';
 import { NodeTypeCell, formatNodeType } from './NodeTypeCell';
+import OperatorCell from './OperatorName';
 
 const fetcher = (url: string) => apiFetch(url, "GET");
+
+interface OperatorData {
+  organization_id: number;
+  name: string;
+  public_key: string;
+}
 
 const getMachineName = (machineId: string | undefined, machineName?: string): string => {
   if (!machineId) return 'Unknown Machine';
@@ -91,6 +98,14 @@ export const MachinesTab: React.FC = () => {
 
     console.log('versionsData:', versionsData?.data);
 
+
+    const pubkeysResponse = useSWR<AxiosResponse<OperatorData[]>, any>('pubkey', fetcher, {
+      revalidateOnFocus: false,
+      revalidateOnMount: true,
+      revalidateOnReconnect: false,
+      dedupingInterval: 300000, // Cache for 5 minutes
+      refreshInterval: 0,
+    });
 
   const getTimeStatus = (timestamp: string | null | undefined): JSX.Element => {
     if (!timestamp) {
@@ -437,7 +452,7 @@ export const MachinesTab: React.FC = () => {
                 <Th content="AVS" sortKey="avs_name" currentSort={sortConfig} onSort={setSortConfig}></Th>
                 <Th content="Type" sortKey="avs_type" currentSort={sortConfig} onSort={setSortConfig}></Th>
                 <Th content="Chain" sortKey="chain" currentSort={sortConfig} onSort={setSortConfig}></Th>
-                {/*<Th content="Address" sortKey="operator_address" currentSort={sortConfig} onSort={setSortConfig}></Th>*/}
+                <Th content="Address" sortKey="operator_address" currentSort={sortConfig} onSort={setSortConfig}></Th>
                 <Th
                   content="Version"
                   //sortKey="avs_version"
@@ -449,7 +464,7 @@ export const MachinesTab: React.FC = () => {
                 currentSort={sortConfig} onSort={setSortConfig}
                 tooltip="Add chain for latest version. Not all AVS use semantic versioning."
                 ></Th>
-                <Th content="Health" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}
+                <Th content="Issues" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}
                 ></Th>
          {/*       <Th
                 content="Score"
@@ -491,8 +506,15 @@ export const MachinesTab: React.FC = () => {
                   machineId={avs.machine_id || ""}
                   />
                   </Td>
-                  {/*<Td content={formatAddress(avs.operator_address) || ""}></Td>*/}
-                  <Td content={ avs.avs_version === "0.0.0" ? "---" : avs.avs_version === "Local" ? "Local" : (avs.avs_version === "latest" && getLatestVersion(avs.avs_type, avs.chain) === "latest" && avs.errors?.includes('NeedsUpdate')) ? "outdated" : truncateVersion(avs.avs_version) } className="px-1"></Td>
+                  <Td>
+                  <OperatorCell
+                    operatorAddress={avs.operator_address || ""}
+                    operatorData={pubkeysResponse.data?.data}
+                    avsName={avs.avs_name}
+                    machineId={avs.machine_id || ""}
+                  />
+                </Td>
+<Td content={ avs.avs_version === "0.0.0" ? "---" : avs.avs_version === "Local" ? "Local" : (avs.avs_version === "latest" && getLatestVersion(avs.avs_type, avs.chain) === "latest" && avs.errors?.includes('NeedsUpdate')) ? "outdated" : truncateVersion(avs.avs_version) } className="px-1"></Td>
                   <Td content={avs.avs_version === "Othentic" || avs.avs_version === "Local" ? "Local" : truncateVersion(getLatestVersion(avs.avs_type, avs.chain))} className="px-1" ></Td>
                   <Td>
                     <HealthStatus

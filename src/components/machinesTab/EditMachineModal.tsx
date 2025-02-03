@@ -207,7 +207,7 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
     <div className="fixed left-0 top-0 w-screen h-screen flex justify-center items-center bg-black/[0.8]">
       <div className="flex flex-col bg-widgetBg w-[730px] rounded-xl p-8 gap-10">
         <div className="flex items-center">
-          <h2>Add Address Details</h2>
+          <h2>Edit Address Details</h2>
           <Link to="/nodes" relative="path" className="ml-auto">
             <img src={closeIcon} alt="close icon" />
           </Link>

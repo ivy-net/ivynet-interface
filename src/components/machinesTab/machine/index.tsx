@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { Topbar } from "../../Topbar";
 import { SectionTitle } from "../../shared/sectionTitle";
 import { MachineStatus } from "./MachineStatus";
@@ -21,6 +22,8 @@ import { sortData } from '../../../utils/SortData';
 import ChainCell from "../ChainCell";
 import { RescanModal } from '../Rescan';
 import { NodeTypeCell } from "../NodeTypeCell";
+import OperatorCell from '../OperatorName';
+
 
 
 interface VersionInfo {
@@ -30,6 +33,12 @@ interface VersionInfo {
   latest_version_digest: string;
   breaking_change_version: string | null;
   breaking_change_datetime: string | null;
+}
+
+interface OperatorData {
+  organization_id: number;
+  name: string;
+  public_key: string;
 }
 
 interface MachineProps {}
@@ -77,6 +86,22 @@ export const Machine: React.FC<MachineProps> = () => {
       shouldRetryOnError: false,
     }
   );
+
+  const pubkeysResponse = useSWR<AxiosResponse<OperatorData[]>, any>('pubkey', fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnMount: true,
+    revalidateOnReconnect: false,
+    dedupingInterval: 300000, // Cache for 5 minutes
+    refreshInterval: 0,
+  });
+
+  const formatOperatorAddress = (address: string, operatorData: OperatorData[] | undefined) => {
+    const operator = operatorData?.find(op => op.public_key === address);
+    if (!operator?.name) {
+      return `${address.slice(0, 4)}..${address.slice(-3)}`;
+    }
+    return `${operator.name}`;
+  };
 
   const machine = useMemo(() =>
     machineResponse?.data?.find((m: MachineDetails) => m.machine_id === address),
@@ -282,6 +307,7 @@ export const Machine: React.FC<MachineProps> = () => {
             <Th content="AVS" sortKey="avs_name" currentSort={sortConfig} onSort={setSortConfig}></Th>
             <Th content="Type" sortKey="avs_type" currentSort={sortConfig} onSort={setSortConfig}></Th>
             <Th content="Chain" sortKey="chain" currentSort={sortConfig} onSort={setSortConfig}></Th>
+            <Th content="Address" sortKey="operator_address" currentSort={sortConfig} onSort={setSortConfig}></Th>
             <Th
               content="Version"
               currentSort={sortConfig}
@@ -294,7 +320,7 @@ export const Machine: React.FC<MachineProps> = () => {
               onSort={setSortConfig}
               tooltip="Add chain for latest version. Not all AVS use semantic versioning."
             ></Th>
-            <Th content="Health" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}></Th>
+            <Th content="Issues" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}></Th>
        {/*          <Th
               content="Score"
               sortKey="performance_score"
@@ -332,6 +358,14 @@ export const Machine: React.FC<MachineProps> = () => {
                   machineId={avs.machine_id || ""}
                 />
               </Td>
+              <Td>
+                  <OperatorCell
+                    operatorAddress={avs.operator_address || ""}
+                    operatorData={pubkeysResponse.data?.data}
+                    avsName={avs.avs_name}
+                    machineId={avs.machine_id || ""}
+                  />
+                </Td>
 
               <Td content={ avs.avs_version === "0.0.0" ? "---" : avs.avs_version === "Local" ? "Local" : (avs.avs_version === "latest" && getLatestVersion(avs.avs_type, avs.chain) === "latest" && avs.errors?.includes('NeedsUpdate')) ? "outdated" : truncateVersion(avs.avs_version) } className="px-1"></Td>
               <Td content={avs.avs_version === "Othentic" || avs.avs_version === "Local" ? "Local" : truncateVersion(getLatestVersion(avs.avs_type, avs.chain))} className="px-1" ></Td>

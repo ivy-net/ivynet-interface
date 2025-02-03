@@ -23,6 +23,7 @@ import { toast } from 'react-toastify';
 import ChainCell from "./ChainCell";
 import { RescanModal } from './Rescan';
 import { NodeTypeCell, formatNodeType } from './NodeTypeCell';
+import OperatorCell from './OperatorName';
 
 const fetcher = (url: string) => apiFetch(url, "GET");
 
@@ -105,14 +106,6 @@ export const MachinesTab: React.FC = () => {
       dedupingInterval: 300000, // Cache for 5 minutes
       refreshInterval: 0,
     });
-
-    const formatOperatorAddress = (address: string, operatorData: OperatorData[] | undefined) => {
-      const operator = operatorData?.find(op => op.public_key === address);
-      if (!operator?.name) {
-        return `${address.slice(0, 4)}..${address.slice(-3)}`;
-      }
-      return `${operator.name}`;
-    };
 
   const getTimeStatus = (timestamp: string | null | undefined): JSX.Element => {
     if (!timestamp) {
@@ -514,13 +507,14 @@ export const MachinesTab: React.FC = () => {
                   />
                   </Td>
                   <Td>
-                    <Link
-                      to={`/nodes/edit/${avs.avs_name}/${avs.machine_id || ""}`}
-                      className="hover:text-textHover"
-                    >
-                      {formatOperatorAddress(avs.operator_address || "", pubkeysResponse.data?.data)}
-                    </Link>
-                  </Td>                  <Td content={ avs.avs_version === "0.0.0" ? "---" : avs.avs_version === "Local" ? "Local" : (avs.avs_version === "latest" && getLatestVersion(avs.avs_type, avs.chain) === "latest" && avs.errors?.includes('NeedsUpdate')) ? "outdated" : truncateVersion(avs.avs_version) } className="px-1"></Td>
+                  <OperatorCell
+                    operatorAddress={avs.operator_address || ""}
+                    operatorData={pubkeysResponse.data?.data}
+                    avsName={avs.avs_name}
+                    machineId={avs.machine_id || ""}
+                  />
+                </Td>
+<Td content={ avs.avs_version === "0.0.0" ? "---" : avs.avs_version === "Local" ? "Local" : (avs.avs_version === "latest" && getLatestVersion(avs.avs_type, avs.chain) === "latest" && avs.errors?.includes('NeedsUpdate')) ? "outdated" : truncateVersion(avs.avs_version) } className="px-1"></Td>
                   <Td content={avs.avs_version === "Othentic" || avs.avs_version === "Local" ? "Local" : truncateVersion(getLatestVersion(avs.avs_type, avs.chain))} className="px-1" ></Td>
                   <Td>
                     <HealthStatus

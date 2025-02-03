@@ -22,6 +22,8 @@ import { sortData } from '../../../utils/SortData';
 import ChainCell from "../ChainCell";
 import { RescanModal } from '../Rescan';
 import { NodeTypeCell } from "../NodeTypeCell";
+import OperatorCell from '../OperatorName';
+
 
 
 interface VersionInfo {
@@ -356,14 +358,14 @@ export const Machine: React.FC<MachineProps> = () => {
                   machineId={avs.machine_id || ""}
                 />
               </Td>
-               <Td>
-                                  <Link
-                                    to={`/nodes/edit/${avs.avs_name}/${avs.machine_id || ""}`}
-                                    className="hover:text-textHover"
-                                  >
-                                    {formatOperatorAddress(avs.operator_address || "", pubkeysResponse.data?.data)}
-                                  </Link>
-                                </Td>
+              <Td>
+                  <OperatorCell
+                    operatorAddress={avs.operator_address || ""}
+                    operatorData={pubkeysResponse.data?.data}
+                    avsName={avs.avs_name}
+                    machineId={avs.machine_id || ""}
+                  />
+                </Td>
 
               <Td content={ avs.avs_version === "0.0.0" ? "---" : avs.avs_version === "Local" ? "Local" : (avs.avs_version === "latest" && getLatestVersion(avs.avs_type, avs.chain) === "latest" && avs.errors?.includes('NeedsUpdate')) ? "outdated" : truncateVersion(avs.avs_version) } className="px-1"></Td>
               <Td content={avs.avs_version === "Othentic" || avs.avs_version === "Local" ? "Local" : truncateVersion(getLatestVersion(avs.avs_type, avs.chain))} className="px-1" ></Td>

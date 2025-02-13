@@ -30,6 +30,7 @@ import { AddMetricsModal } from '../components/avsTab/AddMetrics';
 //import AlertSettings from '../components/issuesTab/AlertSettings';
 import { ActiveSet } from '../components/activeSet';
 import { AddKeysModal } from '../components/activeSet/AddAddresses';
+import {OrganizationConfirm} from '../components/organizationConfirm';
 
 const authLoader: LoaderFunction = ({ request }) => {
   // Skip auth check for public routes
@@ -246,11 +247,15 @@ export const router = createBrowserRouter([
   },
   // In your router configuration
 {
-  path: "password_reset/:token",  // Add this new route
+  path: "password_reset/:token",
   element: <PasswordReset />
 },
   {
-    path: "password_set/:token",  // Changed from setPassword/:token to match the URL format
+    path: "password_set/:token",
     element: <PasswordSet />
+  },
+  {
+    path: "organization_confirm/:token",
+    element: <OrganizationConfirm />
   }
 ]);

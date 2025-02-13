@@ -27,7 +27,7 @@ import { PasswordReset } from '../components/passwordreset/index';
 import { LogsTab } from '../components/logsTab';
 import { AddMetricsModal } from '../components/avsTab/AddMetrics';
 //import { IssuesTab } from '../components/issuesTab';
-import AlertSettings from '../components/issuesTab/AlertSettings';
+//import AlertSettings from '../components/issuesTab/AlertSettings';
 import { ActiveSet } from '../components/activeSet';
 import { AddKeysModal } from '../components/activeSet/AddAddresses';
 

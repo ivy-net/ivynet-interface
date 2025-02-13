@@ -24,6 +24,7 @@ import ChainCell from "./ChainCell";
 import { RescanModal } from './Rescan';
 import { NodeTypeCell, formatNodeType } from './NodeTypeCell';
 import OperatorCell from './OperatorName';
+import VersionStatusCell from './VersionStatusCell';
 
 const fetcher = (url: string) => apiFetch(url, "GET");
 
@@ -68,7 +69,7 @@ export const MachinesTab: React.FC = () => {
       refreshInterval: 0,
       errorRetryCount: 3,
       shouldRetryOnError: false,
-      dedupingInterval: 5000,
+      dedupingInterval: 10000,
       onError: () => {
         if (!localStorage.getItem('machine-fetch-error')) {
           toast.error('Error loading machines data. Please refresh the page to try again.', {
@@ -83,21 +84,19 @@ export const MachinesTab: React.FC = () => {
   );
 
 
-    const { data: versionsData } = useSWR<AxiosResponse<VersionInfo[]>>(
-      'info/avs/version',
-      fetcher,
-      {
-        revalidateOnFocus: true,
-        revalidateOnMount: true,
-        revalidateOnReconnect: false,
-        dedupingInterval: 300000,
-        refreshInterval: 0,
-      }
-    );
-    console.log('versionsData:', versionsData?.data);
-
-    console.log('versionsData:', versionsData?.data);
-
+  const { data: versionsData } = useSWR<AxiosResponse<VersionInfo[]>>(
+    'info/avs/version',
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnMount: true,
+      revalidateOnReconnect: false,
+      refreshInterval: 0,
+      dedupingInterval: 100000,
+      revalidateIfStale: false,
+      isPaused: () => false
+    }
+  );
 
     const pubkeysResponse = useSWR<AxiosResponse<OperatorData[]>, any>('pubkey', fetcher, {
       revalidateOnFocus: false,
@@ -154,7 +153,7 @@ export const MachinesTab: React.FC = () => {
     if (diffMinutes >= 60) {
       textColorClass = 'text-textWarning';
     } else if (diffMinutes >= 15) {
-      textColorClass = 'text-ivygrey';
+      textColorClass = 'text-textSecondary';
     }
 
     return (
@@ -190,9 +189,10 @@ export const MachinesTab: React.FC = () => {
     { label: "All AVS", query: "running" },
     { label: "Mainnet", query: "ethereum" },
     { label: "Holesky", query: "holesky" },
-    { label: "Active Set", query: "active" },
-    { label: "Unhealthy", query: "unhealthy" }
+    { label: "Eigenlayer", query: "eigenlayer" },
+    { label: "Symbiotic", query: "symbiotic" }
   ];
+
 
   // Extract all AVS entries and combine with machine data
   const allAvs = useMemo(() => {
@@ -222,20 +222,11 @@ export const MachinesTab: React.FC = () => {
         case "holesky":
           filtered = filtered.filter(avs => avs.chain === "holesky");
           break;
-        case "active":
-          filtered = filtered.filter(avs => avs.active_set === true);
+        case "eigenlayer":
+          filtered = filtered.filter(avs => avs.protocol?.toLowerCase() === "eigenlayer");
           break;
-        case "unhealthy":
-          filtered = filtered.filter(avs => {
-            // If there are no errors, it's healthy
-            if (!avs.errors || avs.errors.length === 0) return false;
-
-            // Get errors excluding NoMetrics
-            const significantErrors = avs.errors.filter(error => error !== "NoMetrics");
-
-            // Only include if there are errors other than just NoMetrics
-            return significantErrors.length > 0;
-          });
+        case "symbiotic":
+          filtered = filtered.filter(avs => avs.protocol?.toLowerCase() === "symbiotic");
           break;
       }
     }
@@ -451,9 +442,12 @@ export const MachinesTab: React.FC = () => {
               <Tr>
                 <Th content="AVS" sortKey="avs_name" currentSort={sortConfig} onSort={setSortConfig}></Th>
                 <Th content="Type" sortKey="avs_type" currentSort={sortConfig} onSort={setSortConfig}></Th>
+                <Th content="Protocol" sortKey="protocol" currentSort={sortConfig} onSort={setSortConfig}></Th>
                 <Th content="Chain" sortKey="chain" currentSort={sortConfig} onSort={setSortConfig}></Th>
                 <Th content="Address" sortKey="operator_address" currentSort={sortConfig} onSort={setSortConfig}></Th>
-                <Th
+                <Th content="Version" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}
+                ></Th>
+          {/*        <Th
                   content="Version"
                   //sortKey="avs_version"
                   currentSort={sortConfig}
@@ -463,7 +457,7 @@ export const MachinesTab: React.FC = () => {
                 <Th content="Latest" //sortKey="latest_version"
                 currentSort={sortConfig} onSort={setSortConfig}
                 tooltip="Add chain for latest version. Not all AVS use semantic versioning."
-                ></Th>
+                ></Th>*/}
                 <Th content="Issues" sortKey="errors" currentSort={sortConfig} onSort={setSortConfig}
                 ></Th>
          {/*       <Th
@@ -499,7 +493,11 @@ export const MachinesTab: React.FC = () => {
                     mutateMachines={mutateMachines}
                   />
                 </Td>
-                  <Td>
+                <Td>
+    <div className="text-left px-3 py-2 rounded-lg text-textSecondary">
+      {avs.protocol || '---'}
+    </div>
+  </Td>                  <Td>
                   <ChainCell
                   chain={avs.chain}
                   avsName={avs.avs_name}
@@ -514,8 +512,18 @@ export const MachinesTab: React.FC = () => {
                     machineId={avs.machine_id || ""}
                   />
                 </Td>
-<Td content={ avs.avs_version === "0.0.0" ? "---" : avs.avs_version === "Local" ? "Local" : (avs.avs_version === "latest" && getLatestVersion(avs.avs_type, avs.chain) === "latest" && avs.errors?.includes('NeedsUpdate')) ? "outdated" : truncateVersion(avs.avs_version) } className="px-1"></Td>
-                  <Td content={avs.avs_version === "Othentic" || avs.avs_version === "Local" ? "Local" : truncateVersion(getLatestVersion(avs.avs_type, avs.chain))} className="px-1" ></Td>
+                <Td>
+  <VersionStatusCell
+    updateStatus={avs.update_status}
+    currentVersion={avs.avs_version}
+    latestVersion={getLatestVersion(avs.avs_type, avs.chain)}
+    avsName={avs.avs_name}
+
+  />
+</Td>
+
+ {/* <Td content={ avs.avs_version === "0.0.0" ? "---" : avs.avs_version === "Local" ? "Local" : (avs.avs_version === "latest" && getLatestVersion(avs.avs_type, avs.chain) === "latest" && avs.errors?.includes('NeedsUpdate')) ? "outdated" : truncateVersion(avs.avs_version) } className="px-1"></Td>
+                  <Td content={avs.avs_version === "Othentic" || avs.avs_version === "Local" ? "Local" : truncateVersion(getLatestVersion(avs.avs_type, avs.chain))} className="px-1" ></Td> */}
                   <Td>
                     <HealthStatus
                       isChecked={avs.errors.length === 0}

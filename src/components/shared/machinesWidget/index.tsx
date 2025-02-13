@@ -17,30 +17,33 @@ interface PubKeyData {
 }
 
 export const MachinesWidget: React.FC<MachinesWidgetProps> = ({ data, details, avs }) => {
-  // Fetch operator addresses from pubkey endpoint
+  // Fetch operator addresses from pubkey endpoint once
   const { data: pubkeysResponse } = useSWR<AxiosResponse<PubKeyData[]>>(
     'pubkey',
-    () => apiFetch('pubkey', 'GET')
+    () => apiFetch('pubkey', 'GET'),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      refreshInterval: 0 // Disable polling completely
+    }
   );
 
   const pubkeys = pubkeysResponse?.data;
 
-  // Get unique operators from pubkey endpoint instead of AVS data
+  // Rest of the component remains the same...
   const uniqueOperators = pubkeys
     ? Array.from(new Set(pubkeys.map(item => item.public_key)))
     : [];
 
-  // Get the number of unique machines that have running AVS
   const runningMachines = new Set(avs?.filter(a => a.avs_name).map(a => a.machine_id)).size;
 
-  // Get the total number of running AVS nodes
   const runningNodes = avs?.filter(a => a.avs_name).length ?? 0;
 
-  // Get the number of AVS in active set
-//  const activeSetCount = avs?.filter(item => item.active_set === true).length ?? 0;
-
-  // Get the number of unhealthy AVS
-  const unhealthyCount = avs?.filter(item => item.errors && item.errors.length > 0).length ?? 0;
+  const unhealthyCount = avs?.filter(item => {
+    if (!item.errors || item.errors.length === 0) return false;
+    const significantErrors = item.errors.filter(error => error !== "NoMetrics");
+    return significantErrors.length > 0;
+  }).length ?? 0;
 
   return (
     <div className="grid grid-cols-4 gap-4">

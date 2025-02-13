@@ -6,6 +6,7 @@ import { ReactComponent as AVS } from "../images/avs-tab.svg"
 import { ReactComponent as Settings } from "../images/settings.svg"
 import { ReactComponent as Help } from "../images/help.svg"
 import { ReactComponent as Org } from "../images/org.svg"
+import { ReactComponent as Rewards } from "../images/rewards.svg"
 //import { AddUserModal } from "./settingsTab/AddUserModal";
 //import { OverviewTab } from "./overviewTab";
 
@@ -21,6 +22,8 @@ export const Sidebar: React.FC<SidebarProps> = () => {
     <div className="flex flex-col h-full">
         {/* <SidebarItem title="Overview" Logo={Machines} /> */}
         <SidebarItem title="Nodes" Logo={Machines} to="nodes" />
+        <SidebarItem title="Active Set" Logo={Rewards} to="activeSet" />
+       {/* <SidebarItem title="Issues" Logo={Machines} to="issues" />
         {/* <SidebarItem title="Overview" Logo={OverviewTab} /> */}
         <SidebarItem title="Logs" Logo={Settings} to="logs" />
         <SidebarItem title="Metrics" Logo={AVS} to="metrics" />

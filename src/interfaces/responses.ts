@@ -27,6 +27,7 @@ export interface SystemMetrics {
   };
 }
 
+
 export interface Metric {
   machine_id: string;
   avs_name: string | null;
@@ -68,6 +69,7 @@ export interface AVSInfoFull {
   performance_score: number;
   update_status: string;
   errors: string[];
+  protocol: string;
 }
 
 export interface ConsolidatedMachine {
@@ -108,7 +110,21 @@ export interface MachineDetails {
   machine_id: string;
   name: string;
   status: string;
-  system_metrics: {
+  client_version?: string;
+  hardware_info?: {
+    sys_metrics: {
+      cpu_cores: number;
+      cpu_usage: number;
+      memory_usage: number;
+      memory_free: number;
+      memory_total: number;
+      disks: any[];
+      uptime: number;
+    };
+    memory_status: string;
+    disk_status: string;
+  };
+  system_metrics?: {
     cores: number;
     cpu_usage: number;
     memory_info: {
@@ -125,7 +141,6 @@ export interface MachineDetails {
   avs_list: AVS[];
   errors: NodeError[];
 }
-
 
 export interface NodeError {
   NodeError: {
@@ -193,6 +208,8 @@ export interface AVS {
   performance_score: number;
   update_status: string;
   errors: string[];
+  protocol: string;
+
 }
 
 
@@ -211,6 +228,7 @@ export const avsFromJSON = (json: any): AVS[] => {
     uptime: avs.uptime,
     performance_score: avs.performance_score,
     update_status: avs.update_status,
-    errors: avs.errors
+    errors: avs.errors,
+    protocol: avs.protocol
   }));
 };

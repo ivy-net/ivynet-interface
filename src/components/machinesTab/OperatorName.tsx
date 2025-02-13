@@ -1,52 +1,53 @@
 import React from 'react';
-import useSWR from 'swr';
-import { AxiosResponse } from 'axios';
-import { apiFetch } from "../../utils";
+import { Link } from 'react-router-dom';
 
-interface OperatorInfo {
-  id: number;
+interface OperatorData {
   organization_id: number;
   name: string;
   public_key: string;
 }
 
-interface OperatorNameProps {
-  address: string | null | undefined;
+interface OperatorCellProps {
+  operatorAddress: string;
+  operatorData: OperatorData[] | undefined;
+  avsName: string;
+  machineId: string;
 }
 
-const OperatorName: React.FC<OperatorNameProps> = ({ address }) => {
-  const { data: operatorsResponse } = useSWR<AxiosResponse<OperatorInfo[]>>(
-    'pubkey',
-    (url: string) => apiFetch(url, 'GET'),
-    {
-      onError: (error) => {
-        console.error('Operator fetch error:', error);
-        return [];
-      }
+const OperatorCell: React.FC<OperatorCellProps> = ({
+  operatorAddress,
+  operatorData,
+  avsName,
+  machineId
+}) => {
+  const formatOperatorAddress = (address: string, data: OperatorData[] | undefined) => {
+    const operator = data?.find(op => op.public_key === address);
+    if (!operator?.name) {
+      return `${address.slice(0, 4)}..${address.slice(-3)}`;
     }
-  );
-
-  if (!address) return <span>-</span>;
-
-  const formatAddress = (addr: string): string => {
-    if (!addr) return '';
-    return `${addr.slice(0, 4)}...${addr.slice(-4)}`;
+    return `${operator.name}`;
   };
 
-  const operator = operatorsResponse?.data?.find(
-    op => op.public_key.toLowerCase() === address.toLowerCase()
-  );
-
-  const operatorName = operator?.name || formatAddress(address);
+  if (!operatorAddress || !operatorData?.find(op => op.public_key === operatorAddress)?.name) {
+    return (
+      <div className="w-24 flex justify-start">
+        <Link to={`/nodes/edit/${avsName}/${machineId}`}>
+          <div className="px-3 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textSecondary text-md">
+            Add
+          </div>
+        </Link>
+      </div>
+    );
+  }
 
   return (
-    <div className="relative inline-block group">
-      <span className="cursor-default">{operatorName}</span>
-      <div className="invisible group-hover:visible absolute z-50 px-2 py-1 text-sm bg-gray-900 text-white rounded-md top-full left-0 mt-1">
-        {address}
-      </div>
-    </div>
+    <Link
+      to={`/nodes/edit/${avsName}/${machineId}`}
+      className="text-left px-3 py-2 rounded-lg hover:bg-widgetHoverBg text-textSecondary block"
+      >
+      {formatOperatorAddress(operatorAddress, operatorData)}
+    </Link>
   );
 };
 
-export default OperatorName;
+export default OperatorCell;

@@ -30,22 +30,20 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
   const [operatorName, setOperatorName] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [operatorData, setOperatorData] = useState<OperatorData[]>([]);
+  const [addressOptions, setAddressOptions] = useState<SelectOption[]>([]);
   const navigate = useNavigate();
 
   const { avsName, machineId } = useParams();
   const apiFetcher = (url: string) => apiFetch(url, "GET");
 
-  // Fetch machine details
   const machineResponse = useSWR<AxiosResponse<MachineDetails>, any>(`machine/${machineId}`, apiFetcher);
   const machine = machineResponse.data?.data;
   const avs = machine?.avs_list.find(avs => avs.avs_name === avsName);
 
-  // Fetch operator addresses from pubkey endpoint
   const pubkeysResponse = useSWR<AxiosResponse<OperatorData[]>, any>('pubkey', apiFetcher);
 
   useEffect(() => {
     if (pubkeysResponse.data?.data) {
-      // Create unique address-name pairs by filtering out duplicates
       const uniqueOperators = pubkeysResponse.data.data.reduce((acc, curr) => {
         const existingOperator = acc.find(op => op.public_key === curr.public_key);
         if (!existingOperator) {
@@ -56,21 +54,28 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
 
       setOperatorData(uniqueOperators);
 
-      // If current AVS has an operator_address, select it and its corresponding name
       if (avs?.operator_address) {
         const operatorEntry = uniqueOperators.find(
           entry => entry.public_key === avs.operator_address
         );
         if (operatorEntry) {
-          setSelectedAddress({
-            value: operatorEntry.public_key,
-            label: `${operatorEntry.public_key} | ${operatorEntry.name}`
-          });
           setSelectedName({
             value: operatorEntry.name,
-            label: `${operatorEntry.name} | ${operatorEntry.public_key}`
+            label: operatorEntry.name
           });
           setOperatorName(operatorEntry.name);
+          // Update address options for this name
+          updateAddressOptions(operatorEntry.name);
+          // Set the selected address
+          setSelectedAddress({
+            value: avs.operator_address,
+            label: avs.operator_address
+          });
+        } else {
+          setSelectedAddress({
+            value: avs.operator_address,
+            label: avs.operator_address
+          });
         }
       }
     }
@@ -85,50 +90,32 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
     }
   }, [avs]);
 
-  // When an existing address is selected, auto-populate the name
-  const handleAddressChange = (option: SelectOption | null) => {
-    setSelectedAddress(option);
+  const updateAddressOptions = (name: string) => {
+    const addresses = operatorData
+      .filter(entry => entry.name === name)
+      .map(entry => ({
+        value: entry.public_key,
+        label: entry.public_key
+      }));
+    setAddressOptions(addresses);
+  };
+
+  const handleNameChange = (option: SelectOption | null) => {
+    setSelectedName(option);
+    setSelectedAddress(null); // Clear the selected address when name changes
+
     if (option) {
-      const operatorEntry = operatorData.find(
-        entry => entry.public_key === option.value
-      );
-      if (operatorEntry) {
-        // If it's an existing address, set its corresponding name
-        setSelectedName({
-          value: operatorEntry.name,
-          label: `${operatorEntry.name} | ${operatorEntry.public_key}`
-        });
-        setOperatorName(operatorEntry.name);
-      }
-      // If it's a new address, keep the existing name (don't reset anything)
+      setOperatorName(option.value);
+      // Update address options based on the selected name
+      updateAddressOptions(option.value);
     } else {
-      // Only clear everything if explicitly clearing the address
-      setSelectedName(null);
       setOperatorName("");
+      setAddressOptions([]); // Clear address options when no name is selected
     }
   };
 
-  // When an existing name is selected, auto-populate the address
-  const handleNameChange = (option: SelectOption | null) => {
-    setSelectedName(option);
-    if (option) {
-      const operatorEntry = operatorData.find(
-        entry => entry.name === option.value
-      );
-      if (operatorEntry) {
-        setSelectedAddress({
-          value: operatorEntry.public_key,
-          label: `${operatorEntry.public_key} | ${operatorEntry.name}`
-        });
-        setOperatorName(operatorEntry.name);
-      } else {
-        setSelectedAddress(null);
-        setOperatorName(option.value);
-      }
-    } else {
-      setSelectedAddress(null);
-      setOperatorName("");
-    }
+  const handleAddressChange = (option: SelectOption | null) => {
+    setSelectedAddress(option);
   };
 
   const addNewPubKey = async (publicKey: string, name: string) => {
@@ -151,13 +138,11 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
     try {
       setIsSubmitting(true);
 
-      // If this is a new address, add it to pubkey endpoint first
       const isNewAddress = !operatorData.some(entry => entry.public_key === address);
       if (isNewAddress && operatorName) {
         await addNewPubKey(address, operatorName);
       }
 
-      // Update the machine with address, chain, and AVS name
       const url = `machine/${machineId}`;
       const urlObj = new URL(`${process.env.REACT_APP_API_ENDPOINT}/${url}`);
       urlObj.searchParams.set("avs_name", avsName);
@@ -166,7 +151,8 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
 
       await apiFetch(urlObj.toString(), "PUT");
       toast.success(getMessage("MachineEditedMessage"), { theme: "dark" });
-      navigate("/nodes", { state: { refetch: true } });
+      navigate("/nodes", { state:
+         { refetch: true } });
     } catch (err) {
       toast.error("Failed to update machine", { theme: "dark" });
     } finally {
@@ -222,7 +208,7 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
     <div className="fixed left-0 top-0 w-screen h-screen flex justify-center items-center bg-black/[0.8]">
       <div className="flex flex-col bg-widgetBg w-[730px] rounded-xl p-8 gap-10">
         <div className="flex items-center">
-          <h2>Add Address Details</h2>
+          <h2>Edit Address Details</h2>
           <Link to="/nodes" relative="path" className="ml-auto">
             <img src={closeIcon} alt="close icon" />
           </Link>
@@ -246,10 +232,16 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
               <CreatableSelect<SelectOption>
                 value={selectedName}
                 onChange={handleNameChange}
-                options={operatorData.map(entry => ({
-                  value: entry.name,
-                  label: `${entry.name} | ${entry.public_key}`
-                }))}
+                options={operatorData
+                  .reduce((unique: SelectOption[], current) => {
+                    if (!unique.some(item => item.value === current.name)) {
+                      unique.push({
+                        value: current.name,
+                        label: current.name
+                      });
+                    }
+                    return unique;
+                  }, [])}
                 styles={selectStyles}
                 isDisabled={isSubmitting}
                 isClearable
@@ -260,23 +252,27 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
                     label: inputValue
                   });
                   setOperatorName(inputValue);
+                  setAddressOptions([]); // Clear address options for new names
                 }}
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <div className="text-md leading-5 font-lg text-ivygrey">Operator Address</div>
+              <div className="text-md leading-5 font-lg text-ivygrey">
+                Operator Address {selectedName && addressOptions.length > 0 && `(${addressOptions.length} available)`}
+              </div>
               <CreatableSelect<SelectOption>
                 value={selectedAddress}
                 onChange={handleAddressChange}
-                options={operatorData.map(entry => ({
-                  value: entry.public_key,
-                  label: `${entry.public_key} | ${entry.name}`
-                }))}
+                options={addressOptions}
                 styles={selectStyles}
                 isDisabled={isSubmitting}
                 isClearable
-                placeholder="Select or enter an operator address..."
+                placeholder={selectedName
+                  ? addressOptions.length > 0
+                    ? "Select an address for this operator..."
+                    : "Enter a new address for this operator..."
+                  : "Please select an operator name first..."}
               />
             </div>
           </div>
@@ -297,7 +293,7 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
             )}
             className="px-4 py-2 rounded-lg bg-bgButton hover:bg-textGrey text-textPrimary disabled:opacity-50"
           >
-            Save Changes
+            {isSubmitting ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
       </div>

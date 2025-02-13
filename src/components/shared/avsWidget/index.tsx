@@ -4,7 +4,7 @@ import avsIcon from "../../../images/avs.svg"
 import arrowUpRight from "./../../../images/arrow-up-right.svg"
 
 // Fixed the type annotation that was causing the linting error
-const truncateString = (str: string, maxLength = 18) => {
+const truncateString = (str: string, maxLength = 25) => {
   if (!str || str.length <= maxLength) return str;
   return `${str.slice(0, maxLength)}...`;
 };

@@ -26,7 +26,7 @@ import { PasswordSet } from '../components/passwordset/index';
 import { PasswordReset } from '../components/passwordreset/index';
 import { LogsTab } from '../components/logsTab';
 import { AddMetricsModal } from '../components/avsTab/AddMetrics';
-import { IssuesTab } from '../components/issuesTab';
+//import { IssuesTab } from '../components/issuesTab';
 import AlertSettings from '../components/issuesTab/AlertSettings';
 import { ActiveSet } from '../components/activeSet';
 import { AddKeysModal } from '../components/activeSet/AddAddresses';
@@ -182,16 +182,18 @@ export const router = createBrowserRouter([
             element: <AddKeysModal />
           }
         ]
-      }, {
-        path: "issues",
-        element: <IssuesTab />,
-        children: [
-          {
-            path: "settings",
-            element: <AlertSettings />
-          },
-        ]
       },
+//      {
+//        path: "issues",
+//        element: <IssuesTab />,
+//        children: [
+//          {
+//            path: "settings",
+//            element: <AlertSettings />
+//          },
+//        ]
+  //    }
+   //   ,
       {
         path: "overview",
         element: <OrgTab />,

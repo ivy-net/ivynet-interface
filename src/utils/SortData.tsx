@@ -11,8 +11,11 @@ export const sortData = <T extends Record<string, any>>(
   return [...data].sort((a, b) => {
     let aValue = a[sortConfig.key!];
     let bValue = b[sortConfig.key!];
-    // Handle special cases
-    if (sortConfig.key === 'avs_name' || sortConfig.key === 'avs_type' || sortConfig.key === 'chain') {
+
+    if (sortConfig.key === 'avs_name' ||
+        sortConfig.key === 'avs_type' ||
+        sortConfig.key === 'chain' ||
+        sortConfig.key === 'protocol') {
       aValue = String(aValue || '').toLowerCase();
       bValue = String(bValue || '').toLowerCase();
     } else if (sortConfig.key === 'performance_score') {
@@ -25,6 +28,7 @@ export const sortData = <T extends Record<string, any>>(
       aValue = Array.isArray(aValue) ? aValue.length : 0;
       bValue = Array.isArray(bValue) ? bValue.length : 0;
     }
+
     if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
     if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
     return 0;

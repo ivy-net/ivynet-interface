@@ -43,8 +43,8 @@ const OperatorCell: React.FC<OperatorCellProps> = ({
   return (
     <Link
       to={`/nodes/edit/${avsName}/${machineId}`}
-      className="hover:text-textHover"
-    >
+      className="text-left px-3 py-2 rounded-lg hover:bg-widgetHoverBg text-textSecondary block"
+      >
       {formatOperatorAddress(operatorAddress, operatorData)}
     </Link>
   );

@@ -151,7 +151,8 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
 
       await apiFetch(urlObj.toString(), "PUT");
       toast.success(getMessage("MachineEditedMessage"), { theme: "dark" });
-      navigate("/nodes", { state: { refetch: true } });
+      navigate("/nodes", { state:
+         { refetch: true } });
     } catch (err) {
       toast.error("Failed to update machine", { theme: "dark" });
     } finally {

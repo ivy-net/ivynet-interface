@@ -30,12 +30,11 @@ import { AddMetricsModal } from '../components/avsTab/AddMetrics';
 //import AlertSettings from '../components/issuesTab/AlertSettings';
 import { ActiveSet } from '../components/activeSet';
 import { AddKeysModal } from '../components/activeSet/AddAddresses';
-import {OrganizationConfirm} from '../components/organizationConfirm';
 
 const authLoader: LoaderFunction = ({ request }) => {
   // Skip auth check for public routes
-  const publicPaths = ['/login', '/signup', '/reset', '/welcome', '/password_set', '/password_reset', '/organization_confirm'];
-  const url = new URL(request.url);
+  const publicPaths = ['/login', '/signup', '/reset', '/welcome', '/password_set', '/password_reset'];
+   const url = new URL(request.url);
    if (publicPaths.some(path => url.pathname.startsWith(path))) {  // Using startsWith to handle parameters
      return null;
    }
@@ -247,15 +246,11 @@ export const router = createBrowserRouter([
   },
   // In your router configuration
 {
-  path: "password_reset/:token",
+  path: "password_reset/:token",  // Add this new route
   element: <PasswordReset />
 },
   {
-    path: "password_set/:token",
+    path: "password_set/:token",  // Changed from setPassword/:token to match the URL format
     element: <PasswordSet />
-  },
-  {
-    path: "organization_confirm/:token",
-    element: <OrganizationConfirm />
   }
 ]);

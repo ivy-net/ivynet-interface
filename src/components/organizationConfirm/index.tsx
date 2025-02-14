@@ -3,12 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 export const OrganizationConfirm = () => {
-  const { id } = useParams();
+  const { token } = useParams();
   const navigate = useNavigate();
 
   const handleConfirmation = async () => {
     try {
-      const response = await fetch(`/api/organization/confirm/${id}`, {
+      const response = await fetch(`/api/organization/confirm/${token}`, {
         method: 'POST'
       });
 

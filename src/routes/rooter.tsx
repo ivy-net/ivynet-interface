@@ -34,8 +34,8 @@ import {OrganizationConfirm} from '../components/organizationConfirm';
 
 const authLoader: LoaderFunction = ({ request }) => {
   // Skip auth check for public routes
-  const publicPaths = ['/login', '/signup', '/reset', '/welcome', '/password_set', '/password_reset'];
-   const url = new URL(request.url);
+  const publicPaths = ['/login', '/signup', '/reset', '/welcome', '/password_set', '/password_reset', '/organization_confirm'];
+  const url = new URL(request.url);
    if (publicPaths.some(path => url.pathname.startsWith(path))) {  // Using startsWith to handle parameters
      return null;
    }

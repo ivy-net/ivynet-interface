@@ -1,6 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { apiFetch } from "../../utils";
 
 export const OrganizationConfirm = () => {
   const { token } = useParams();
@@ -8,19 +9,13 @@ export const OrganizationConfirm = () => {
 
   const handleConfirmation = async () => {
     try {
-      const response = await fetch(`/api/organization/confirm/${token}`, {
-        method: 'POST'
-      });
-
-      if (!response.ok) {
-        throw new Error('Verification failed');
-      }
+      const response = await apiFetch(`organization/confirm/${token}`, "POST");
 
       toast.success('Organization verified successfully!');
       navigate('/login');
-    } catch (error) {
+    } catch (err) {
       toast.error('Failed to verify organization. Please try again or contact support.');
-      console.error('Verification error:', error);
+      console.error('Verification error:', err);
     }
   };
 

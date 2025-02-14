@@ -2,6 +2,8 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { apiFetch } from "../../utils";
+import ivySmall from "../../images/ivy-small.svg";
+
 
 export const OrganizationConfirm = () => {
   const { token } = useParams();
@@ -9,7 +11,7 @@ export const OrganizationConfirm = () => {
 
   const handleConfirmation = async () => {
     try {
-      const response = await apiFetch(`organization/confirm/${token}`, "POST");
+      const response = await apiFetch(`organization/confirm/${token}`, "GET");
 
       toast.success('Organization verified successfully!');
       navigate('/login');
@@ -23,7 +25,7 @@ export const OrganizationConfirm = () => {
     <div className="flex items-center justify-center h-screen w-screen bg-contentBg">
       <div className="flex flex-col w-[440px] h-[464px] gap-4">
         <div className="flex flex-col gap-3">
-          <img className="w-[48px] h-[48px]" src="/api/placeholder/48/48" alt="ivy-logo" />
+          <img className="w-[48px] h-[48px]" src={ivySmall} alt="ivy-logo" />
           <div className="text-ivywhite text-2xl leading-9 font-bold">Verify Organization</div>
           <div className="text-ivywhite text-lg leading-6 font-normal">
             <span>Click the button below to verify your organization and activate your </span>

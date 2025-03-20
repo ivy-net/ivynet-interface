@@ -23,7 +23,7 @@ export const Sidebar: React.FC<SidebarProps> = () => {
         {/* <SidebarItem title="Overview" Logo={Machines} /> */}
         <SidebarItem title="Nodes" Logo={Machines} to="nodes" />
         <SidebarItem title="Active Set" Logo={Rewards} to="activeSet" />
-       {/* <SidebarItem title="Issues" Logo={Machines} to="issues" />
+        <SidebarItem title="Alerts" Logo={Help} to="alerts" />
         {/* <SidebarItem title="Overview" Logo={OverviewTab} /> */}
         <SidebarItem title="Logs" Logo={Settings} to="logs" />
         <SidebarItem title="Metrics" Logo={AVS} to="metrics" />

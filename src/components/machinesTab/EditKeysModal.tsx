@@ -279,7 +279,7 @@ export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
 
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-1.5">
-            <div className="text-sm leading-5 font-medium text-ivygrey">AVS Name</div>
+            <div className="text-sm leading-5 font-medium text-ivywhite">AVS Name</div>
             <Select
               value={selectedAvs}
               onChange={(value) => {
@@ -294,7 +294,7 @@ export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <div className="text-sm leading-5 font-medium text-ivygrey">Chain</div>
+            <div className="text-sm leading-5 font-medium text-ivywhite">Chain</div>
             <Select
               value={selectedChain}
               onChange={(value) => setSelectedChain(value)}
@@ -306,7 +306,7 @@ export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <div className="text-sm leading-5 font-medium text-ivygrey">Operator Name</div>
+            <div className="text-sm leading-5 font-medium text-ivywhite">Operator Name</div>
             <CreatableSelect<SelectOption>
               value={selectedName}
               onChange={handleNameChange}
@@ -336,7 +336,7 @@ export const EditKeysModal: React.FC<EditKeysModalProps> = () => {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <div className="text-sm leading-5 font-medium text-ivygrey">
+            <div className="text-sm leading-5 font-medium text-ivywhite">
               Operator Address {selectedName && addressOptions.length > 0 && `(${addressOptions.length} available)`}
             </div>
             <CreatableSelect<SelectOption>

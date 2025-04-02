@@ -1,7 +1,5 @@
 # Ivynet Interface
 
-Currently, only dummy data is used.
-
 ## Available Scripts
 
 In the project directory, you can run:

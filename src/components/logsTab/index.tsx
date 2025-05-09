@@ -487,7 +487,7 @@ export const LogsTab: React.FC = () => {
       ) : filteredAndSortedLogs.length === 0 ? (
         <div className="flex flex-col items-center justify-center min-h-[400px] bg-widgetBg rounded-lg p-8">
           <h2 className="text-xl font-semibold text-textPrimary mb-4">No logs available for {selectedAvs}</h2>
-          <p className="text-textSecondary">Try refreshing or adjusting your filters</p>
+          <p className="text-textSecondary">Logs are currently only stored for 6 hours. Try refreshing or adjusting your filters</p>
         </div>
       ) : (
 <Table>

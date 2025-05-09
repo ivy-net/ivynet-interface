@@ -216,7 +216,7 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-5">
             <div className="flex flex-col gap-1.5">
-              <div className="text-md leading-5 font-lg text-ivygrey">Chain</div>
+              <div className="text-md leading-5 font-lg text-ivywhite">Chain</div>
               <Select
                 value={selectedChain}
                 onChange={(value) => setSelectedChain(value)}
@@ -228,7 +228,7 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <div className="text-md leading-5 font-lg text-ivygrey">Operator Name</div>
+              <div className="text-md leading-5 font-lg text-ivywhite">Operator Name</div>
               <CreatableSelect<SelectOption>
                 value={selectedName}
                 onChange={handleNameChange}
@@ -258,7 +258,7 @@ export const EditMachineModal: React.FC<EditMachineModalProps> = () => {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <div className="text-md leading-5 font-lg text-ivygrey">
+              <div className="text-md leading-5 font-lg text-ivywhite">
                 Operator Address {selectedName && addressOptions.length > 0 && `(${addressOptions.length} available)`}
               </div>
               <CreatableSelect<SelectOption>

@@ -58,8 +58,8 @@ export const Login: React.FC<LoginProps> = () => {
         </div>
         <div className="flex text-ivywhite gap-1 justify-center">
           <div>New to IvyNet?</div>
-          <a href="https://t.me/ivynetdotdev" target="_blank" rel="noopener noreferrer">
-            <div className="text-accent hover:text-accent/80">DM</div>
+          <a href="https://metrics.ivynet.dev/signup" target="_blank" rel="noopener noreferrer">
+            <div className="text-accent hover:text-accent/80">Sign Up</div>
           </a>
         </div>
       </div>
